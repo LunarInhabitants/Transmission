@@ -225,8 +225,9 @@ namespace Sabresaurus.SabreCSG
 				}
 			}
 
+			bool mixedSelection = (selectedIndex == names.Length);
 			// Mixed selection, add a name entry for "Mixed"
-			if(selectedIndex == names.Length)
+			if(mixedSelection)
 			{
 				Array.Resize(ref names, names.Length+1);
 				
@@ -236,7 +237,7 @@ namespace Sabresaurus.SabreCSG
 
 			int newIndex = EditorGUILayout.Popup(label, selectedIndex, names, options);
 
-			if(newIndex == names.Length-1)
+			if(mixedSelection && newIndex == names.Length-1)
 			{
 				return null;
 			}
@@ -338,6 +339,32 @@ namespace Sabresaurus.SabreCSG
 		{
 			EditorGUI.indentLevel = cachedIndentLevel;
 		}
-	}
+
+        public static void DrawAnchoredLabel(string text, Vector2 anchoredPosition, Vector2 size, TextAnchor alignment)
+        {
+            // Calculate normalized device coordinates (-1 to +1)
+            float xAnchor = ((int)alignment % 3) - 1; // -1 is left, 0 center, 1 is right
+            float yAnchor = ((int)alignment / 3) - 1; // -1 is left, 0 center, 1 is right
+
+            Vector2 realPosition = anchoredPosition + new Vector2((-xAnchor * 0.5f - 0.5f) * size.x, -(yAnchor * 0.5f + 0.5f) * size.y);
+
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.alignment = alignment;
+            GUI.Label(new Rect(realPosition.x, realPosition.y, size.x, size.y), text, style);
+        }
+
+        public static void DrawOutlinedBox(Rect rect, Color fillColor)
+        {
+            // Draw outer line in black
+            GUI.color = Color.black;
+            GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+
+            // Draw an inset rectangle in the specified colour
+            rect.size -= new Vector2(2, 2);
+            rect.center += new Vector2(1, 1);
+            GUI.color = fillColor;
+            GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+        }
+    }
 }
 #endif

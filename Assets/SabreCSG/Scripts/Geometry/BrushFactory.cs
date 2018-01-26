@@ -190,21 +190,163 @@ namespace Sabresaurus.SabreCSG
 			return polygons;
 		}
 
+		[System.Obsolete("Use GeneratePolarSphere instead, or for a more isotropic geometry use GenerateIcoSphere")]
+		public static Polygon[] GenerateSphere(int lateralCount = 6, int longitudinalCount = 12)
+		{
+			return GeneratePolarSphere(lateralCount, longitudinalCount);
+		}
+
+		/// <summary>
+		/// Generates an ico-sphere of radius 2. Unlike a polar-sphere this has a more even distribution of vertices.
+		/// </summary>
+		/// <returns>Polygons to be supplied to a brush.</returns>
+		/// <param name="iterationCount">Number of times the surface is subdivided, values of 1 or 2 are recommended.</param>
+		public static Polygon[] GenerateIcoSphere(int iterationCount)
+		{
+			// Derived from http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
+			float longestDimension = (1+Mathf.Sqrt(5f)) / 2f;
+			Vector3 sourceVector = new Vector3(0, 1, longestDimension);
+
+			// Make the longest dimension 1, so the icosphere fits in a 2,2,2 cube
+			sourceVector.Normalize();
+
+			Vertex[] vertices = new Vertex[]
+			{
+				new Vertex(new Vector3(-sourceVector.y,+sourceVector.z,sourceVector.x), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(sourceVector.y,+sourceVector.z,sourceVector.x), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(-sourceVector.y,-sourceVector.z,sourceVector.x), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(sourceVector.y,-sourceVector.z,sourceVector.x), Vector3.zero, Vector2.zero),
+
+				new Vertex(new Vector3(sourceVector.x,-sourceVector.y,+sourceVector.z), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(sourceVector.x,+sourceVector.y,+sourceVector.z), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(sourceVector.x,-sourceVector.y,-sourceVector.z), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(sourceVector.x,+sourceVector.y,-sourceVector.z), Vector3.zero, Vector2.zero),
+
+				new Vertex(new Vector3(+sourceVector.z,sourceVector.x,-sourceVector.y), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(+sourceVector.z,sourceVector.x,+sourceVector.y), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(-sourceVector.z,sourceVector.x,-sourceVector.y), Vector3.zero, Vector2.zero),
+				new Vertex(new Vector3(-sourceVector.z,sourceVector.x,+sourceVector.y), Vector3.zero, Vector2.zero),
+			};
+
+			Polygon[] polygons = new Polygon[]
+			{
+				new Polygon(new Vertex[] { vertices[0].DeepCopy(),vertices[1].DeepCopy(),vertices[7].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[0].DeepCopy(),vertices[5].DeepCopy(),vertices[1].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[0].DeepCopy(),vertices[7].DeepCopy(),vertices[10].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[0].DeepCopy(),vertices[10].DeepCopy(),vertices[11].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[0].DeepCopy(),vertices[11].DeepCopy(),vertices[5].DeepCopy()}, null, false, false),
+
+				new Polygon(new Vertex[] { vertices[7].DeepCopy(),vertices[1].DeepCopy(),vertices[8].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[1].DeepCopy(),vertices[5].DeepCopy(),vertices[9].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[10].DeepCopy(),vertices[7].DeepCopy(),vertices[6].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[11].DeepCopy(),vertices[10].DeepCopy(),vertices[2].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[5].DeepCopy(),vertices[11].DeepCopy(),vertices[4].DeepCopy()}, null, false, false),
+
+				new Polygon(new Vertex[] { vertices[3].DeepCopy(),vertices[2].DeepCopy(),vertices[6].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[3].DeepCopy(),vertices[4].DeepCopy(),vertices[2].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[3].DeepCopy(),vertices[6].DeepCopy(),vertices[8].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[3].DeepCopy(),vertices[8].DeepCopy(),vertices[9].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[3].DeepCopy(),vertices[9].DeepCopy(),vertices[4].DeepCopy()}, null, false, false),
+
+				new Polygon(new Vertex[] { vertices[6].DeepCopy(),vertices[2].DeepCopy(),vertices[10].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[2].DeepCopy(),vertices[4].DeepCopy(),vertices[11].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[8].DeepCopy(),vertices[6].DeepCopy(),vertices[7].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[9].DeepCopy(),vertices[8].DeepCopy(),vertices[1].DeepCopy()}, null, false, false),
+				new Polygon(new Vertex[] { vertices[4].DeepCopy(),vertices[9].DeepCopy(),vertices[5].DeepCopy()}, null, false, false),
+			};
+
+			// Refine 
+			for (int i = 0; i < iterationCount; i++)
+			{
+				Polygon[] newPolygons = new Polygon[polygons.Length*4];
+				for (int j = 0; j < polygons.Length; j++) 
+				{
+					Vertex a = Vertex.Lerp(polygons[j].Vertices[0], polygons[j].Vertices[1], 0.5f);
+					Vertex b = Vertex.Lerp(polygons[j].Vertices[1], polygons[j].Vertices[2], 0.5f);
+					Vertex c = Vertex.Lerp(polygons[j].Vertices[2], polygons[j].Vertices[0], 0.5f);
+
+					a.Position = a.Position.normalized;
+					b.Position = b.Position.normalized;
+					c.Position = c.Position.normalized;
+
+					newPolygons[j*4+0] = new Polygon(new Vertex[] { polygons[j].Vertices[0].DeepCopy(), a.DeepCopy(), c.DeepCopy()}, null, false, false);
+					newPolygons[j*4+1] = new Polygon(new Vertex[] { polygons[j].Vertices[1].DeepCopy(), b.DeepCopy(), a.DeepCopy()}, null, false, false);
+					newPolygons[j*4+2] = new Polygon(new Vertex[] { polygons[j].Vertices[2].DeepCopy(), c.DeepCopy(), b.DeepCopy()}, null, false, false);
+					newPolygons[j*4+3] = new Polygon(new Vertex[] { a.DeepCopy(), b.DeepCopy(), c.DeepCopy()}, null, false, false);
+				}
+				polygons = newPolygons;
+			}
+
+			for (int i = 0; i < polygons.Length; i++) 
+			{
+                bool anyAboveHalf = false;
+
+                for (int j = 0; j < polygons[i].Vertices.Length; j++)
+                {
+                    Vector3 normal = polygons[i].Vertices[j].Position.normalized;
+                    polygons[i].Vertices[j].Normal = normal;
+                    float piReciprocal = 1f / Mathf.PI;
+                    float u = 0.5f - 0.5f * Mathf.Atan2(normal.x, -normal.z) * piReciprocal;
+                    float v = 1f - Mathf.Acos(normal.y) * piReciprocal;
+
+                    if (Mathf.Abs(u) < 0.01f
+                        || Mathf.Abs(1 - Mathf.Abs(u)) < 0.01f)
+                    {
+                        if (polygons[i].Plane.normal.x > 0)
+                        {
+                            u = 0;
+                        }
+                        else
+                        {
+                            u = 1;
+                        }
+                    }
+
+                    if(u > 0.75f)
+                    {
+                        anyAboveHalf = true;
+                    }
+
+                    //Debug.Log(u);
+                    polygons[i].Vertices[j].UV = new Vector2(u, v);
+
+                    //const float kOneOverPi = 1.0 / 3.14159265;
+                    //float u = 0.5 - 0.5 * atan(N.x, -N.z) * kOneOverPi;
+                    //float v = 1.0 - acos(N.y) * kOneOverPi;
+                }
+
+                if (anyAboveHalf)
+                {
+                    for (int j = 0; j < polygons[i].Vertices.Length; j++)
+                    {
+                        Vector2 uv = polygons[i].Vertices[j].UV;
+                        if (uv.x < 0.5f)
+                        {
+                            uv.x += 1;
+                        }
+                        polygons[i].Vertices[j].UV = uv;
+
+                    }
+                }
+            }
+
+			return polygons;
+		}
+
 		/// <summary>
 		/// Generates a sphere of radius 2
 		/// </summary>
 		/// <returns>Polygons to be supplied to a brush.</returns>
 		/// <param name="lateralCount">Vertex count up from the south pole to the north pole.</param>
 		/// <param name="longitudinalCount">Vertex count around the sphere equator.</param>
-		public static Polygon[] GenerateSphere(int lateralCount = 6, int longitudinalCount = 12)
+		public static Polygon[] GeneratePolarSphere(int lateralCount = 6, int longitudinalCount = 12)
 		{
 			Polygon[] polygons = new Polygon[lateralCount * longitudinalCount];
 
 			float angleDelta = 1f / lateralCount;
 			float longitudinalDelta = 1f / longitudinalCount;
 
-			// TODO: Right now this uses quads for the top and bottom, should use tris to join up to polar points
-
+			// Generate tris for the top and bottom, then quads for the rest
 			for (int i = 0; i < lateralCount; i++)
 			{
 				for (int j = 0; j < longitudinalCount; j++)
@@ -286,7 +428,7 @@ namespace Sabresaurus.SabreCSG
 								new Vector2(i * (1f/lateralCount), j * (1f/longitudinalCount))),
 						};
 					}
-					else
+					else // i == 0
 					{
 						vertices = new Vertex[] {
 
@@ -332,12 +474,57 @@ namespace Sabresaurus.SabreCSG
 			return polygons;
 		}
 
-		/// <summary>
-		/// Generates the polygons from a supplied convex mesh, preserving quads if the MeshImporter has <c>keepQuads</c> set.
-		/// </summary>
-		/// <returns>The polygons converted from the mesh.</returns>
-		/// <param name="sourceMesh">Source mesh.</param>
-		public static List<Polygon> GeneratePolygonsFromMesh(Mesh sourceMesh)
+        /// <summary>
+        /// Generates a cone of height and radius 2
+        /// </summary>
+		/// <param name="sideCount">Side count for the cone.</param>
+        /// <returns>Polygons to be supplied to a brush.</returns>
+        public static Polygon[] GenerateCone(int sideCount = 20)
+        {
+            Polygon[] polygons = new Polygon[sideCount * 2];
+
+            float angleDelta = Mathf.PI * 2 / sideCount;
+
+            Vertex capCenterVertex = new Vertex(new Vector3(0, 1, 0), Vector3.up, new Vector2(0, 0));
+
+            for (int i = 0; i < sideCount; i++)
+            {
+                Vector3 normal = new Vector3(Mathf.Sin((i + 0.5f) * angleDelta), 0, Mathf.Cos((i + 0.5f) * angleDelta));
+
+                polygons[i] = new Polygon(new Vertex[]
+                {
+                    new Vertex(new Vector3(Mathf.Sin(i * angleDelta), -1, Mathf.Cos(i * angleDelta)),
+                        normal,
+                        new Vector2(i * (1f/sideCount),0)),
+                    new Vertex(new Vector3(Mathf.Sin((i+1) * angleDelta), -1, Mathf.Cos((i+1) * angleDelta)),
+                        normal,
+                        new Vector2((i+1) * (1f/sideCount),0)),
+                    new Vertex(new Vector3(0, 1, 0),
+                        normal,
+                        new Vector2((((i + 1) * (1f / sideCount)) + (i * (1f / sideCount))) / 2.0f, 1.0f)),
+                }, null, false, false);
+            }
+
+            capCenterVertex = new Vertex(new Vector3(0, -1, 0), Vector3.down, new Vector2(0, 0));
+
+            for (int i = 0; i < sideCount; i++)
+            {
+                Vertex vertex1 = new Vertex(new Vector3(Mathf.Sin(i * -angleDelta), -1, Mathf.Cos(i * -angleDelta)), Vector3.down, new Vector2(Mathf.Sin(i * angleDelta), Mathf.Cos(i * angleDelta)));
+                Vertex vertex2 = new Vertex(new Vector3(Mathf.Sin((i + 1) * -angleDelta), -1, Mathf.Cos((i + 1) * -angleDelta)), Vector3.down, new Vector2(Mathf.Sin((i + 1) * angleDelta), Mathf.Cos((i + 1) * angleDelta)));
+
+                Vertex[] capVertices = new Vertex[] { vertex1, vertex2, capCenterVertex.DeepCopy() };
+                polygons[sideCount + i] = new Polygon(capVertices, null, false, false);
+            }
+
+            return polygons;
+        }
+
+        /// <summary>
+        /// Generates the polygons from a supplied convex mesh, preserving quads if the MeshImporter has <c>keepQuads</c> set.
+        /// </summary>
+        /// <returns>The polygons converted from the mesh.</returns>
+        /// <param name="sourceMesh">Source mesh.</param>
+        public static List<Polygon> GeneratePolygonsFromMesh(Mesh sourceMesh)
 		{
 			List<Polygon> generatedPolygons = new List<Polygon>();
 			// Each sub mesh can have a different topology, i.e. triangles and quads

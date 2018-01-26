@@ -19,8 +19,9 @@ namespace Sabresaurus.SabreCSG
 	public enum OverrideMode
 	{
 		None,
-		Clip,
-		Draw
+        TransformModel, // Dummy mode that prevents active tools conflicting
+		//Clip,
+		//Draw,
 	};
 
 	public enum GridMode
@@ -31,12 +32,33 @@ namespace Sabresaurus.SabreCSG
 	}
 
 	[ExecuteInEditMode]
-	public static class CurrentSettings
+    public class CurrentSettings : ScriptableObject
 	{
-		static bool brushesHidden = false;
-		static bool meshHidden = false;
+		bool brushesHidden = false;
+		bool meshHidden = false;
+        Material foregroundMaterial;
 
-		static Material foregroundMaterial;
+        static CurrentSettings instance = null;
+
+        static CurrentSettings Instance
+        {
+            get
+            {
+                // Instance reference lost or not set
+                if(instance == null)
+                {
+                    // First of all see if a CurrentSettings object exists
+                    instance = FindObjectOfType<CurrentSettings>();
+
+                    // Couldn't find an existing object, make a new one
+                    if(instance == null)
+                    {
+                        instance = ScriptableObject.CreateInstance<CurrentSettings>();
+                    }
+                }
+                return instance;
+            }
+        }
 
 		const string KEY_PREFIX = "SabreCSG";
 
@@ -146,11 +168,11 @@ namespace Sabresaurus.SabreCSG
 	    {
 	        get
 	        {
-	            return foregroundMaterial;
+	            return Instance.foregroundMaterial;
 	        }
 	        set
 	        {
-	            foregroundMaterial = value;
+	            Instance.foregroundMaterial = value;
 	        }
 		}
 
@@ -188,11 +210,11 @@ namespace Sabresaurus.SabreCSG
 	    {
 	        get
 	        {
-	            return brushesHidden;
+	            return Instance.brushesHidden;
 	        }
 	        set
 	        {
-	            brushesHidden = value;
+                Instance.brushesHidden = value;
 	        }
 	    }
 
@@ -200,11 +222,11 @@ namespace Sabresaurus.SabreCSG
 		{
 			get
 			{
-				return meshHidden;
+				return Instance.meshHidden;
 			}
 			set
 			{
-				meshHidden = value;
+                Instance.meshHidden = value;
 			}
 		}
 
@@ -213,7 +235,7 @@ namespace Sabresaurus.SabreCSG
 	    {
 	        get
 	        {
-				return !brushesHidden;
+                return !Instance.brushesHidden;
 	        }
 	    }
 
@@ -226,12 +248,12 @@ namespace Sabresaurus.SabreCSG
 	    }
 
 		public static MainMode CurrentMode
-	    {
-	        get
-	        {
-				int storedValue = PlayerPrefs.GetInt(KEY_PREFIX + "-CurrentMode", 0);
+        {
+            get
+            {
+                int storedValue = PlayerPrefs.GetInt(KEY_PREFIX + "-CurrentMode", 0);
 
-				if(storedValue >= Enum.GetNames(typeof(MainMode)).Length)
+                if (storedValue >= Enum.GetNames(typeof(MainMode)).Length || storedValue < 0)
 				{
 					return default(MainMode);
 				}
@@ -255,7 +277,7 @@ namespace Sabresaurus.SabreCSG
 			{
 				int storedValue = PlayerPrefs.GetInt(KEY_PREFIX + "-OverrideMode", 0);
 
-				if(storedValue >= Enum.GetNames(typeof(OverrideMode)).Length)
+				if(storedValue >= Enum.GetNames(typeof(OverrideMode)).Length || storedValue < 0)
 				{
 					return default(OverrideMode);
 				}
