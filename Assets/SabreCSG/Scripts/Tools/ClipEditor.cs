@@ -27,6 +27,8 @@ namespace Sabresaurus.SabreCSG
 		// Whether the plane has been reversed by the user
 		bool isFlipped = false;
 
+        bool isDragValid = true; // Drags are only valid if they didn't start on the bottom toolbar or scene view alignment gizmo
+
         public override void ResetTool()
         {
 			if(primaryTargetBrush != null)
@@ -85,13 +87,16 @@ namespace Sabresaurus.SabreCSG
 			// First let's see if we can select any existing points
 			if(e.type == EventType.MouseDown || e.type == EventType.MouseUp)
 			{
-				if(!EditorHelper.IsMousePositionNearSceneGizmo(e.mousePosition))
+				if(!EditorHelper.IsMousePositionInInvalidRects(e.mousePosition))
 				{
 					OnMouseSelection(sceneView, e);
 				}
 			}
 
-			if(e.button == 0 && e.type == EventType.MouseDrag && !CameraPanInProgress)
+			if(e.button == 0 
+                && e.type == EventType.MouseDrag 
+                && !CameraPanInProgress
+                && isDragValid)
 			{
 				planeEstablished = false;
 			}
@@ -99,14 +104,30 @@ namespace Sabresaurus.SabreCSG
             // Forward specific events on to handlers
 			if (e.type == EventType.MouseDown || e.type == EventType.MouseUp || e.type == EventType.MouseDrag || e.type == EventType.MouseMove)
             {
-				if(sceneView.camera.orthographic && EditorHelper.GetSceneViewCamera(sceneView) != EditorHelper.SceneViewCamera.Other)
-				{
-					OnMouseActionOrthographic(sceneView, e);
-				}
-				else
-				{
-					OnMouseAction3D(sceneView, e);
-				}
+                if(e.type == EventType.MouseDown)
+                {
+                    isDragValid = !(EditorHelper.IsMousePositionInInvalidRects(e.mousePosition));
+                }
+
+                if(isDragValid
+                    && !(e.type == EventType.MouseMove && EditorHelper.IsMousePositionInInvalidRects(e.mousePosition))) // Also ignore mouse moves that are in bad areas
+                {
+                    if (sceneView.camera.orthographic && EditorHelper.GetSceneViewCamera(sceneView) != EditorHelper.SceneViewCamera.Other)
+                    {
+                        OnMouseActionOrthographic(sceneView, e);
+                    }
+                    else
+                    {
+                        OnMouseAction3D(sceneView, e);
+                    }
+                }
+                else
+                {
+                    if(e.type == EventType.MouseUp)
+                    {
+                        isDragValid = true;
+                    }
+                }
             }
             else if (e.type == EventType.Repaint || e.type == EventType.Layout)
             {
@@ -116,6 +137,7 @@ namespace Sabresaurus.SabreCSG
             {
                 OnKeyAction(sceneView, e);
             }
+
         }
 
 		void OnMouseSelection (SceneView sceneView, Event e)
@@ -153,12 +175,6 @@ namespace Sabresaurus.SabreCSG
 		void OnMouseActionOrthographic(SceneView sceneView, Event e)
 		{
 			if(primaryTargetBrush == null || CameraPanInProgress || e.button != 0)
-			{
-				return;
-			}
-
-			
-			if(EditorHelper.IsMousePositionNearSceneGizmo(e.mousePosition))
 			{
 				return;
 			}

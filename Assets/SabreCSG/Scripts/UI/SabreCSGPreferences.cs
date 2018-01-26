@@ -34,20 +34,6 @@ namespace Sabresaurus.SabreCSG
 
 		}
 
-		static string GetPluginPath()
-		{
-			return CSGModel.GetSabreCSGPath() + "Scripts/SabreCSG.Core.dll";
-		}
-
-		static PluginImporter GetPluginImporter()
-		{
-			string path = GetPluginPath();
-			PluginImporter pluginImporter = AssetImporter.GetAtPath(path) as PluginImporter;
-
-			return pluginImporter;
-		}
-
-
 		[PreferenceItem("SabreCSG")]
 		public static void PreferencesGUI()
 		{
@@ -86,7 +72,14 @@ namespace Sabresaurus.SabreCSG
 
 
 			CurrentSettings.OverrideFlyCamera = GUILayout.Toggle(CurrentSettings.OverrideFlyCamera, "Linear fly camera");
+
+			EditorGUI.BeginChangeCheck();
 			CurrentSettings.ShowExcludedPolygons = GUILayout.Toggle(CurrentSettings.ShowExcludedPolygons, "Show excluded polygons");
+			if(EditorGUI.EndChangeCheck())
+			{
+				// What's shown in the SceneView has potentially changed, so force it to repaint
+				SceneView.RepaintAll();
+			}
 
 			GUILayout.Space(10);
 
@@ -99,7 +92,6 @@ namespace Sabresaurus.SabreCSG
 //			CurrentSettings.ReducedHandleThreshold = GUILayout.Toggle(CurrentSettings.ReducedHandleThreshold, "Reduced handle threshold");
 
 			GUILayout.Space(20);
-			PluginImporter plugin = GetPluginImporter();
 
 			GUIStyle style = SabreGUILayout.GetForeStyle();
 			style.wordWrap = true;
@@ -109,14 +101,6 @@ namespace Sabresaurus.SabreCSG
 			List<string> definesSplit = defines.Split(';').ToList();
 			bool enabled = definesSplit.Contains(RUNTIME_CSG_DEFINE);
 
-			if(plugin != null)
-			{
-				if(!plugin.GetCompatibleWithAnyPlatform())
-				{
-					enabled = false;
-				}
-			}
-
 			if(enabled)
 			{
 				if(GUILayout.Button("Disable Runtime CSG (Experimental)"))
@@ -124,16 +108,6 @@ namespace Sabresaurus.SabreCSG
 					definesSplit.Remove(RUNTIME_CSG_DEFINE);
 					defines = string.Join(";", definesSplit.ToArray());
 					PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines);
-
-					if(plugin != null)
-					{
-						// Set plugin as only compatible with editor
-						plugin.SetCompatibleWithAnyPlatform(false);
-						plugin.SetCompatibleWithEditor(true);
-						// Reimport the plugin
-						string path = GetPluginPath();
-						AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
-					}
 				}
 			}
 			else
@@ -146,15 +120,6 @@ namespace Sabresaurus.SabreCSG
 					}
 					defines = string.Join(";", definesSplit.ToArray());
 					PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines);
-
-					if(plugin != null)
-					{
-						// Set plugin as compatible with all platforms
-						plugin.SetCompatibleWithAnyPlatform(true);
-						// Reimport the plugin
-						string path = GetPluginPath();
-						AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
-					}
 				}
 			}
 

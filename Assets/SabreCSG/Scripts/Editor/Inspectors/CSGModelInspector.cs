@@ -9,15 +9,18 @@ namespace Sabresaurus.SabreCSG
     public class CSGModelInspector : Editor
     {
 		// Build settings for the next build
-
 		SerializedProperty generateCollisionMeshesProperty;
 		SerializedProperty generateTangentsProperty;
+        SerializedProperty optimizeGeometryProperty;
+		SerializedProperty saveMeshesAsAssetsProperty;
 		SerializedProperty generateLightmapUVsProperty;
 
 		SerializedProperty unwrapAngleErrorProperty;
 		SerializedProperty unwrapAreaErrorProperty;
 		SerializedProperty unwrapHardAngleProperty;
 		SerializedProperty unwrapPackMarginProperty;
+
+        SerializedProperty shadowCastingModeProperty;
 
 		SerializedProperty defaultPhysicsMaterialProperty;
 		SerializedProperty defaultVisualMaterialProperty;
@@ -31,12 +34,16 @@ namespace Sabresaurus.SabreCSG
 			// Build settings for the next build
 			generateCollisionMeshesProperty = serializedObject.FindProperty("buildSettings.GenerateCollisionMeshes");
 			generateTangentsProperty = serializedObject.FindProperty("buildSettings.GenerateTangents");
+            optimizeGeometryProperty = serializedObject.FindProperty("buildSettings.OptimizeGeometry");
+            saveMeshesAsAssetsProperty = serializedObject.FindProperty("buildSettings.SaveMeshesAsAssets");
 			generateLightmapUVsProperty = serializedObject.FindProperty("buildSettings.GenerateLightmapUVs");
 
 			unwrapAngleErrorProperty = serializedObject.FindProperty("buildSettings.UnwrapAngleError");
 			unwrapAreaErrorProperty = serializedObject.FindProperty("buildSettings.UnwrapAreaError");
 			unwrapHardAngleProperty = serializedObject.FindProperty("buildSettings.UnwrapHardAngle");
-			unwrapPackMarginProperty = serializedObject.FindProperty("buildSettings.UnwrapPackMargin");
+            unwrapPackMarginProperty = serializedObject.FindProperty("buildSettings.UnwrapPackMargin");
+			
+            shadowCastingModeProperty = serializedObject.FindProperty("buildSettings.ShadowCastingMode");
 
 			defaultPhysicsMaterialProperty = serializedObject.FindProperty("buildSettings.DefaultPhysicsMaterial");
 			defaultVisualMaterialProperty = serializedObject.FindProperty("buildSettings.DefaultVisualMaterial");
@@ -56,121 +63,126 @@ namespace Sabresaurus.SabreCSG
 			DrawDefaultInspector();
 
 			this.serializedObject.Update();
-			GUILayout.Label("Build Settings", EditorStyles.boldLabel);
-			EditorGUILayout.PropertyField(generateCollisionMeshesProperty, new GUIContent("Generate Collision Meshes"));
-			EditorGUILayout.PropertyField(generateTangentsProperty, new GUIContent("Generate Tangents"));
-			EditorGUILayout.PropertyField(generateLightmapUVsProperty, new GUIContent("Generate Lightmap UVs"));
-
-			GUI.enabled = generateLightmapUVsProperty.boolValue;
-			EditorGUI.indentLevel = 1;
-			EditorGUILayout.PropertyField(unwrapAngleErrorProperty, new GUIContent("Unwrap Angle Error"));
-			EditorGUILayout.PropertyField(unwrapAreaErrorProperty, new GUIContent("Unwrap Area Error"));
-			EditorGUILayout.PropertyField(unwrapHardAngleProperty, new GUIContent("Unwrap Hard Angle"));
-			EditorGUILayout.PropertyField(unwrapPackMarginProperty, new GUIContent("Unwrap Pack Margin"));
-			EditorGUI.indentLevel = 0;
-			GUI.enabled = true;
-
-			PhysicMaterial lastPhysicsMaterial = defaultPhysicsMaterialProperty.objectReferenceValue as PhysicMaterial;
-
-			EditorGUI.BeginChangeCheck();
-			EditorGUILayout.PropertyField(defaultPhysicsMaterialProperty, new GUIContent("Default Physics Material"));
-			if(EditorGUI.EndChangeCheck())
+			using (new NamedVerticalScope("Build Settings"))
 			{
-				PhysicMaterial newPhysicsMaterial = defaultPhysicsMaterialProperty.objectReferenceValue as PhysicMaterial;
+				EditorGUIUtility.fieldWidth = 0;
+				EditorGUIUtility.labelWidth = 160;
 
-				// Update the built mesh colliders that use the old material
-				UpdatePhysicsMaterial(lastPhysicsMaterial, newPhysicsMaterial);
-			}
+				EditorGUILayout.PropertyField(generateCollisionMeshesProperty, new GUIContent("Generate Collision Meshes"));
+				EditorGUILayout.PropertyField(generateTangentsProperty, new GUIContent("Generate Tangents"));
+                
 
-			// Track the last visual material, so that if the user changes it we can update built renderers instantly
-			Material lastVisualMaterial = defaultVisualMaterialProperty.objectReferenceValue as Material;
+                EditorGUILayout.PropertyField(generateLightmapUVsProperty, new GUIContent("Generate Lightmap UVs"));
+				EditorGUIUtility.labelWidth = 125;
 
-			EditorGUI.BeginChangeCheck();
-			EditorGUILayout.PropertyField(defaultVisualMaterialProperty, new GUIContent("Default Visual Material"));
-			if(EditorGUI.EndChangeCheck())
+
+				GUI.enabled = generateLightmapUVsProperty.boolValue;
+				EditorGUI.indentLevel = 1;
+				EditorGUILayout.PropertyField(unwrapAngleErrorProperty, new GUIContent("Unwrap Angle Error"));
+				EditorGUILayout.PropertyField(unwrapAreaErrorProperty, new GUIContent("Unwrap Area Error"));
+				EditorGUILayout.PropertyField(unwrapHardAngleProperty, new GUIContent("Unwrap Hard Angle"));
+				EditorGUILayout.PropertyField(unwrapPackMarginProperty, new GUIContent("Unwrap Pack Margin"));
+				EditorGUI.indentLevel = 0;
+				EditorGUIUtility.labelWidth = 0;
+				GUI.enabled = true;
+
+                EditorGUILayout.PropertyField(shadowCastingModeProperty, new GUIContent("Shadow Casting Mode"));
+
+                // Experimental build settings to enable features that are not yet completely stable
+                GUILayout.Label("Experimental", EditorStyles.boldLabel);
+                EditorGUI.indentLevel = 1;
+
+                EditorGUILayout.PropertyField(optimizeGeometryProperty, new GUIContent("Optimize Geometry"));
+                EditorGUILayout.PropertyField(saveMeshesAsAssetsProperty, new GUIContent("Save Meshes As Assets"));
+                EditorGUI.indentLevel = 0;
+            }
+
+			using (new NamedVerticalScope("Default Material"))
 			{
-				// User has changed the material, so grab the new material
-				Material newVisualMaterial = defaultVisualMaterialProperty.objectReferenceValue as Material;
-				// EnsureDefaultMaterialSet hasn't had a chance to run yet, so make sure we have a solid material reference
-				if(newVisualMaterial == null)
+				PhysicMaterial lastPhysicsMaterial = defaultPhysicsMaterialProperty.objectReferenceValue as PhysicMaterial;
+
+				EditorGUI.BeginChangeCheck();
+				EditorGUILayout.PropertyField(defaultPhysicsMaterialProperty, new GUIContent("Default Physics Material"));
+				if(EditorGUI.EndChangeCheck())
 				{
-					newVisualMaterial = csgModel.GetDefaultFallbackMaterial();
-					defaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
+					PhysicMaterial newPhysicsMaterial = defaultPhysicsMaterialProperty.objectReferenceValue as PhysicMaterial;
+
+					// Update the built mesh colliders that use the old material
+					UpdatePhysicsMaterial(lastPhysicsMaterial, newPhysicsMaterial);
 				}
 
-				// Update the built renderers that use the old material, also update source brush polygons
-				UpdateVisualMaterial(lastVisualMaterial, newVisualMaterial);
+				// Track the last visual material, so that if the user changes it we can update built renderers instantly
+				Material lastVisualMaterial = defaultVisualMaterialProperty.objectReferenceValue as Material;
 
-				// Update the last build's default material because we don't need to build again
-				lastBuildDefaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
-			}
-
-			EditorGUILayout.BeginHorizontal();
-			if(GUILayout.Button("Lit Texture (No Tint)"))
-			{
-				Material newVisualMaterial = AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Resources/Materials/Default_Map.mat") as Material;
-
-				// EnsureDefaultMaterialSet hasn't had a chance to run yet, so make sure we have a solid material reference
-				if(newVisualMaterial == null)
+				EditorGUI.BeginChangeCheck();
+				EditorGUILayout.PropertyField(defaultVisualMaterialProperty, new GUIContent("Default Visual Material"));
+				if(EditorGUI.EndChangeCheck())
 				{
-					newVisualMaterial = csgModel.GetDefaultFallbackMaterial();
+					// User has changed the material, so grab the new material
+					Material newVisualMaterial = defaultVisualMaterialProperty.objectReferenceValue as Material;
+					// EnsureDefaultMaterialSet hasn't had a chance to run yet, so make sure we have a solid material reference
+					if(newVisualMaterial == null)
+					{
+						newVisualMaterial = csgModel.GetDefaultFallbackMaterial();
+						defaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
+					}
+
+					// Update the built renderers that use the old material, also update source brush polygons
+					UpdateVisualMaterial(lastVisualMaterial, newVisualMaterial);
+
+					// Update the last build's default material because we don't need to build again
+					lastBuildDefaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
 				}
 
-				// Update the built renderers that use the old material, also update source brush polygons
-				UpdateVisualMaterial(lastVisualMaterial, newVisualMaterial);
-
-				defaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
-				// Update the last build's default material because we don't need to build again
-				lastBuildDefaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
-			}
-			if(GUILayout.Button("Lit Vertex Tint"))
-			{
-				Material newVisualMaterial = AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Resources/Materials/Default_LitWithTint.mat") as Material;
-
-				// EnsureDefaultMaterialSet hasn't had a chance to run yet, so make sure we have a solid material reference
-				if(newVisualMaterial == null)
+				EditorGUILayout.BeginHorizontal();
+				if(GUILayout.Button("Lit Texture (No Tint)"))
 				{
-					newVisualMaterial = csgModel.GetDefaultFallbackMaterial();
+					Material newVisualMaterial = AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Resources/Materials/Default_Map.mat") as Material;
+					SetVisualMaterial(lastVisualMaterial, newVisualMaterial);
+				}
+				if(GUILayout.Button("Lit Vertex Tint"))
+				{
+					Material newVisualMaterial = AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Resources/Materials/Default_LitWithTint.mat") as Material;
+					SetVisualMaterial(lastVisualMaterial, newVisualMaterial);
+				}
+				EditorGUILayout.EndHorizontal();
+
+				EditorGUILayout.BeginHorizontal();
+				if(GUILayout.Button("Unlit Vertex Color"))
+				{
+					Material newVisualMaterial = AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Resources/Materials/Default_VertexColor.mat") as Material;
+					SetVisualMaterial(lastVisualMaterial, newVisualMaterial);
+				}
+				if(GUILayout.Button("Lit Vertex Color"))
+				{
+					Material newVisualMaterial = AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Resources/Materials/Default_VertexColorLit.mat") as Material;
+					SetVisualMaterial(lastVisualMaterial, newVisualMaterial);
+				}
+				EditorGUILayout.EndHorizontal();
+			}
+
+			using (new NamedVerticalScope("Export"))
+			{
+				if(GUILayout.Button("Export All To OBJ"))
+				{
+					csgModel.ExportOBJ(false);
 				}
 
-				// Update the built renderers that use the old material, also update source brush polygons
-				UpdateVisualMaterial(lastVisualMaterial, newVisualMaterial);
-
-				defaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
-				// Update the last build's default material because we don't need to build again
-				lastBuildDefaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
+	            if (GUILayout.Button("Export Selected To OBJ"))
+	            {
+	                csgModel.ExportOBJ(true);
+	            }
 			}
-			if(GUILayout.Button("Unlit Vertex Color"))
+
+			using (new NamedVerticalScope("Stats"))
 			{
-				Material newVisualMaterial = AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Resources/Materials/Default_VertexColor.mat") as Material;
+	            BuildMetrics buildMetrics = csgModel.BuildMetrics;
 
-				// EnsureDefaultMaterialSet hasn't had a chance to run yet, so make sure we have a solid material reference
-				if(newVisualMaterial == null)
-				{
-					newVisualMaterial = csgModel.GetDefaultFallbackMaterial();
-				}
-
-				// Update the built renderers that use the old material, also update source brush polygons
-				UpdateVisualMaterial(lastVisualMaterial, newVisualMaterial);
-
-				defaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
-				// Update the last build's default material because we don't need to build again
-				lastBuildDefaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
+				GUILayout.Label("Vertices: " + buildMetrics.TotalVertices);
+				GUILayout.Label("Triangles: " + buildMetrics.TotalTriangles);
+				GUILayout.Label("Meshes: " + buildMetrics.TotalMeshes);
+				GUILayout.Label("Build Time: " + buildMetrics.BuildTime.ToString());
 			}
-			EditorGUILayout.EndHorizontal();
-			// Divider line
-			GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-
-			if(GUILayout.Button("Export OBJ"))
-			{
-				csgModel.ExportOBJ();
-			}
-			BuildMetrics buildMetrics = csgModel.BuildMetrics;
-
-			GUILayout.Label("Vertices: " + buildMetrics.TotalVertices);
-			GUILayout.Label("Triangles: " + buildMetrics.TotalTriangles);
-			GUILayout.Label("Meshes: " + buildMetrics.TotalMeshes);
-			GUILayout.Label("Build Time: " + buildMetrics.BuildTime.ToString());
 
 			// Make sure any serialize property changes are committed to the underlying Unity Object
 			bool anyApplied = this.serializedObject.ApplyModifiedProperties();
@@ -182,6 +194,23 @@ namespace Sabresaurus.SabreCSG
 				Undo.IncrementCurrentGroup();
 			}
         }
+
+		private void SetVisualMaterial(Material lastVisualMaterial, Material newVisualMaterial)
+		{
+			// EnsureDefaultMaterialSet hasn't had a chance to run yet, so make sure we have a solid material reference
+			if(newVisualMaterial == null)
+			{
+				CSGModel csgModel = (CSGModel)target;
+				newVisualMaterial = csgModel.GetDefaultFallbackMaterial();
+			}
+
+			// Update the built renderers that use the old material, also update source brush polygons
+			UpdateVisualMaterial(lastVisualMaterial, newVisualMaterial);
+
+			defaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
+			// Update the last build's default material because we don't need to build again
+			lastBuildDefaultVisualMaterialProperty.objectReferenceValue = newVisualMaterial;
+		}
 
 		private void UpdateVisualMaterial(Material oldMaterial, Material newMaterial)
 		{

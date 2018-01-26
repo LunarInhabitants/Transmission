@@ -1,107 +1,102 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
-using System.Collections;
 using UnityEditor;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Sabresaurus.SabreCSG
 {
 	public static class SabreCSGResources
 	{
-		//	    private static Material marqueeBorderMaterial = null;
-		//	    private static Material marqueeFillMaterial = null;
+#region Fields
+
+		// Cached objects keyed by AssetDatabase path relative to SabreCSG folder
+        static Dictionary<string, Object> loadedObjects = new Dictionary<string, Object>();
+
+		// Textures generated rather than loaded
+		private static Texture2D clearTexture = null; // 0 alpha texture
+		private static Texture2D halfWhiteTexture = null; // white with 0.5 alpha
+		private static Texture2D halfBlackTexture = null; // black with 0.5 alpha
+
+		// ---------------------
+
 		private static Material selectedBrushMaterial = null;
 		private static Material selectedBrushDashedMaterial = null;
-		private static Material gizmoMaterial = null;
-		//	    private static Material gizmoSelectedMaterial = null;
+		private static Material selectedBrushDashedAlphaMaterial = null;
+        private static Material gizmoMaterial = null;
 		private static Material vertexMaterial = null;
 		private static Material circleMaterial = null;
 		private static Material circleOutlineMaterial = null;
 		private static Material planeMaterial = null;
 		private static Material previewMaterial = null;
-
-		private static Texture2D addIconTexture = null;
-		private static Texture2D subtractIconTexture = null;
-		private static Texture2D noCSGIconTexture = null;
-
-		private static Texture2D dialogOverlayTexture = null;
-		private static Texture2D dialogOverlayRetinaTexture = null;
-
-		private static Texture2D clearTexture = null;
-		private static Texture2D halfWhiteTexture = null;
-		private static Texture2D halfBlackTexture = null;
-
-		private static Texture2D buttonCubeTexture = null;
-		private static Texture2D buttonCylinderTexture = null;
-		private static Texture2D buttonPrismTexture = null;
-		private static Texture2D buttonSphereTexture = null;
-
-		private static Texture2D circleTexture = null;
-		private static Texture2D circleOutlineTexture = null;
-
 		private static Material excludedMaterial = null;
-		private static Texture2D excludedTexture = null;
+		private static Material greyscaleUIMaterial = null;
 
-		public static Texture2D AddIconTexture 
+#endregion
+
+
+		/// <summary>
+		/// Loads an object from a path, or if the object is already loaded returns it
+		/// </summary>
+		/// <param name="sabrePath">Path local to the SabreCSG folder</param>
+		/// <returns></returns>
+		private static Object LoadObject(string sabrePath)
 		{
-			get 
+			bool found = false;
+
+			Object loadedObject = null;
+
+			// First of all see if there's a cached record
+			if (loadedObjects.ContainsKey(sabrePath))
 			{
-				if(addIconTexture == null)
+				found = true;
+				loadedObject = loadedObjects[sabrePath];
+
+				// Now make sure the cached record actually points to something
+				if (loadedObject != null)
 				{
-					addIconTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/Add.png") as Texture2D;
+					return loadedObject;
 				}
-				return addIconTexture;
 			}
+
+			// Failed to load from cache, so load it from the Asset Database
+			loadedObject = AssetDatabase.LoadMainAssetAtPath(Path.Combine(CSGModel.GetSabreCSGPath(), sabrePath));
+			if(loadedObject != null)
+			{
+				if (found)
+				{
+					// A cache record was found but empty, so set the existing record to the newly loaded object
+					loadedObjects[sabrePath] = loadedObject;
+				}
+				else
+				{
+					// We know that it's not already in the cache, so add it to the end
+					loadedObjects.Add(sabrePath, loadedObject);
+				}
+			}
+			return loadedObject;
 		}
 
-		public static Texture2D SubtractIconTexture 
+		/// <summary>
+		/// Gets an icon for a primitive brush to be displayed on a button
+		/// </summary>
+		/// <returns>The icon texture.</returns>
+		/// <param name="brushType">Primitive Brush type.</param>
+		public static Texture2D GetButtonTexture(PrimitiveBrushType brushType)
 		{
-			get 
-			{
-				if(subtractIconTexture == null)
-				{
-					subtractIconTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/Subtract.png") as Texture2D;
-				}
-				return subtractIconTexture;
-			}
+            if (brushType == PrimitiveBrushType.Prism)
+                return ButtonPrismTexture;
+            else if (brushType == PrimitiveBrushType.Cylinder)
+                return ButtonCylinderTexture;
+            else if (brushType == PrimitiveBrushType.Sphere || brushType == PrimitiveBrushType.IcoSphere)
+                return ButtonSphereTexture;
+            else if (brushType == PrimitiveBrushType.Cone)
+                return ButtonConeTexture;
+            else
+                return ButtonCubeTexture;
 		}
 
-		public static Texture2D NoCSGIconTexture 
-		{
-			get 
-			{
-				if(noCSGIconTexture == null)
-				{
-					noCSGIconTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/NoCSG.png") as Texture2D;
-				}
-				return noCSGIconTexture;
-			}
-		}
-
-		public static Texture2D DialogOverlayTexture 
-		{
-			get 
-			{
-				if(dialogOverlayTexture == null)
-				{
-					dialogOverlayTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/DialogOverlay75.png") as Texture2D;
-				}
-				return dialogOverlayTexture;
-			}
-		}
-
-		public static Texture2D DialogOverlayRetinaTexture 
-		{
-			get 
-			{
-				if(dialogOverlayRetinaTexture == null)
-				{
-					dialogOverlayRetinaTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/DialogOverlay75@2x.png") as Texture2D;
-				}
-				return dialogOverlayRetinaTexture;
-			}
-		}
-
-
+#region Accessors
 		public static Texture2D ClearTexture
 		{
 			get
@@ -161,16 +156,52 @@ namespace Sabresaurus.SabreCSG
 				return halfBlackTexture;
 			}
 		}
+			       
+        public static Texture2D AddIconTexture 
+		{
+			get 
+			{
+                return (Texture2D)LoadObject("Gizmos/Add.png");
+			}
+		}
+
+		public static Texture2D SubtractIconTexture 
+		{
+			get 
+			{
+				return (Texture2D)LoadObject("Gizmos/Subtract.png");
+			}
+		}
+
+		public static Texture2D NoCSGIconTexture 
+		{
+			get 
+			{
+				return (Texture2D)LoadObject("Gizmos/NoCSG.png");
+			}
+		}
+
+		public static Texture2D DialogOverlayTexture 
+		{
+			get 
+			{
+				return (Texture2D)LoadObject("Gizmos/DialogOverlay75.png");
+			}
+		}
+
+		public static Texture2D DialogOverlayRetinaTexture 
+		{
+			get 
+			{
+				return (Texture2D)LoadObject("Gizmos/DialogOverlay75@2x.png");
+			}
+		}
 
 		public static Texture2D ButtonCubeTexture 
 		{
 			get 
 			{
-				if(buttonCubeTexture == null)
-				{
-					buttonCubeTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/ButtonCube.png") as Texture2D;
-				}
-				return buttonCubeTexture;
+				return (Texture2D)LoadObject("Gizmos/ButtonCube.png");
 			}
 		}
 
@@ -178,11 +209,7 @@ namespace Sabresaurus.SabreCSG
 		{
 			get 
 			{
-				if(buttonPrismTexture == null)
-				{
-					buttonPrismTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/ButtonPrism.png") as Texture2D;
-				}
-				return buttonPrismTexture;
+				return (Texture2D)LoadObject("Gizmos/ButtonPrism.png");
 			}
 		}
 
@@ -190,11 +217,7 @@ namespace Sabresaurus.SabreCSG
 		{
 			get 
 			{
-				if(buttonCylinderTexture == null)
-				{
-					buttonCylinderTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/ButtonCylinder.png") as Texture2D;
-				}
-				return buttonCylinderTexture;
+				return (Texture2D)LoadObject("Gizmos/ButtonCylinder.png");
 			}
 		}
 
@@ -202,71 +225,71 @@ namespace Sabresaurus.SabreCSG
 		{
 			get 
 			{
-				if(buttonSphereTexture == null)
-				{
-					buttonSphereTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/ButtonSphere.png") as Texture2D;
-				}
-				return buttonSphereTexture;
+				return (Texture2D)LoadObject("Gizmos/ButtonSphere.png");
 			}
 		}
 
-		public static Texture2D CircleTexture 
+		public static Texture2D ButtonStairsTexture 
 		{
 			get 
 			{
-				if(circleTexture == null)
-				{
-					circleTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/Circle.png") as Texture2D;
-				}
-				return circleTexture;
+				return (Texture2D)LoadObject("Gizmos/ButtonStairs.png");
 			}
 		}
 
-		public static Texture2D CircleOutlineTexture 
-		{
-			get 
-			{
-				if(circleOutlineTexture == null)
-				{
-					circleOutlineTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/CircleOutline.png") as Texture2D;
-				}
-				return circleOutlineTexture;
-			}
-		}
+        public static Texture2D ButtonConeTexture
+        {
+            get
+            {
+                return (Texture2D)LoadObject("Gizmos/ButtonCone.png");
+            }
+        }
+		
+        public static Texture2D ButtonCurvedStairsTexture
+        {
+            get
+            {
+                return (Texture2D)LoadObject("Gizmos/ButtonCurvedStairs.png");
+            }
+        }
 
-		//	    public static Material GetMarqueeBorderMaterial()
-		//	    {
-		//	        if (marqueeBorderMaterial == null)
-		//	        {
-		//	            marqueeBorderMaterial = new Material(Shader.Find("Transparent/Diffuse"));
-		//	        }
-		//	        return marqueeBorderMaterial;
-		//	    }
-		//
-		//	    public static Material GetMarqueeFillMaterial()
-		//	    {
-		//	        if (marqueeFillMaterial == null)
-		//	        {
-		//	            marqueeFillMaterial = new Material(Shader.Find("Transparent/Diffuse"));
-		//	        }
-		//	        return marqueeFillMaterial;
-		//	    }
+        public static Texture2D GroupHeaderTexture
+        {
+            get
+            {
+                return (Texture2D)LoadObject("Gizmos/GroupHeader.png");
+            }
+        }
+
+        public static Texture2D GroupHeaderRetinaTexture
+        {
+            get
+            {
+				return (Texture2D)LoadObject("Gizmos/GroupHeader@2x.png");
+            }
+        }
 
 		public static Material GetExcludedMaterial()
 		{
-			if (excludedTexture == null)
-			{
-				excludedTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Internal/Excluded.png") as Texture2D;
-
-			}
 			if (excludedMaterial == null)
 			{
 				excludedMaterial = new Material(Shader.Find("SabreCSG/SeeExcluded"));
 				excludedMaterial.hideFlags = HideFlags.HideAndDontSave;
 				excludedMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
-				excludedMaterial.mainTexture = excludedTexture;
+				excludedMaterial.mainTexture = (Texture2D)LoadObject("Internal/Excluded.png");
 			}
 			return excludedMaterial;
+		}
+
+		public static Material GetGreyscaleUIMaterial()
+		{
+			if (greyscaleUIMaterial == null)
+			{
+				greyscaleUIMaterial = new Material(Shader.Find("Hidden/Grayscale-GUITexture"));
+				greyscaleUIMaterial.hideFlags = HideFlags.HideAndDontSave;
+				greyscaleUIMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
+			}
+			return greyscaleUIMaterial;
 		}
 
 		public static Material GetSelectedBrushMaterial()
@@ -291,7 +314,18 @@ namespace Sabresaurus.SabreCSG
 			return selectedBrushDashedMaterial;
 		}
 
-		public static Material GetGizmoMaterial()
+        public static Material GetSelectedBrushDashedAlphaMaterial()
+        {
+            if (selectedBrushDashedAlphaMaterial == null)
+            {
+                selectedBrushDashedAlphaMaterial = new Material(Shader.Find("SabreCSG/Line Dashed Alpha"));
+                selectedBrushDashedAlphaMaterial.hideFlags = HideFlags.HideAndDontSave;
+                selectedBrushDashedAlphaMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
+            }
+            return selectedBrushDashedAlphaMaterial;
+        }
+
+        public static Material GetGizmoMaterial()
 		{
 			if (gizmoMaterial == null)
 			{
@@ -299,7 +333,7 @@ namespace Sabresaurus.SabreCSG
 				gizmoMaterial = new Material(shader);
 				gizmoMaterial.hideFlags = HideFlags.HideAndDontSave;
 				gizmoMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
-				gizmoMaterial.mainTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/SquareGizmo8x8.png") as Texture;
+				gizmoMaterial.mainTexture = (Texture2D)LoadObject("Gizmos/SquareGizmo8x8.png");
 			}
 			return gizmoMaterial;
 		}
@@ -312,7 +346,7 @@ namespace Sabresaurus.SabreCSG
 				vertexMaterial = new Material(shader);
 				vertexMaterial.hideFlags = HideFlags.HideAndDontSave;
 				vertexMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
-				vertexMaterial.mainTexture = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Gizmos/CircleGizmo8x8.png") as Texture;
+				vertexMaterial.mainTexture = (Texture2D)LoadObject("Gizmos/CircleGizmo8x8.png");
 			}
 			return vertexMaterial;
 		}
@@ -325,7 +359,7 @@ namespace Sabresaurus.SabreCSG
 				circleMaterial = new Material(shader);
 				circleMaterial.hideFlags = HideFlags.HideAndDontSave;
 				circleMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
-				circleMaterial.mainTexture = CircleTexture;
+				circleMaterial.mainTexture = (Texture2D)LoadObject("Gizmos/Circle.png");
 			}
 			return circleMaterial;
 		}
@@ -338,7 +372,7 @@ namespace Sabresaurus.SabreCSG
 				circleOutlineMaterial = new Material(shader);
 				circleOutlineMaterial.hideFlags = HideFlags.HideAndDontSave;
 				circleOutlineMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
-				circleOutlineMaterial.mainTexture = CircleOutlineTexture;
+				circleOutlineMaterial.mainTexture = (Texture2D)LoadObject("Gizmos/CircleOutline.png");
 			}
 			return circleOutlineMaterial;
 		}
@@ -357,6 +391,21 @@ namespace Sabresaurus.SabreCSG
 			return previewMaterial;
 		}
 
+		public static Material GetNoCSGMaterial()
+		{
+			return (Material)LoadObject("Materials/NoCSG.mat");
+		}
+
+		public static Material GetAddMaterial()
+		{
+			return (Material)LoadObject("Materials/Add.mat");
+		}
+
+		public static Material GetSubtractMaterial()
+		{
+			return (Material)LoadObject("Materials/Subtract.mat");
+		}
+
 		public static Material GetPlaneMaterial()
 		{
 			if (planeMaterial == null)
@@ -367,6 +416,7 @@ namespace Sabresaurus.SabreCSG
 			}
 			return planeMaterial;
 		}
+#endregion
 	}
 }
 #endif

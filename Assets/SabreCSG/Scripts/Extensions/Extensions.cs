@@ -7,11 +7,12 @@ namespace Sabresaurus.SabreCSG
 {
 	public static class Extensions
 	{
-		const float EPSILON = 1e-5f;
-		const float EPSILON_LOWER = 1e-4f;
-		const float EPSILON_LOWER_2 = 1e-3f;
+        const float EPSILON = 1e-5f;
+        const float EPSILON_LOWER = 1e-4f;
+        const float EPSILON_LOWER_2 = 1e-3f;
+        const float EPSILON_LOWER_3 = 1e-2f;
 
-		public static Vector3 Abs(this Vector3 a)
+        public static Vector3 Abs(this Vector3 a)
 	    {
 	        return new Vector3(Mathf.Abs(a.x), Mathf.Abs(a.y), Mathf.Abs(a.z));
 	    }
@@ -24,6 +25,35 @@ namespace Sabresaurus.SabreCSG
 		public static Vector3 Divide(this Vector3 a, Vector3 b)
 		{
 			return new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+		}
+
+		public static Vector3 SetAxis(this Vector3 vector, int axis, float newValue)
+		{
+			if(axis < 0 || axis > 2)
+			{
+				throw new ArgumentOutOfRangeException("Axis must be 0, 1 or 2");
+			}
+
+			vector[axis] = newValue;
+			return vector;
+		}
+
+		/// <summary>
+		/// Counts the number of components that are not equal to zero
+		/// </summary>
+		/// <returns>Number of components that are not zero.</returns>
+		/// <param name="vector">Vector.</param>
+		public static int GetSetAxisCount(this Vector3 vector)
+		{
+			int count = 0;
+			for (int i = 0; i < 3; i++) 
+			{
+                if(Mathf.Abs(vector[i]) > 1e-3f)
+				{
+					count++;
+				}
+			}
+			return count++;
 		}
 
 		public static Vector2 Multiply(this Vector2 a, Vector2 b)
@@ -300,15 +330,25 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-		public static bool EqualsWithEpsilon(this float a, float b)
-		{
-			return Mathf.Abs(a - b) < EPSILON;
-		}
+#if !UNITY_2017_1_OR_NEWER
+        // Before Unity 2017 there wasn't a built in Flip() method
+        public static Plane Flip(this Plane sourcePlane)
+        {
+            sourcePlane.normal = -sourcePlane.normal;
+            sourcePlane.distance = -sourcePlane.distance;
+            return sourcePlane;
+        }
+#endif
 
-		/// <summary>
-		/// Determines whether two vector's are equal, allowing for floating point differences with an Epsilon value taken into account in per component comparisons
-		/// </summary>
-		public static bool EqualsWithEpsilon(this Vector3 a, Vector3 b)
+        public static bool EqualsWithEpsilon(this float a, float b)
+        {
+            return Mathf.Abs(a - b) < EPSILON;
+        }
+
+        /// <summary>
+        /// Determines whether two vector's are equal, allowing for floating point differences with an Epsilon value taken into account in per component comparisons
+        /// </summary>
+        public static bool EqualsWithEpsilon(this Vector3 a, Vector3 b)
 		{
 			return Mathf.Abs(a.x - b.x) < EPSILON && Mathf.Abs(a.y - b.y) < EPSILON && Mathf.Abs(a.z - b.z) < EPSILON;
 		}
@@ -318,11 +358,60 @@ namespace Sabresaurus.SabreCSG
 			return Mathf.Abs(a.x - b.x) < EPSILON_LOWER && Mathf.Abs(a.y - b.y) < EPSILON_LOWER && Mathf.Abs(a.z - b.z) < EPSILON_LOWER;
 		}
 
-		public static Rect ExpandFromCenter(this Rect rect, Vector2 expansion)
+        public static bool EqualsWithEpsilonLower3(this Vector3 a, Vector3 b)
+        {
+            return Mathf.Abs(a.x - b.x) < EPSILON_LOWER_3 && Mathf.Abs(a.y - b.y) < EPSILON_LOWER_3 && Mathf.Abs(a.z - b.z) < EPSILON_LOWER_3;
+        }
+
+        public static Rect ExpandFromCenter(this Rect rect, Vector2 expansion)
 		{
 			rect.size += expansion;
 			rect.center -= expansion / 2f;
 			return rect;
 		}
-	}
+
+        internal static bool Contains(this Bounds bounds1, Bounds bounds2)
+        {
+            if (bounds1.Contains(bounds2.min) && bounds1.Contains(bounds2.max))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        internal static bool IntersectsApproximate(this Bounds bounds1, Bounds bounds2)
+        {
+            //		return bounds1.min.x-EPSILON <= bounds2.max.x && bounds1.max.x+EPSILON >= bounds2.min.x && bounds1.min.y-EPSILON <= bounds2.max.y && bounds1.max.y+EPSILON >= bounds2.min.y && bounds1.min.z-EPSILON <= bounds2.max.z && bounds1.max.z+EPSILON >= bounds2.min.z;
+            return bounds1.min.x - EPSILON_LOWER_2 <= bounds2.max.x
+                && bounds1.max.x + EPSILON_LOWER_2 >= bounds2.min.x
+                && bounds1.min.y - EPSILON_LOWER_2 <= bounds2.max.y
+                && bounds1.max.y + EPSILON_LOWER_2 >= bounds2.min.y
+                && bounds1.min.z - EPSILON_LOWER_2 <= bounds2.max.z
+                && bounds1.max.z + EPSILON_LOWER_2 >= bounds2.min.z;
+        }
+
+        // If the second bounds has a coplanar side then it is considered not contained
+        internal static bool ContainsWithin(this Bounds bounds1, Bounds bounds2)
+        {
+            return (bounds2.min.x > bounds1.min.x
+                && bounds2.min.y > bounds1.min.y
+                && bounds2.min.z > bounds1.min.z
+                && bounds2.max.x < bounds1.max.x
+                && bounds2.max.y < bounds1.max.y
+                && bounds2.max.z < bounds1.max.z);
+        }
+
+        internal static bool ContainsApproximate(this Bounds bounds1, Vector3 point)
+        {
+            return (point.x > bounds1.min.x - EPSILON_LOWER_2
+                && point.y > bounds1.min.y - EPSILON_LOWER_2
+                && point.z > bounds1.min.z - EPSILON_LOWER_2
+                && point.x < bounds1.max.x + EPSILON_LOWER_2
+                && point.y < bounds1.max.y + EPSILON_LOWER_2
+                && point.z < bounds1.max.z + EPSILON_LOWER_2);
+        }
+    }
 }
