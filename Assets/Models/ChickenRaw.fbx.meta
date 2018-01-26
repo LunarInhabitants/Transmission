@@ -1,0 +1,163 @@
+fileFormatVersion: 2
+guid: 94b5c3c8523028a4399402e57beb222f
+timeCreated: 1517005061
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: pCylinder2
+    100004: transform1
+    100006: transform10
+    100008: transform11
+    100010: transform12
+    100012: transform13
+    100014: transform14
+    100016: transform15
+    100018: transform16
+    100020: transform17
+    100022: transform18
+    100024: transform19
+    100026: transform2
+    100028: transform20
+    100030: transform21
+    100032: transform22
+    100034: transform23
+    100036: transform24
+    100038: transform25
+    100040: transform26
+    100042: transform27
+    100044: transform28
+    100046: transform29
+    100048: transform3
+    100050: transform30
+    100052: transform31
+    100054: transform32
+    100056: transform33
+    100058: transform34
+    100060: transform35
+    100062: transform36
+    100064: transform37
+    100066: transform4
+    100068: transform5
+    100070: transform6
+    100072: transform7
+    100074: transform8
+    100076: transform9
+    400000: //RootNode
+    400002: pCylinder2
+    400004: transform1
+    400006: transform10
+    400008: transform11
+    400010: transform12
+    400012: transform13
+    400014: transform14
+    400016: transform15
+    400018: transform16
+    400020: transform17
+    400022: transform18
+    400024: transform19
+    400026: transform2
+    400028: transform20
+    400030: transform21
+    400032: transform22
+    400034: transform23
+    400036: transform24
+    400038: transform25
+    400040: transform26
+    400042: transform27
+    400044: transform28
+    400046: transform29
+    400048: transform3
+    400050: transform30
+    400052: transform31
+    400054: transform32
+    400056: transform33
+    400058: transform34
+    400060: transform35
+    400062: transform36
+    400064: transform37
+    400066: transform4
+    400068: transform5
+    400070: transform6
+    400072: transform7
+    400074: transform8
+    400076: transform9
+    2300000: pCylinder2
+    3300000: pCylinder2
+    4300000: pCylinder2
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
