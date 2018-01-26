@@ -45,7 +45,6 @@ public class Movement : MonoBehaviour
 	            moveDirection.y = _jumpSpeed;
 	    }
 	    moveDirection.y -= _gravity * Time.fixedDeltaTime;
-        Debug.Log((moveDirection));
 	    _characterController.Move((moveDirection * _moveSpeed) * Time.fixedDeltaTime);
 	    //_characterController.Move(moveDirection);
     }
