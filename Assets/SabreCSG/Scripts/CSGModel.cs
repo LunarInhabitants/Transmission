@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEditor;
 using System.Linq;
 using System.Reflection;
@@ -31,9 +32,11 @@ namespace Sabresaurus.SabreCSG
 		bool autoRebuild = false;
 
 		bool editMode = false;
+        static CSGModel editModeModel = null;
 
 		bool mouseIsDragging = false;
 		bool mouseIsHeld = false;
+		DateTime mouseReleaseTime = DateTime.MinValue;
 
 		// Tools
 		Tool activeTool = null;
@@ -69,13 +72,14 @@ namespace Sabresaurus.SabreCSG
 			{ MainMode.Draw, new DrawEditor() },
 		};
 
-//		Dictionary<OverrideMode, Tool> overrideTools = new Dictionary<OverrideMode, Tool>()
-//		{
-//			{ OverrideMode.Clip, new ClipEditor() },
-//			{ OverrideMode.Draw, new DrawEditor() },
-//		};
+        Dictionary<OverrideMode, Tool> overrideTools = new Dictionary<OverrideMode, Tool>()
+        {
+            { OverrideMode.TransformModel, new TransformModelEditor() },
+            //{ OverrideMode.Clip, new ClipEditor() },
+            //{ OverrideMode.Draw, new DrawEditor() },
+        };
 
-		public bool MouseIsDragging 
+        public bool MouseIsDragging 
 		{
 			get 
 			{
@@ -88,6 +92,22 @@ namespace Sabresaurus.SabreCSG
 			get 
 			{
 				return mouseIsHeld;
+			}
+		}
+
+		public bool MouseIsHeldOrRecent
+		{
+			get 
+			{
+				return mouseIsHeld || (MouseReleaseDuration < 0.22f);
+			}
+		}
+
+		public double MouseReleaseDuration
+		{
+			get 
+			{
+				return (DateTime.UtcNow - mouseReleaseTime).TotalSeconds;
 			}
 		}
 
@@ -119,7 +139,18 @@ namespace Sabresaurus.SabreCSG
 				// Make sure editing is turned on
 				EditMode = true;
 
-				firstRun = false;
+                brushes = new List<Brush>(transform.GetComponentsInChildren<Brush>(false));
+
+                // Only create a brush if the model doesn't already contain one
+                if(brushes.Count == 0)
+                {
+                    // Create the default brush
+                    GameObject newBrushObject = CreateBrush(PrimitiveBrushType.Cube, new Vector3(0, 1, 0));
+                    // Set the selection to the new object
+                    Selection.activeGameObject = newBrushObject;
+                }
+
+                firstRun = false;
 				EditorHelper.SetDirty(this);
 			}
 
@@ -143,13 +174,7 @@ namespace Sabresaurus.SabreCSG
 			// in edit mode. wereAnyInEditMode would be true and anyCSGModelsInEditMode would now be false
 			if(anyCSGModelsInEditMode != wereAnyInEditMode)
 			{
-				for (int i = 0; i < csgModels.Length; i++) 
-				{
-					if(csgModels[i] != null && csgModels[i].gameObject != null)
-					{
-						csgModels[i].UpdateBrushVisibility();
-					}
-				}
+                UpdateAllBrushesVisibility();
 			}
 
 			if(modelVersion < MODEL_VERSION)
@@ -180,11 +205,70 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
+        public override void Build(bool forceRebuild, bool buildInBackground)
+        {
+            // Build can take place if meshes are not saved to the DB, or if the scene is saved
+            if(!buildSettings.SaveMeshesAsAssets || EnsureUntitledSceneHasBeenSaved("Scene must be saved for SaveMeshesAsAssets to work"))
+            {
+                base.Build(forceRebuild, buildInBackground);
+            }
+        }
+
+        private bool EnsureUntitledSceneHasBeenSaved(string message)
+        {
+#if UNITY_5_6_OR_NEWER || UNITY_5_6
+            return UnityEditor.SceneManagement.EditorSceneManager.EnsureUntitledSceneHasBeenSaved(message);
+           
+#elif UNITY_5_3_OR_NEWER
+            if(string.IsNullOrEmpty(SceneManager.GetActiveScene().path)) // Scene not saved
+            {
+                // Ask the user to save
+                UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+                    
+                // Check that the scene was saved
+                if(!string.IsNullOrEmpty(SceneManager.GetActiveScene().path))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+#else
+            if(string.IsNullOrEmpty(EditorApplication.currentScene))
+            {
+                // Ask the user to save
+                EditorApplication.SaveCurrentSceneIfUserWantsTo();
+
+                // Check that the scene was saved
+                if(!string.IsNullOrEmpty(EditorApplication.currentScene))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+#endif
+        }
+
 		public override void OnBuildComplete ()
 		{
 			base.OnBuildComplete ();
 
 			EditorUtility.ClearProgressBar();
+
+            UpdateAllBrushesVisibility();
 
 			EditorHelper.SetDirty(this);
 			SetContextDirty();
@@ -237,6 +321,7 @@ namespace Sabresaurus.SabreCSG
 			else if (e.rawType == EventType.MouseUp)
 			{
 				mouseIsHeld = false;
+				mouseReleaseTime = DateTime.UtcNow;
 			}
 
 //			if (CurrentSettings.BrushesVisible)
@@ -245,7 +330,7 @@ namespace Sabresaurus.SabreCSG
 				HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
 			}
 
-			if(EditMode)
+			if(EditMode && CurrentSettings.OverrideMode != OverrideMode.TransformModel)
 			{
 				// In CSG mode, prevent the normal tools, so that the user must use our tools instead
 				Tools.current = UnityEditor.Tool.None;
@@ -403,45 +488,21 @@ namespace Sabresaurus.SabreCSG
 				Rect rect = new Rect(0, 0, Screen.width, Screen.height);
 				EditorGUIUtility.AddCursorRect(rect, SabreMouse.ActiveCursor);
 			}
-			//
 
-			//		int hotControl = GUIUtility.hotControl;
-			//		if(hotControl != 0)
-			//			Debug.Log (hotControl);
-			//		Tools.viewTool = ViewTool.None;
-
-			PrimitiveBrush primitiveBrush = null;
-			List<PrimitiveBrush> primitiveBrushes = new List<PrimitiveBrush>();
-
-			for (int i = 0; i < Selection.gameObjects.Length; i++) 
-			{
-				PrimitiveBrush matchedBrush = Selection.gameObjects[i].GetComponent<PrimitiveBrush>();
-
-				// If we've selected a brush that isn't a prefab in the project 
-				if(matchedBrush != null
-					&& !(PrefabUtility.GetPrefabParent(matchedBrush.gameObject) == null 
-						&& PrefabUtility.GetPrefabObject(matchedBrush.transform) != null))
-				{
-					primitiveBrushes.Add(matchedBrush);
-				}
-			}
-
-			if(primitiveBrushes.Count >= 1)
-			{
-				primitiveBrush = primitiveBrushes[0];
-			}
-				
-
-			if(activeTool == null)
-			{
-				UpdateActiveTool();
-			}
-
+            if(e.type == EventType.Layout) 
+            {
+                // Don't need to do this for every OnSceneGUI call, so limit it to Layout events
+                if (activeTool == null
+                    || activeTool != GetActiveTool())
+                {
+                    UpdateActiveTool();
+                }
+            }
+			
 			if(activeTool != null)
 			{
 				activeTool.CSGModel = this;
-				activeTool.PrimaryTargetBrush = primitiveBrush;
-				activeTool.TargetBrushes = primitiveBrushes.ToArray();
+				activeTool.SetSelection(Selection.activeGameObject, Selection.gameObjects);
 				activeTool.OnSceneGUI(sceneView, e);
 			}
 
@@ -484,8 +545,9 @@ namespace Sabresaurus.SabreCSG
 		{
 			if (mouseIsDragging 
 				|| (activeTool != null && activeTool.PreventBrushSelection)
-				|| EditorHelper.IsMousePositionNearSceneGizmo(e.mousePosition))
+				|| EditorHelper.IsMousePositionInInvalidRects(e.mousePosition))
 			{
+                SceneView.RepaintAll();
 				return;
 			}
 
@@ -494,18 +556,20 @@ namespace Sabresaurus.SabreCSG
 			{
 				Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 				List<PolygonRaycastHit> hits = RaycastBrushesAll(ray, true);
-				List<GameObject> hitObjects = hits.Select(hit => hit.GameObject).ToList();
+				List<Brush> hitBrushes = hits.Select(hit => hit.GameObject.GetComponent<Brush>()).ToList();
+                List<BrushBase> hitBases = ExtractBrushBases(hitBrushes);
+                List<GameObject> hitObjects = hitBases.Select(hit => hit.gameObject).ToList();
 
-				GameObject selectedObject = null;
+                GameObject selectedObject = null;
 
-				if(hits.Count == 0) // Didn't hit anything, blank the selection
+				if(hitObjects.Count == 0) // Didn't hit anything, blank the selection
 				{
 					previousHits.Clear();
 					lastHitSet.Clear();
 				}
-				else if(hits.Count == 1) // Only hit one thing, no ambiguity, this is what is selected
+				else if(hitObjects.Count == 1) // Only hit one thing, no ambiguity, this is what is selected
 				{
-					selectedObject = hits[0].GameObject;
+					selectedObject = hitObjects[0];
 					previousHits.Clear();
 					lastHitSet.Clear();
 				}
@@ -513,18 +577,18 @@ namespace Sabresaurus.SabreCSG
 				{
 					if(!hitObjects.ContentsEquals(lastHitSet))
 					{
-						selectedObject = hits[0].GameObject;
+						selectedObject = hitObjects[0];
 						previousHits.Clear();
 						lastHitSet = hitObjects;
 					}
 					else
 					{
 						// First try and select anything other than what has been previously hit
-						for (int i = 0; i < hits.Count; i++) 
+						for (int i = 0; i < hitObjects.Count; i++) 
 						{
-							if(!previousHits.Contains(hits[i].GameObject))
+							if(!previousHits.Contains(hitObjects[i]))
 							{
-								selectedObject = hits[i].GameObject;
+								selectedObject = hitObjects[i];
 								break;
 							}
 						}
@@ -535,9 +599,9 @@ namespace Sabresaurus.SabreCSG
 							// Walk backwards to find the oldest previous hit that has been hit by this ray
 							for (int i = previousHits.Count-1; i >= 0 && selectedObject == null; i--) 
 							{
-								for (int j = 0; j < hits.Count; j++) 
+								for (int j = 0; j < hitObjects.Count; j++) 
 								{
-									if(hits[j].GameObject == previousHits[i])
+									if(hitObjects[j] == previousHits[i])
 									{
 										selectedObject = previousHits[i];
 										break;
@@ -548,7 +612,14 @@ namespace Sabresaurus.SabreCSG
 					}
 				}
 
-				if (EnumHelper.IsFlagSet(e.modifiers, EventModifiers.Shift)
+                if (selectedObject != null)
+                {
+                    previousHits.Remove(selectedObject);
+                    // Most recent hit
+                    previousHits.Insert(0, selectedObject);
+                }
+
+                if (EnumHelper.IsFlagSet(e.modifiers, EventModifiers.Shift)
 					|| EnumHelper.IsFlagSet(e.modifiers, EventModifiers.Control)
 					|| EnumHelper.IsFlagSet(e.modifiers, EventModifiers.Command))
 				{
@@ -568,13 +639,7 @@ namespace Sabresaurus.SabreCSG
 				{
 					Selection.activeGameObject = selectedObject;
 				}
-
-				if(selectedObject != null)
-				{
-					previousHits.Remove(selectedObject);
-					// Most recent hit
-					previousHits.Insert(0, selectedObject);
-				}
+				
 				e.Use();
 			}
 		}
@@ -623,10 +688,10 @@ namespace Sabresaurus.SabreCSG
 				}
 				e.Use();
 			}
-			else if (!mouseIsHeld && KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ActivateClipMode)))
+			else if (!MouseIsHeld && KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ActivateClipMode)))
 			{
 				// Activate mode - immediately (key down)
-				if (e.type == EventType.KeyDown)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
 				{
 					SetCurrentMode(MainMode.Clip);
 //					SetOverrideMode(OverrideMode.Clip);
@@ -635,10 +700,10 @@ namespace Sabresaurus.SabreCSG
 				}
 				e.Use();
 			}
-			else if (!mouseIsHeld && KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ActivateDrawMode)))
+			else if (!MouseIsHeld && KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ActivateDrawMode)))
 			{
 				// Activate mode - immediately (key down)
-				if (e.type == EventType.KeyDown)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
 				{
 					SetCurrentMode(MainMode.Draw);
 //					SetOverrideMode(OverrideMode.Draw);
@@ -647,6 +712,39 @@ namespace Sabresaurus.SabreCSG
 				}
 				e.Use();
 			}
+			else if (!MouseIsHeld && KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ActivateFaceMode)))
+			{
+				// Activate mode - immediately (key down)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
+				{
+					SetCurrentMode(MainMode.Face);
+//					SetOverrideMode(OverrideMode.Face);
+
+					SceneView.RepaintAll();
+				}
+				e.Use();
+			}
+			else if (!MouseIsHeld && KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ActivateVertexMode)))
+			{
+				// Activate mode - immediately (key down)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
+				{
+					SetCurrentMode(MainMode.Vertex);
+//					SetOverrideMode(OverrideMode.Vertex);
+
+					SceneView.RepaintAll();
+				}
+				e.Use();
+			}
+            else if (!MouseIsHeld && KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ActivateResizeMode)))
+            {
+                if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
+                {
+                    SetCurrentMode(MainMode.Resize);
+                    SceneView.RepaintAll();
+                }
+                e.Use();
+            }
 			else if (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.IncreasePosSnapping)) 
 				&& !SabreGUIHelper.AnyControlFocussed)
 			{
@@ -727,7 +825,7 @@ namespace Sabresaurus.SabreCSG
 				if (e.type == EventType.KeyUp)
 				{
 					CurrentSettings.BrushesHidden = !CurrentSettings.BrushesHidden;
-					UpdateBrushVisibility();
+                    UpdateAllBrushesVisibility();
 					SceneView.RepaintAll();
 				}
 				e.Use();
@@ -742,21 +840,21 @@ namespace Sabresaurus.SabreCSG
 				}
 				e.Use();
 			}
-			else if(!mouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToAdditive))
+			else if(!MouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToAdditive))
 				|| KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToAdditive2)))
 			)
 			{
-				if (e.type == EventType.KeyDown)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
 				{
 					bool anyChanged = false;
 
 					for (int i = 0; i < Selection.gameObjects.Length; i++) 
 					{
-						Brush brush = Selection.gameObjects[i].GetComponent<Brush>();
-						if (brush != null)
+						BrushBase brushBase = Selection.gameObjects[i].GetComponent<BrushBase>();
+						if (brushBase != null)
 						{
-							Undo.RecordObject(brush, "Change Brush To Add");
-							brush.Mode = CSGMode.Add;
+							Undo.RecordObject(brushBase, "Change Brush To Add");
+							brushBase.Mode = CSGMode.Add;
 							anyChanged = true;
 						}
 					}
@@ -769,21 +867,21 @@ namespace Sabresaurus.SabreCSG
 				}
 				e.Use();
 			}
-			else if(!mouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToSubtractive))
+			else if(!MouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToSubtractive))
 				|| KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToSubtractive2)))
 			)
 			{
-				if (e.type == EventType.KeyDown)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
 				{
 					bool anyChanged = false;
 
 					for (int i = 0; i < Selection.gameObjects.Length; i++) 
 					{
-						Brush brush = Selection.gameObjects[i].GetComponent<Brush>();
-						if (brush != null)
+						BrushBase brushBase = Selection.gameObjects[i].GetComponent<BrushBase>();
+						if (brushBase != null)
 						{
-							Undo.RecordObject(brush, "Change Brush To Subtract");
-							brush.Mode = CSGMode.Subtract;
+							Undo.RecordObject(brushBase, "Change Brush To Subtract");
+							brushBase.Mode = CSGMode.Subtract;
 							anyChanged = true;
 						}
 					}
@@ -796,84 +894,23 @@ namespace Sabresaurus.SabreCSG
 				}
 				e.Use();
 			}
-			else if(!mouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.Group))
+			else if(!MouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.Group))
 					&& !SabreGUIHelper.AnyControlFocussed)
 			)
 			{
-				if (e.type == EventType.KeyDown)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
 				{
-					if(Selection.activeTransform != null)
-					{
-						List<Transform> selectedTransforms = Selection.transforms.ToList();
-						selectedTransforms.Sort((x,y) => x.GetSiblingIndex().CompareTo(y.GetSiblingIndex()));
-
-						Transform rootTransform = Selection.activeTransform.parent;
-
-						int earliestSiblingIndex = Selection.activeTransform.GetSiblingIndex();
-
-						// Make sure we use the earliest sibling index for grouping, as they may select in reverse order up the hierarchy
-						for (int i = 0; i < selectedTransforms.Count; i++) 
-						{
-							if(selectedTransforms[i].parent == rootTransform)
-							{
-								int siblingIndex = selectedTransforms[i].GetSiblingIndex();
-								if(siblingIndex < earliestSiblingIndex)
-								{
-									earliestSiblingIndex = siblingIndex;
-								}
-							}
-						}
-
-						// Create group
-						GameObject groupObject = new GameObject("Group");
-						Undo.RegisterCreatedObjectUndo (groupObject, "Group");
-						Undo.SetTransformParent(groupObject.transform, rootTransform, "Group");
-
-						groupObject.transform.position = Selection.activeTransform.position;
-						groupObject.transform.rotation = Selection.activeTransform.rotation;
-						groupObject.transform.localScale = Selection.activeTransform.localScale;
-						// Ensure correct sibling index
-
-						groupObject.transform.SetSiblingIndex(earliestSiblingIndex);
-						// Renachor
-						for (int i = 0; i < selectedTransforms.Count; i++) 
-						{
-							Undo.SetTransformParent(selectedTransforms[i], groupObject.transform, "Group");
-						}
-
-						Selection.activeGameObject = groupObject;
-//						EditorApplication.RepaintHierarchyWindow();
-//						SceneView.RepaintAll();
-					}
+					TransformHelper.GroupSelection();
 				}
 				e.Use();
 			}
-			else if(!mouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.Ungroup))
+			else if(!MouseIsHeld && (KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.Ungroup))
 				&& !SabreGUIHelper.AnyControlFocussed)
 			)
 			{
-				if (e.type == EventType.KeyDown)
+				if (e.type == EventType.KeyDown && !MouseIsHeldOrRecent)
 				{
-					if(Selection.activeTransform != null && Selection.activeGameObject.GetComponents<MonoBehaviour>().Length == 0)
-					{
-						Transform rootTransform = Selection.activeTransform.parent;
-						int siblingIndex = Selection.activeTransform.GetSiblingIndex();
-
-						int childCount = Selection.activeTransform.childCount;
-						UnityEngine.Object[] newSelection = new UnityEngine.Object[childCount];
-
-						for (int i = 0; i < childCount; i++) 
-						{
-							Transform childTransform = Selection.activeTransform.GetChild(0);
-							Undo.SetTransformParent(childTransform, rootTransform, "Ungroup");
-							childTransform.SetSiblingIndex(siblingIndex+i);
-
-							newSelection[i] = childTransform.gameObject;
-						}
-						Undo.DestroyObjectImmediate(Selection.activeGameObject);
-						//				GameObject.DestroyImmediate(Selection.activeGameObject);
-						Selection.objects = newSelection;
-					}
+					TransformHelper.UngroupSelection();
 				}
 				e.Use();
 			}
@@ -883,7 +920,8 @@ namespace Sabresaurus.SabreCSG
 #if !(UNITY_5_0 || UNITY_5_1)
 		void OnSelectionChanged()
 		{
-			bool anyCSGObjectsSelected = false;
+            bool onlyCSGModelsSelected = true; // Does not include brushes
+			bool anyCSGObjectsSelected = false; // Includes brushes and models
 			bool anyNonCSGSelected = false;
 
 			List<CSGModel> foundModels = new List<CSGModel>();
@@ -901,6 +939,12 @@ namespace Sabresaurus.SabreCSG
 				PrimitiveBrush primitiveBrush = Selection.gameObjects[i].GetComponent<PrimitiveBrush>();
 				CSGModel csgModel = Selection.gameObjects[i].GetComponent<CSGModel>();
 
+                if(csgModel == null)
+                {
+                    // Something other than a CSG Model has been selected
+                    onlyCSGModelsSelected = false;
+                }
+
 				if(primitiveBrush != null)
 				{
 					csgModel = primitiveBrush.GetCSGModel() as CSGModel;
@@ -917,7 +961,7 @@ namespace Sabresaurus.SabreCSG
 					}
 				}
 
-				if(csgModel != null)
+				if(csgModel != null) // If a CSG Model is selected, or a brush has told us about its parent CSG Model
 				{
 					anyCSGObjectsSelected = true;
 
@@ -927,7 +971,7 @@ namespace Sabresaurus.SabreCSG
 						selectedBrushes[csgModel] = new List<UnityEngine.Object>();
 					}
 				}
-				else
+				else // None found, try recursing up to find a CSG Model
 				{
 					CSGModel[] parentCSGModels = Selection.gameObjects[i].GetComponentsInParent<CSGModel>(true);
 					if(parentCSGModels.Length > 0)
@@ -993,6 +1037,22 @@ namespace Sabresaurus.SabreCSG
 				{
 					deferredSelection = selectedBrushes[activeModel].ToArray();
 				}
+
+                if (this != null && this.EditMode) // Current model can be destroyed
+                {
+                    if (onlyCSGModelsSelected)
+                    {
+                        // Only CSG model has been selected, so show special UI
+                        SetOverrideMode(OverrideMode.TransformModel);
+                    }
+                    else
+                    {
+                        if (CurrentSettings.OverrideMode == OverrideMode.TransformModel)
+                        {
+                            SetOverrideMode(OverrideMode.None);
+                        }
+                    } 
+                }
 			}
 			else if(anyNonCSGSelected)
 			{
@@ -1022,7 +1082,7 @@ namespace Sabresaurus.SabreCSG
 			lastSelectedBrush = brush;
 		}
 
-		void OnHierarchyItemGUI(int instanceID, Rect selectionRect)
+		void OnHierarchyItemGUI(int instanceID, Rect drawRect)
 		{
 			if(Event.current.type == EventType.ExecuteCommand)
 			{				
@@ -1039,7 +1099,7 @@ namespace Sabresaurus.SabreCSG
 
 			if(Event.current.type == EventType.DragPerform)
 			{
-				if(selectionRect.Contains(Event.current.mousePosition))
+				if(drawRect.Contains(Event.current.mousePosition))
 				{
 					if(gameObject != null)
 					{
@@ -1051,54 +1111,47 @@ namespace Sabresaurus.SabreCSG
 
 			if(gameObject != null)
 			{
-				Brush brush = gameObject.GetComponent<Brush>();
-				if(brush != null)
+				BrushBase brushBase = gameObject.GetComponent<BrushBase>();
+				if(brushBase != null)
 				{
-					selectionRect.xMax -= 2;
-					selectionRect.xMin = selectionRect.xMax - 16;
-					selectionRect.height = 16;
+					drawRect.xMax -= 2;
+					drawRect.xMin = drawRect.xMax - 16;
+					drawRect.height = 16;
 
-					if(brush.IsNoCSG)
+					Material iconMaterial = null;
+					// Read only brushes have a greyscale icon
+					if(brushBase is PrimitiveBrush)
 					{
-						GUI.DrawTexture(selectionRect, SabreCSGResources.NoCSGIconTexture);
+						if(((PrimitiveBrush)brushBase).IsReadOnly)
+						{
+							iconMaterial = SabreCSGResources.GetGreyscaleUIMaterial();
+						}
 					}
-					else if(brush.Mode == CSGMode.Add)
+					if(brushBase.IsNoCSG)
 					{
-						GUI.DrawTexture(selectionRect, SabreCSGResources.AddIconTexture);
+						Graphics.DrawTexture(drawRect, SabreCSGResources.NoCSGIconTexture, iconMaterial);
+					}
+					else if(brushBase.Mode == CSGMode.Add)
+					{
+						Graphics.DrawTexture(drawRect, SabreCSGResources.AddIconTexture, iconMaterial);
 					}
 					else
 					{
-						GUI.DrawTexture(selectionRect, SabreCSGResources.SubtractIconTexture);
-					}
-
-					Event e = Event.current;
-					if (e.type == EventType.KeyDown || e.type == EventType.KeyUp)
-					{
-						OnGenericKeyAction(null, e);
-//						if(Selection.gameObjects.Contains(gameObject))
-//						{
-//							if((KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToAdditive))
-//								|| KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToAdditive2)))
-//							)
-//							{
-//								Undo.RecordObject(brush, "Change Brush To Add");
-//								brush.Mode = CSGMode.Add;
-//								EditorApplication.RepaintHierarchyWindow();
-//							}
-//							else if((KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToSubtractive))
-//								|| KeyMappings.EventsMatch(e, Event.KeyboardEvent(KeyMappings.Instance.ChangeBrushToSubtractive2)))
-//							)
-//							{
-//								Undo.RecordObject(brush, "Change Brush To Subtract");
-//								brush.Mode = CSGMode.Subtract;
-//								EditorApplication.RepaintHierarchyWindow();
-//							}
-//						}
+						Graphics.DrawTexture(drawRect, SabreCSGResources.SubtractIconTexture, iconMaterial);
 					}
 				}
+
+
+                if(EditMode)
+                {
+                    Event e = Event.current;
+
+                    if (e.type == EventType.KeyDown || e.type == EventType.KeyUp)
+                    {
+                        OnGenericKeyAction(null, e);
+                    }
+                }
 			}
-
-
 		}
 
 		int frameIndex;
@@ -1149,15 +1202,7 @@ namespace Sabresaurus.SabreCSG
 			if(editMode && !anyCSGModelsInEditMode)
 			{
 				anyCSGModelsInEditMode = true;
-				CSGModel[] csgModels = FindObjectsOfType<CSGModel>();
-
-				for (int i = 0; i < csgModels.Length; i++) 
-				{
-					if(csgModels[i] != null && csgModels[i].gameObject != null)
-					{
-						csgModels[i].UpdateBrushVisibility();
-					}
-				}
+                UpdateAllBrushesVisibility();
 			}
 				
 			base.Update();
@@ -1231,9 +1276,9 @@ namespace Sabresaurus.SabreCSG
 				if(!Application.isPlaying && !anyBrushes)
 				{
 					// Create the default brush
-					GameObject newBrushObject = CreateBrush(PrimitiveBrushType.Cube, new Vector3(0,1,0));
-					// Set the selection to the new object
-					Selection.activeGameObject = newBrushObject;
+					//GameObject newBrushObject = CreateBrush(PrimitiveBrushType.Cube, new Vector3(0,1,0));
+					//// Set the selection to the new object
+					//Selection.activeGameObject = newBrushObject;
 				}
 			}
 		}
@@ -1257,20 +1302,53 @@ namespace Sabresaurus.SabreCSG
 			SceneView.onSceneGUIDelegate += OnSceneGUI;
 		}
 
-		public void ExportOBJ ()
+		public void ExportOBJ (bool limitToSelection)
 		{
-			if(buildContext.VisualPolygons != null)
-			{
-				string path = EditorUtility.SaveFilePanel("Save Geometry As OBJ", "Assets", this.name + ".obj", "obj");
-				if(!string.IsNullOrEmpty(path))
-				{
-					OBJFactory.ExportToFile(path, transform, buildContext.VisualPolygons.DeepCopy(), GetDefaultMaterial());
-					AssetDatabase.Refresh();
-				}
-			}
-		}
+            List<Polygon> polygonsToExport = new List<Polygon>();
 
-		public static string GetSabreCSGPath()
+            if (limitToSelection)
+            {
+                for (int i = 0; i < Selection.gameObjects.Length; i++)
+                {
+                    PrimitiveBrush brush = Selection.gameObjects[i].GetComponent<PrimitiveBrush>();
+                    if (brush != null) // If there's actually a brush attached to the game object
+                    {
+                        polygonsToExport.AddRange(brush.BrushCache.BuiltVisualPolygons.DeepCopy());
+                    }
+                }
+            }
+            else
+            {
+                if (buildContext.VisualPolygons != null)
+                {
+                    polygonsToExport = buildContext.VisualPolygons.DeepCopy();
+                }
+            }
+
+            if(polygonsToExport.Count > 0)
+            {
+                string path = EditorUtility.SaveFilePanel("Save Geometry As OBJ", "Assets", this.name + ".obj", "obj");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    OBJFactory.ExportToFile(path, transform, polygonsToExport, GetDefaultMaterial());
+                    AssetDatabase.Refresh();
+                }
+            }
+            else
+            {
+                // Nothing to export
+                if (limitToSelection)
+                {
+                    EditorUtility.DisplayDialog("Nothing to export", "No brushes selected corresponding to built geometry", "OK");
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Nothing to export", "No built geometry found to export", "OK");
+                }
+            }
+        }
+
+        public static string GetSabreCSGPath()
 		{
 			// Find all the scripts with CSGModel in their name
 			string[] guids = AssetDatabase.FindAssets("CSGModel t:Script");
@@ -1308,18 +1386,23 @@ namespace Sabresaurus.SabreCSG
 			Undo.RecordObject(buildContextBehaviour, name);
 		}
 
+        Tool GetActiveTool()
+        {
+            if (CurrentSettings.OverrideMode != OverrideMode.None)
+            {
+                return overrideTools[CurrentSettings.OverrideMode];
+            }
+            else
+            {
+                return tools[CurrentSettings.CurrentMode];
+            }
+        }
+
 		private void UpdateActiveTool()
 		{
 			Tool lastTool = activeTool;
 
-//			if(CurrentSettings.OverrideMode != OverrideMode.None)
-//			{
-//				activeTool = overrideTools[CurrentSettings.OverrideMode];
-//			}
-//			else
-			{
-				activeTool = tools[CurrentSettings.CurrentMode];
-			}
+            activeTool = GetActiveTool();
 
 			if(activeTool != lastTool)
 			{
@@ -1327,14 +1410,10 @@ namespace Sabresaurus.SabreCSG
 				{
 					lastTool.Deactivated();
 				}
-				else // Tool was null, but is now set. 
-				{
-					// Make sure brushes are updated as we may be in the Face tool which requires brushes to be hidden
-					UpdateBrushVisibility();
-				}
 				activeTool.ResetTool();
 			}
-		}
+            UpdateAllBrushesVisibility();
+        }
 
 		public Tool GetTool(MainMode mode)
 		{
@@ -1343,28 +1422,36 @@ namespace Sabresaurus.SabreCSG
 
 		public void SetCurrentMode(MainMode newMode)
 		{
-			if (newMode != CurrentSettings.CurrentMode)
-			{
-				CurrentSettings.OverrideMode = OverrideMode.None;
+            if(CurrentSettings.OverrideMode == OverrideMode.TransformModel)
+            {
+                // If we're leaving TransformModel 
+                bool onlyModelsSelected = true;
+                for (int i = 0; i < Selection.gameObjects.Length; i++)
+                {
+                    if(Selection.gameObjects[i].GetComponent<CSGModel>() == null)
+                    {
+                        onlyModelsSelected = false;
+                        break;
+                    }
+                }
+                // Deselect if only CSG Models are selected
+                if(onlyModelsSelected)
+                {
+                    Selection.activeGameObject = null;
+                }
+            }
+			CurrentSettings.OverrideMode = OverrideMode.None;
 
-				CurrentSettings.CurrentMode = newMode;
+			CurrentSettings.CurrentMode = newMode;
 
-				UpdateActiveTool();
-
-				UpdateBrushVisibility();
-			}
+			UpdateActiveTool();			
 		}
 
 		public void SetOverrideMode(OverrideMode newMode)
 		{
-			if(newMode != CurrentSettings.OverrideMode)
-			{
-				CurrentSettings.OverrideMode = newMode;
+			CurrentSettings.OverrideMode = newMode;
 
-				UpdateActiveTool();
-
-				UpdateBrushVisibility();
-			}
+			UpdateActiveTool();
 		}
 
 		public void ExitOverrideMode()
@@ -1372,8 +1459,6 @@ namespace Sabresaurus.SabreCSG
 			CurrentSettings.OverrideMode = OverrideMode.None;
 
 			UpdateActiveTool();
-
-			UpdateBrushVisibility();
 		}
 
 		public bool EditMode
@@ -1389,7 +1474,9 @@ namespace Sabresaurus.SabreCSG
 				{
 					editMode = value;
 
-					CSGModel[] csgModels = FindObjectsOfType<CSGModel>();
+                    editModeModel = this;
+
+                    CSGModel[] csgModels = Resources.FindObjectsOfTypeAll<CSGModel>();
 
 					if (value == true) // Edit mode enabled
 					{
@@ -1443,19 +1530,14 @@ namespace Sabresaurus.SabreCSG
 								if(csgModels[i] != this
 									&& csgModels[i].EditMode)
 								{
+                                    editModeModel = csgModels[i];
 									anyCSGModelsInEditMode = true;
 								}
 							}
 						}
 					}
 
-					for (int i = 0; i < csgModels.Length; i++) 
-					{
-						if(csgModels[i] != null && csgModels[i].gameObject != null)
-						{
-							csgModels[i].UpdateBrushVisibility();
-						}
-					}
+                    UpdateAllBrushesVisibility();
 
 					GridManager.UpdateGrid();
 				}
@@ -1512,12 +1594,14 @@ namespace Sabresaurus.SabreCSG
 			// An undo or redo operation may restore a brush, so make sure we track all
 			brushes = new List<Brush>(transform.GetComponentsInChildren<Brush>(false));
 
-			// Tell each brush that an undo/redo has been performed so it can make sure the render mesh is updated
-			for (int i = 0; i < brushes.Count; i++) 
+			BrushBase[] brushBases = transform.GetComponentsInChildren<BrushBase>(false);
+
+			// Tell each brush base that an undo/redo has been performed so it can make sure the render mesh is updated
+			for (int i = 0; i < brushBases.Length; i++) 
 			{
-				if(brushes[i] != null)
+				if(brushBases[i] != null)
 				{
-					brushes[i].OnUndoRedoPerformed();
+					brushBases[i].OnUndoRedoPerformed();
 				}
 			}
 
@@ -1544,24 +1628,37 @@ namespace Sabresaurus.SabreCSG
 			get {
 				if(!Application.isPlaying)
 				{
-					return anyCSGModelsInEditMode &&
-						CurrentSettings.BrushesVisible && (activeTool == null || activeTool.BrushesHandleDrawing);
+                    return CurrentSettings.BrushesVisible
+                        && anyCSGModelsInEditMode 
+                        && editModeModel != null 
+                        && (editModeModel.activeTool == null || editModeModel.activeTool.BrushesHandleDrawing);
 				}
 				return base.AreBrushesVisible;
 			}
 		}
 
-		public override void UpdateBrushVisibility ()
-		{
-			base.UpdateBrushVisibility ();
+        public static void UpdateAllBrushesVisibility()
+        {
+            CSGModel[] csgModels = Resources.FindObjectsOfTypeAll<CSGModel>();
+            for (int i = 0; i < csgModels.Length; i++) 
+            {
+                Transform meshGroup = csgModels[i].transform.Find("MeshGroup");
 
-			Transform meshGroup = transform.Find("MeshGroup");
+                if(meshGroup != null)
+                {
+                    meshGroup.gameObject.SetActive(!CurrentSettings.MeshHidden);
+                }
 
-			if(meshGroup != null)
-			{
-				meshGroup.gameObject.SetActive(!CurrentSettings.MeshHidden);
-			}
-		}
+                List<Brush> brushes = csgModels[i].brushes;
+                for (int j = 0; j < brushes.Count; j++)
+                {
+                    if (brushes[j] != null)
+                    {
+                        brushes[j].UpdateVisibility();
+                    }
+                }
+            }
+        }
 
 
 
@@ -1802,30 +1899,40 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
+        public static CSGModel GetActiveCSGModel()
+        {
+            CSGModel[] csgModels = FindObjectsOfType<CSGModel>();
+
+            // Return the first csg model that is currently being edited
+            for (int i = 0; i < csgModels.Length; i++)
+            {
+                if (csgModels[i].EditMode)
+                {
+                    return csgModels[i];
+                }
+            }
+
+            // None found
+            return null;
+        }
+
 		static void CleanupForBuild(Transform csgModelTransform)
 		{
 			Transform meshGroup = csgModelTransform.Find("MeshGroup");
 			if(meshGroup != null)
 			{
-				// Reanchor the meshes to the root
-				meshGroup.parent = null;
+				// Reanchor the meshes to the parent of the CSG Model
+                meshGroup.SetParent(csgModelTransform.parent, true);
 			}
 
-			// Remove this game object
-			if(Application.isPlaying)
-			{
-				Destroy (csgModelTransform.gameObject);	
-			}
-			else
-			{
-				DestroyImmediate (csgModelTransform.gameObject);	
-			}
+			// Remove the CSG Model and its brushes
+			DestroyImmediate (csgModelTransform.gameObject);	
 		}
 
 		[PostProcessScene(1)]
 		public static void OnPostProcessScene()
 		{
-			CSGModel[] csgModels = FindObjectsOfType<CSGModel>();
+            CSGModel[] csgModels = Resources.FindObjectsOfTypeAll<CSGModel>();
 			for (int i = 0; i < csgModels.Length; i++) 
 			{
 				CleanupForBuild(csgModels[i].transform);
@@ -1837,6 +1944,7 @@ namespace Sabresaurus.SabreCSG
 		{
 			// Ensure Edit Mode is on
 			EditMode = true;
+            editModeModel = this;
 		}
 #endif
 #endif

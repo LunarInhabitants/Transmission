@@ -2,12 +2,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-//using UnityEditor;
 using UnityEngine;
 
 namespace Sabresaurus.SabreCSG
 {
-    public enum PrimitiveBrushType { Cube, Sphere, Cylinder, Prism, Custom };
+    public enum PrimitiveBrushType { 
+		Cube, 
+		Sphere, 
+		Cylinder, 
+		Prism, 
+		Custom,
+		IcoSphere,
+        Cone,
+	};
 
 	/// <summary>
 	/// A simple brush that represents a single convex shape
@@ -24,14 +31,26 @@ namespace Sabresaurus.SabreCSG
 		[SerializeField,HideInInspector]
 		int cylinderSideCount = 20;
 
-		[SerializeField,HideInInspector]
+        [SerializeField, HideInInspector]
+        int coneSideCount = 20;
+
+        [SerializeField,HideInInspector]
 		int sphereSideCount = 6;
 
 		[SerializeField,HideInInspector]
+		int icoSphereIterationCount = 1;
+
+        [SerializeField,HideInInspector]
 		PrimitiveBrushType brushType = PrimitiveBrushType.Cube;
 
 		[SerializeField,HideInInspector]
 		bool tracked = false;
+
+		[SerializeField,HideInInspector]
+		BrushOrder cachedBrushOrder = null;
+
+		[SerializeField]
+		BrushBase brushController = null;
 
 		int cachedInstanceID = 0;
 
@@ -52,6 +71,29 @@ namespace Sabresaurus.SabreCSG
 			set {
 				brushType = value;
 			}
+		}
+
+        public BrushBase BrushController
+        {
+            get
+            {
+                // If this brush is being controlled by something else, return the controller
+                return brushController;
+            }
+        }
+
+        public bool IsReadOnly
+		{
+			get
+			{
+				// If this brush is being controlled by something else, it's read only
+				return (brushController != null);
+			}
+		}
+
+		public void SetBrushController(BrushBase brushController)
+		{
+			this.brushController = brushController;
 		}
 
 		/// <summary>
@@ -105,7 +147,13 @@ namespace Sabresaurus.SabreCSG
 			}
 
 #if UNITY_EDITOR
+#if UNITY_5_5_OR_NEWER
+            // Unity 5.5 introduces a second possible selection highlight state, so the hiding API has changed
+            UnityEditor.EditorUtility.SetSelectedRenderState(GetComponent<Renderer>(), UnityEditor.EditorSelectedRenderState.Hidden);
+#else
+            // Pre Unity 5.5 the only selection highlight was a wireframe
             UnityEditor.EditorUtility.SetSelectedWireframeHidden(GetComponent<Renderer>(), true);
+#endif
 #endif
 
 			objectVersionUnserialized = objectVersionSerialized;
@@ -135,7 +183,20 @@ namespace Sabresaurus.SabreCSG
 					sphereSideCount = 3;
 				}
 				// Lateral only goes halfway around the sphere (180 deg), longitudinal goes all the way (360 deg)
-				polygons = BrushFactory.GenerateSphere(sphereSideCount, sphereSideCount * 2);
+				polygons = BrushFactory.GeneratePolarSphere(sphereSideCount, sphereSideCount * 2);
+			}
+			else if (brushType == PrimitiveBrushType.IcoSphere)
+			{
+				if(icoSphereIterationCount < 0)
+				{
+					icoSphereIterationCount = 0;
+				}
+				else if(icoSphereIterationCount > 2)
+				{
+					icoSphereIterationCount = 2;
+				}
+
+				polygons = BrushFactory.GenerateIcoSphere(icoSphereIterationCount);
 			}
 			else if (brushType == PrimitiveBrushType.Prism)
 			{
@@ -145,7 +206,15 @@ namespace Sabresaurus.SabreCSG
 				}
 				polygons = BrushFactory.GeneratePrism(prismSideCount);
 			}
-			else if(brushType == Sabresaurus.SabreCSG.PrimitiveBrushType.Custom)
+            else if (brushType == PrimitiveBrushType.Cone)
+            {
+                if (coneSideCount < 3)
+                {
+                    coneSideCount = 3;
+                }
+                polygons = BrushFactory.GenerateCone(coneSideCount);
+            }
+            else if(brushType == Sabresaurus.SabreCSG.PrimitiveBrushType.Custom)
 			{
 				// Do nothing
 				Debug.LogError("PrimitiveBrushType.Custom is not a valid type for new brush creation");
@@ -247,6 +316,12 @@ namespace Sabresaurus.SabreCSG
 						i--;
 					}
 				}
+
+				for (int i = 0; i < brushes.Count; i++) 
+				{
+					brushes[i].UpdateCachedBrushOrder();
+				}
+
 				brushes.Sort(comparer);
 
 				RecalculateIntersections(brushes, true);
@@ -486,6 +561,7 @@ namespace Sabresaurus.SabreCSG
 		/// <param name="polygonsChanged">If set to <c>true</c> polygons will be recached.</param>
         public override void Invalidate(bool polygonsChanged)
         {
+			base.Invalidate(polygonsChanged);
 			if(!gameObject.activeInHierarchy)
 			{
 				return;
@@ -515,7 +591,6 @@ namespace Sabresaurus.SabreCSG
 				requireRegen = true;
 				cachedInstanceID = gameObject.GetInstanceID();
 			}
-
 
 			Mesh renderMesh = meshFilter.sharedMesh;
 
@@ -550,15 +625,25 @@ namespace Sabresaurus.SabreCSG
 			Material material;
 			if(IsNoCSG)
 			{
-				material = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Materials/NoCSG.mat") as Material;
+				material = SabreCSGResources.GetNoCSGMaterial();
 			}
 			else
 			{
-				material = UnityEditor.AssetDatabase.LoadMainAssetAtPath(CSGModel.GetSabreCSGPath() + "Materials/" + this.mode.ToString() + ".mat") as Material;
+				if(this.mode == CSGMode.Add)
+				{
+					material = SabreCSGResources.GetAddMaterial();
+				}
+				else
+				{
+					material = SabreCSGResources.GetSubtractMaterial();
+				}
 			}
-			meshRenderer.sharedMaterial = material;
+			if(meshRenderer.sharedMaterial != material)
+			{
+				meshRenderer.sharedMaterial = material;
+			}
 #endif
-			isBrushConvex = GeometryHelper.IsBrushConvex(polygons);
+//			isBrushConvex = GeometryHelper.IsBrushConvex(polygons);
 
 			if(polygonsChanged)
 			{
@@ -569,6 +654,12 @@ namespace Sabresaurus.SabreCSG
 
 			objectVersionSerialized++;
 			objectVersionUnserialized = objectVersionSerialized;
+
+			if(cachedWorldTransform == null)
+			{
+				cachedWorldTransform = new WorldTransformData(transform);
+			}
+			cachedWorldTransform.SetFromTransform(transform);
         }
 
 		public override void UpdateVisibility()
@@ -614,6 +705,11 @@ namespace Sabresaurus.SabreCSG
 			}
         }
 
+		public override void SetBounds (Bounds newBounds)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public override Bounds GetBoundsTransformed()
 		{
 			if (polygons.Length > 0)
@@ -635,7 +731,28 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-		public float CalculateExtentsInAxis(Vector3 worldAxis)
+        public override Bounds GetBoundsLocalTo(Transform otherTransform)
+        {
+            if (polygons.Length > 0)
+            {
+                Bounds bounds = new Bounds(otherTransform.InverseTransformPoint(transform.TransformPoint(polygons[0].Vertices[0].Position)), Vector3.zero);
+
+                for (int i = 0; i < polygons.Length; i++)
+                {
+                    for (int j = 0; j < polygons[i].Vertices.Length; j++)
+                    {
+                        bounds.Encapsulate(otherTransform.InverseTransformPoint(transform.TransformPoint(polygons[i].Vertices[j].Position)));
+                    }
+                }
+                return bounds;
+            }
+            else
+            {
+                return new Bounds(Vector3.zero, Vector3.zero);
+            }
+        }
+
+        public float CalculateExtentsInAxis(Vector3 worldAxis)
 		{
 			// Transform the world axis direction to local
 			Vector3 localAxis = transform.InverseTransformDirection(worldAxis);
@@ -655,28 +772,7 @@ namespace Sabresaurus.SabreCSG
 
 			return maxDot - minDot;
 		}
-
-		public Bounds GetBoundsLocalTo(Transform otherTransform)
-		{
-			if (polygons.Length > 0)
-			{
-				Bounds bounds = new Bounds(otherTransform.InverseTransformPoint(transform.TransformPoint(polygons[0].Vertices[0].Position)), Vector3.zero);
-
-				for (int i = 0; i < polygons.Length; i++)
-				{
-					for (int j = 0; j < polygons[i].Vertices.Length; j++)
-					{
-						bounds.Encapsulate(otherTransform.InverseTransformPoint(transform.TransformPoint(polygons[i].Vertices[j].Position)));
-					}
-				}
-				return bounds;
-			}
-			else
-			{
-				return new Bounds(Vector3.zero, Vector3.zero);
-			}
-		}
-
+		
 		public override int[] GetPolygonIDs ()
 		{
 			int[] ids = new int[polygons.Length];
@@ -721,7 +817,7 @@ namespace Sabresaurus.SabreCSG
 			}
 
 			// Bounds is aligned with the object
-			transform.Translate(delta);
+			transform.Translate(delta.Multiply(transform.localScale));
 
 			// Counter the delta offset
 			Transform[] childTransforms = transform.GetComponentsInChildren<Transform>(true);
@@ -762,7 +858,7 @@ namespace Sabresaurus.SabreCSG
 			{
 				brushCache.SetUnbuilt();
 				RecachePolygons(true);
-				RecalculateIntersections(brushes, true);
+				RecalculateIntersections(brushes, false);
 			}
 		}
 
@@ -783,7 +879,7 @@ namespace Sabresaurus.SabreCSG
 			return parentCsgModel;
 		}
 
-		public override BrushOrder GetBrushOrder ()
+		public override void UpdateCachedBrushOrder ()
 		{
 			Transform csgModelTransform = GetCSGModel().transform;
 
@@ -807,7 +903,17 @@ namespace Sabresaurus.SabreCSG
 				brushOrder.Position[i] = reversePositions[count-1-i];
 			}
 
-			return brushOrder;
+			cachedBrushOrder = brushOrder;
+		}
+
+		public override BrushOrder GetBrushOrder ()
+		{
+			if(cachedBrushOrder == null)
+			{
+				UpdateCachedBrushOrder();
+			}
+
+			return cachedBrushOrder;
 		}
 
 #if (UNITY_5_0 || UNITY_5_1)

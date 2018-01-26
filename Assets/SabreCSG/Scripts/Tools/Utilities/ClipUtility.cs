@@ -41,14 +41,15 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-		/// <summary>
-		/// Applies a clip or split operation to a brush by supplying a plane local to the brush. Clipping allows you to cut away and discard parts of the brush, while splitting allows you to split a brush in two.
-		/// </summary>
-		/// <returns>If keepBothSides is <c>true</c>, this returns the second brush if one was created.</returns>
-		/// <param name="brush">Brush to clip/split</param>
-		/// <param name="localPlane">Local plane to clip/split against</param>
-		/// <param name="keepBothSides">If set to <c>true</c> split the brush and keep both sides.</param>
-		public static GameObject ApplyClipPlane(PrimitiveBrush brush, Plane localPlane, bool keepBothSides)
+        /// <summary>
+        /// Applies a clip or split operation to a brush by supplying a plane local to the brush. Clipping allows you to cut away and discard parts of the brush, while splitting allows you to split a brush in two.
+        /// </summary>
+        /// <returns>If keepBothSides is <c>true</c>, this returns the second brush if one was created.</returns>
+        /// <param name="brush">Brush to clip/split</param>
+        /// <param name="localPlane">Local plane to clip/split against</param>
+        /// <param name="keepBothSides">If set to <c>true</c> split the brush and keep both sides.</param>
+        /// <param name="resetPivots">If set to <c>true</c> make sure the pivot clipped brush and any new brush are at their center.</param>
+        public static GameObject ApplyClipPlane(PrimitiveBrush brush, Plane localPlane, bool keepBothSides, bool resetPivots = true)
 		{
 			// Clip the polygons against the plane
 			List<Polygon> polygonsFront;
@@ -70,15 +71,21 @@ namespace Sabresaurus.SabreCSG
 					// Finally give the new brush the other set of polygons
 					newObject.GetComponent<PrimitiveBrush>().SetPolygons(polygonsBack.ToArray(), true);
 					newObject.transform.SetSiblingIndex(brush.transform.GetSiblingIndex());
-					// Reset the new brush's pivot
-					newObject.GetComponent<PrimitiveBrush>().ResetPivot();
+                    // Reset the new brush's pivot
+                    if (resetPivots)
+                    {
+                        newObject.GetComponent<PrimitiveBrush>().ResetPivot();
+                    }
 				}
 
-				// Can't reset the first brush pivot until after the second brush is made, otherwise the second 
-				// brush is effectively translated twice, ending up in the wrong position
-				brush.ResetPivot();
+                // Can't reset the first brush pivot until after the second brush is made, otherwise the second 
+                // brush is effectively translated twice, ending up in the wrong position
+                if (resetPivots)
+                {
+                    brush.ResetPivot();
+                }
 
-				return newObject;
+                return newObject;
 			}
 			else
 			{

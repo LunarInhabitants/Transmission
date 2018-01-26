@@ -4,7 +4,34 @@ namespace Sabresaurus.SabreCSG
 {
 	public static class MathHelper
 	{
-	    public static float InverseLerpNoClamp(float from, float to, float value)
+        const float EPSILON_LOWER = 0.0001f;
+        const float EPSILON_LOWER_2 = 0.001f;
+        const float EPSILON_LOWER_3 = 0.003f;
+
+        public static int GetSideThick(Plane plane, Vector3 point)
+        {
+            float dot = Vector3.Dot(plane.normal, point) + plane.distance;
+
+            if (dot > 0.02f)
+            {
+                return 1;
+            }
+            else if (dot < -0.02f)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static Vector2 Vector2Cross(Vector2 vector)
+        {
+            return new Vector2(vector.y, -vector.x);
+        }
+
+        public static float InverseLerpNoClamp(float from, float to, float value)
 	    {
 	        if (from < to)
 	        {
@@ -265,7 +292,6 @@ namespace Sabresaurus.SabreCSG
 			}
 			return angle;
 		}
-		const float EPSILON_LOWER = 0.001f;
 
 		public static bool PlaneEqualsLooser(Plane plane1, Plane plane2)
 		{
@@ -283,7 +309,43 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-		public static bool IsVectorInteger(Vector3 vector)
+        public static bool PlaneEqualsLooserWithFlip(Plane plane1, Plane plane2)
+        {
+            if (
+                Mathf.Abs(plane1.distance - plane2.distance) < EPSILON_LOWER_3
+                && Mathf.Abs(plane1.normal.x - plane2.normal.x) < EPSILON_LOWER_2
+                && Mathf.Abs(plane1.normal.y - plane2.normal.y) < EPSILON_LOWER_2
+                && Mathf.Abs(plane1.normal.z - plane2.normal.z) < EPSILON_LOWER_2)
+            {
+                return true;
+            }
+            else if (
+                Mathf.Abs(-plane1.distance - plane2.distance) < EPSILON_LOWER_3
+                && Mathf.Abs(-plane1.normal.x - plane2.normal.x) < EPSILON_LOWER_2
+                && Mathf.Abs(-plane1.normal.y - plane2.normal.y) < EPSILON_LOWER_2
+                && Mathf.Abs(-plane1.normal.z - plane2.normal.z) < EPSILON_LOWER_2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool PlaneEquals(Plane plane1, Plane plane2)
+        {
+            if (plane1.distance.EqualsWithEpsilon(plane2.distance) && plane1.normal.EqualsWithEpsilon(plane2.normal))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool IsVectorInteger(Vector3 vector)
 		{
 			if(vector.x % 1f != 0
 				|| vector.y % 1f != 0

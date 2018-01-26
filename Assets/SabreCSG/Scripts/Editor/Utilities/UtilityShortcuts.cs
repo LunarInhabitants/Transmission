@@ -33,28 +33,49 @@ namespace Sabresaurus.SabreCSG
 		[MenuItem("Edit/Rebuild CSG " + KeyMappings.Rebuild, false, 100)]
 		static void Rebuild()
 		{
-			CSGModel[] csgModels = FindObjectsOfType<CSGModel>();
+            CSGModel activeCSGModel = CSGModel.GetActiveCSGModel();
 
-			// Build the first csg model that is currently being edited
-			for (int i = 0; i < csgModels.Length; i++) 
-			{
-				if(csgModels[i].EditMode)
-				{
-					csgModels[i].Build(false, false);
-					break;
-				}
-			}
+            if(activeCSGModel != null)
+            {
+                activeCSGModel.Build(false, false);
+            }
 		}
 
-//		[MenuItem("SabreCSG/About")]
-//		static void ShowAboutDialog()
-//		{
-//			string message = "Version " + CSGModel.VERSION_STRING + 
-//				"\nhttp://www.sabrecsg.com";
-//			EditorUtility.DisplayDialog("SabreCSG", message, "Close");
-//		}
-		
-		[MenuItem("Edit/Reset Scene Camera")]
+		[MenuItem("Edit/Group", false, 99)]
+		public static void Group()
+		{
+			TransformHelper.GroupSelection();
+		}
+
+		[MenuItem("Edit/Ungroup", false, 99)]
+		public static void Ungroup()
+		{
+			TransformHelper.UngroupSelection();
+		}
+
+        [MenuItem("Edit/Export All Brushes To OBJ", false, 100)]
+        static void ExportAllToObj()
+        {
+            CSGModel activeCSGModel = CSGModel.GetActiveCSGModel();
+
+            if (activeCSGModel != null)
+            {
+                activeCSGModel.ExportOBJ(false);
+            }
+        }
+
+        [MenuItem("Edit/Export Selected To OBJ", false, 100)]
+        static void ExportSelectedToObj()
+        {
+            CSGModel activeCSGModel = CSGModel.GetActiveCSGModel();
+
+            if (activeCSGModel != null)
+            {
+                activeCSGModel.ExportOBJ(true);
+            }
+        }
+
+        [MenuItem("Edit/Reset Scene Camera")]
 		static void ResetSceneViewCamera()
 		{
 			// Sometimes have issues with the camera locking up, resetting both current tool and the view tool seems
