@@ -59,7 +59,6 @@ public class ChickenController : BaseChromable
 
             if (toPlayer.sqrMagnitude <= attackDistSq)
             {
-                Debug.Log("ATTEK");
                 animator.SetTrigger("IsAttacking");
             }
 
