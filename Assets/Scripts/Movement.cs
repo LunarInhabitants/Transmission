@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed = 6.0f;
+    [SerializeField] private float _walkSpeed = 6.0f;
+    [SerializeField] private float _sprintSpeed = 20.0f;
+
     [SerializeField] private float _jumpSpeed = 8.0F;
     [SerializeField] private float _gravity = 20.0F;
 
     private Vector3 moveDirection;
+
+    private float _moveSpeed = 6.0f;
 
     private CharacterController _characterController;
     private Camera _cameraGameObject;
@@ -21,8 +25,11 @@ public class Movement : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
-	    if (true || _characterController.isGrounded)
+	void FixedUpdate ()
+	{
+	    _moveSpeed = Input.GetButton("Sprint") ? _sprintSpeed : _walkSpeed;
+
+	    if (_characterController.isGrounded)
 	    {
             float horizontalAxis = Input.GetAxis("Horizontal");
             float verticalAxis = Input.GetAxis("Vertical");
