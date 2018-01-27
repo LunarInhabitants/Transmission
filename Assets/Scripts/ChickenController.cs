@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class ChickenController : BaseChromable
 {
+    private const float deathDist = 100.0f;
+    private const float deathDistSq = deathDist * deathDist;
+
     public float chickenSpeed = 15.0f;
     public float attackDist = 2.0f;
+    public float damageToCauseOnAttack = 5.0f;
     public ParticleSystem deathParticles;
 
     Animator animator;
     new Rigidbody rigidbody;
 
-    float animOffset;
     float attackDistSq;
     bool isOnDeathRow = false;
 
@@ -43,23 +46,31 @@ public class ChickenController : BaseChromable
                 B = 1.0f;
                 break;
         }
-
-        animOffset = Random.Range(0.0f, 5.0f);
     }
 
     protected override void Update()
     {
+        if ((transform.position - Player.Instance.transform.position).sqrMagnitude > deathDistSq)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (!isOnDeathRow)
         {
-            Vector3 toPlayer = Movement.Instance.transform.position - transform.position;
+            Vector3 toPlayer = Player.Instance.transform.position - transform.position;
 
             rigidbody.AddForce(toPlayer.normalized * (chickenSpeed * 100.0f) * Time.deltaTime, ForceMode.Acceleration);
-            rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(rigidbody.velocity.normalized), 0.2f);
+            Vector3 lookDir = rigidbody.velocity.normalized;
+            if (lookDir.sqrMagnitude <= 0.001f)
+                lookDir = Vector3.forward;
+            rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(lookDir), 0.2f);
             animator.SetFloat("Speed", rigidbody.velocity.sqrMagnitude);
 
             if (toPlayer.sqrMagnitude <= attackDistSq)
             {
                 animator.SetTrigger("IsAttacking");
+                Player.Instance.Hurt(damageToCauseOnAttack);
             }
 
             if (R + G + B > 2.9f)
