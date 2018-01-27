@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
 
     public void GetAmmo()
     {
-
+        GetComponentInChildren<Gun>().RefillAmmo();
     }
 
     public void Die()

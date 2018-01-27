@@ -27,7 +27,11 @@ public class Gun : MonoBehaviour
     private Material _material;
     private GameObject _cameraGameObject;
     private GunMode _gunMode = GunMode.Red;
+
     private float _redAmmo = 256.0f;
+    private float _greenAmmo = 256.0f;
+    private float _blueAmmo = 256.0f;
+
 
     public GunMode GunMode
     {
@@ -115,10 +119,12 @@ public class Gun : MonoBehaviour
             {
                 _spiralBoi.DoSpiral(transform.position, hitObject.point);
                 chromie.Chromatize(_beamColour * Time.deltaTime);
+                DepleteAmmo();
             }
             else
             {
                 _spiralBoi.DoSpiral(transform.position, hitObject.point);
+                DepleteAmmo();
             }
         }
     }
@@ -167,8 +173,24 @@ public class Gun : MonoBehaviour
         }
     }
 
+    private void DepleteAmmo()
+    {
+        switch (_gunMode)
+        {
+            case GunMode.Red:
+                _redAmmo -= Time.deltaTime;
+                break;
+            case GunMode.Green:
+                _greenAmmo -= Time.deltaTime;
+                break;
+            case GunMode.Blue:
+                _blueAmmo -= Time.deltaTime;
+                break;
+        }
+    }
+
     public void RefillAmmo()
     {
-
+        _greenAmmo = _redAmmo = _blueAmmo = 256.0f;
     }
 }
