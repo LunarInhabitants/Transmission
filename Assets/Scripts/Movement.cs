@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    public static Movement Instance { get; private set; }
+
     [SerializeField] private float _walkSpeed = 6.0f;
     [SerializeField] private float _sprintSpeed = 20.0f;
 
@@ -20,7 +22,9 @@ public class Movement : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-	    _characterController = GetComponent<CharacterController>();
+        Instance = this;
+
+        _characterController = GetComponent<CharacterController>();
 	    _cameraGameObject = GetComponentInChildren<Camera>();
 	}
 	

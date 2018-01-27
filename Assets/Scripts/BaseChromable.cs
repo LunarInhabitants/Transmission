@@ -11,6 +11,7 @@ public class BaseChromable : MonoBehaviour
     public float R { get { return _r; } set { _r = Mathf.Clamp01(value); } }
     public float G { get { return _g; } set { _g = Mathf.Clamp01(value); } }
     public float B { get { return _b; } set { _b = Mathf.Clamp01(value); } }
+    public float brightnessMult = 1.0f;
 
     protected new Renderer renderer;
 
@@ -22,6 +23,7 @@ public class BaseChromable : MonoBehaviour
     protected virtual void Update ()
     {
         renderer.material.SetColor("_Color", new Color(_r, _g, _b));
+        renderer.material.SetFloat("_BrightnessMult", brightnessMult);
     }
 
     public void Chromatize(Color rgb)
