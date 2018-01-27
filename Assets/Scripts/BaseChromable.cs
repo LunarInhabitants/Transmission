@@ -23,4 +23,11 @@ public class BaseChromable : MonoBehaviour
     {
         renderer.material.SetColor("_Color", new Color(_r, _g, _b));
     }
+
+    public void Chromatize(Color rgb)
+    {
+        R += rgb.r;
+        G += rgb.g;
+        B += rgb.b;
+    }
 }
