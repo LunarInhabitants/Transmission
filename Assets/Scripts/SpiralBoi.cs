@@ -34,14 +34,13 @@ public class SpiralBoi : MonoBehaviour
 	        float distance = movementVector.magnitude / _resolution;
 	        for (int i = 0; i < positions.Count; i++)
 	        {
-	            Vector3 vec = _startPoint;
-	            vec.z += distance * i;
-	            //vec.x += Mathf.Sin(i);
-	           // vec.y += Mathf.Cos(i);
-	            positions[i] = vec;
+	            positions[i] = new Vector3(
+                    Mathf.Sin((Time.time + i) * 4.0f) * 0.02f,
+                    Mathf.Cos((Time.time + i) * 4.0f) * 0.02f,
+                    distance * i
+                );
 	        }
 	        _lineRenderer.SetPositions(positions.ToArray());
-            Debug.DrawLine(_startPoint, _endPoint, Color.black);
 	    }
 	}
 
