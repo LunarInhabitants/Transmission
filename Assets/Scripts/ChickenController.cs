@@ -9,6 +9,7 @@ public class ChickenController : BaseChromable
 
     public float chickenSpeed = 15.0f;
     public float attackDist = 2.0f;
+    public float damageToCauseOnAttack = 5.0f;
     public ParticleSystem deathParticles;
 
     Animator animator;
@@ -49,7 +50,7 @@ public class ChickenController : BaseChromable
 
     protected override void Update()
     {
-        if ((transform.position - Movement.Instance.transform.position).sqrMagnitude > deathDistSq)
+        if ((transform.position - Player.Instance.transform.position).sqrMagnitude > deathDistSq)
         {
             Destroy(gameObject);
             return;
@@ -57,7 +58,7 @@ public class ChickenController : BaseChromable
 
         if (!isOnDeathRow)
         {
-            Vector3 toPlayer = Movement.Instance.transform.position - transform.position;
+            Vector3 toPlayer = Player.Instance.transform.position - transform.position;
 
             rigidbody.AddForce(toPlayer.normalized * (chickenSpeed * 100.0f) * Time.deltaTime, ForceMode.Acceleration);
             Vector3 lookDir = rigidbody.velocity.normalized;
@@ -68,8 +69,8 @@ public class ChickenController : BaseChromable
 
             if (toPlayer.sqrMagnitude <= attackDistSq)
             {
-                Debug.Log("ATTEK");
                 animator.SetTrigger("IsAttacking");
+                Player.Instance.Hurt(damageToCauseOnAttack);
             }
 
             if (R + G + B > 2.9f)

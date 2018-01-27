@@ -26,7 +26,7 @@ public class EnemySpawner : MonoBehaviour
     {
         spawnTimer -= Time.deltaTime;
 
-        if ((transform.position - Movement.Instance.transform.position).sqrMagnitude < spawnDistSq)
+        if ((transform.position - Player.Instance.transform.position).sqrMagnitude < spawnDistSq)
         {
             if (!hasInitialSpawned)
             {
