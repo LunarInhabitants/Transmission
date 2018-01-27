@@ -13,6 +13,7 @@ public class CanvasController : MonoBehaviour
 
     void Update()
     {
+        
         float targetSpinnyAngle = 0.0f;
 
         switch (Gun.Instance.GunMode)
