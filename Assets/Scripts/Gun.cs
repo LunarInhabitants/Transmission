@@ -96,11 +96,16 @@ public class Gun : MonoBehaviour
 	        mouseScrollBoi = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
 	    {
-	        Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
-	        Cursor.visible = !Cursor.visible;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
 	    }
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
 	}
 
     private void Fire()

@@ -11,7 +11,8 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float _jumpSpeed = 8.0F;
     [SerializeField] private float _gravity = 20.0F;
-    [SerializeField] private Transform butts;
+    [SerializeField] private Transform gunSpawnPoint;
+    [SerializeField] private GameObject gunPrefab;
 
     public float Health { get; private set; }
     public float MaxHealth = 100.0f;
@@ -23,6 +24,11 @@ public class Player : MonoBehaviour
     private CharacterController _characterController;
     private Camera _cameraGameObject;
 
+    private void Awake()
+    {
+        GameObject gunInstance = (GameObject)Instantiate(gunPrefab, gunSpawnPoint.transform.position, gunSpawnPoint.rotation, gunSpawnPoint.transform);
+        
+    }
     // Use this for initialization
     void Start()
     {
@@ -33,7 +39,13 @@ public class Player : MonoBehaviour
 
         Health = MaxHealth;
     }
-
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
     // Update is called once per frame
     void FixedUpdate()
     {
