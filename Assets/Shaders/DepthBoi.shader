@@ -1,6 +1,8 @@
 ﻿Shader "DepthMaster/DepthBoi" {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
+		_BrightnessMult ("Brightness Mult", float) = 1.0
+		_LowerDepthClamp ("Lower Depth Clamp", float) = 0.05
 		_Tex ("Texture", 2D) = "white" {}
 		_DepthFactor ("Depth Factor", Range(0.0, 1024.0)) = 256.0
 		[MaterialToggle] _FlipDepth("Flip Depth", Int) = 0
@@ -10,10 +12,12 @@
 		LOD 200
 		
 		CGPROGRAM
-		#pragma surface surf DepthBoi fullforwardshadows vertex:vert finalcolor:finalcolor 
+		#pragma surface surf DepthBoi fullforwardshadows vertex:vert
 		#pragma target 3.0
 
 		fixed4 _Color;
+		float _BrightnessMult;
+		float _LowerDepthClamp;
 		sampler2D _Tex;
 		float _DepthFactor;
 		int _FlipDepth;
@@ -36,15 +40,15 @@
 		void surf (Input IN, inout SurfaceOutput o) {
 			float4 tex = tex2D(_Tex, IN.uv_Tex);
 			float depth = (length(IN.worldPos - _WorldSpaceCameraPos) / _DepthFactor);
+			float3 col = tex.rgb * _Color.rgb;
+
 			depth = pow(depth, 0.5);
+			col = lerp(col, float3(1.0, 1.0, 1.0), depth);
+
 			if(_FlipDepth)
 				depth = (1.0 - depth) * 1.2;
-			o.Albedo = max(0.05, depth) * tex.rgb;
+			o.Albedo = max(_LowerDepthClamp, depth) * col * _BrightnessMult;
 			o.Alpha = tex.a;
-		}
-
-		void finalcolor (Input IN, SurfaceOutput o, inout fixed4 color) {
-			color.rgb *= _Color.rgb;
 		}
 
 		half4 LightingDepthBoi (SurfaceOutput s, half3 lightDir, half atten) {

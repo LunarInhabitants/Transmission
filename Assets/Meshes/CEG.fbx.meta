@@ -628,6 +628,14 @@ ModelImporter:
     101240: transform4
     101242: transform5
     101244: transform6
+    101246: pCylinder14
+    101248: pCylinder15
+    101250: pCylinder16
+    101252: pCylinder74
+    101254: pCylinder75
+    101256: pCylinder76
+    101258: transform1
+    101260: transform2
     400000: //RootNode
     400002: pCube1
     400004: pCube2
@@ -1251,6 +1259,14 @@ ModelImporter:
     401240: transform4
     401242: transform5
     401244: transform6
+    401246: pCylinder14
+    401248: pCylinder15
+    401250: pCylinder16
+    401252: pCylinder74
+    401254: pCylinder75
+    401256: pCylinder76
+    401258: transform1
+    401260: transform2
     2300000: pCube1
     2300002: pCube2
     2300004: pCube10
@@ -1813,6 +1829,10 @@ ModelImporter:
     2301118: pTorus2 5
     2301120: pTorus2 6
     2301122: pTorus2 7
+    2301124: pCylinder16
+    2301126: pCylinder74
+    2301128: pCylinder75
+    2301130: pCylinder76
     3300000: pCube1
     3300002: pCube2
     3300004: pCube10
@@ -2375,6 +2395,10 @@ ModelImporter:
     3301118: pTorus2 5
     3301120: pTorus2 6
     3301122: pTorus2 7
+    3301124: pCylinder16
+    3301126: pCylinder74
+    3301128: pCylinder75
+    3301130: pCylinder76
     4300000: pCube1
     4300002: pCube2
     4300004: pSphere1
@@ -2937,6 +2961,10 @@ ModelImporter:
     4301118: extrudedSurface1
     4301120: pCylinder72
     4301122: pCylinder73
+    4301124: pCylinder16
+    4301126: pCylinder74
+    4301128: pCylinder75
+    4301130: pCylinder76
     9500000: //RootNode
   materials:
     importMaterials: 0
