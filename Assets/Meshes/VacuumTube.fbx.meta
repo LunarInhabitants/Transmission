@@ -1,0 +1,170 @@
+fileFormatVersion: 2
+guid: d5e95f01403e6fd43b9687c8ca02d665
+timeCreated: 1517089419
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: pCylinder142
+    100002: pCylinder151
+    100004: pCylinder152
+    100006: pCylinder153
+    100008: pCylinder154
+    100010: pCylinder79
+    100012: pCylinder80
+    100014: pDisc15
+    100016: pDisc16
+    100018: pDisc19
+    100020: pDisc29
+    100022: pDisc30
+    100024: pDisc31
+    100026: pDisc32
+    100028: pDisc4
+    100030: pHelix2
+    100032: pTorus10
+    100034: //RootNode
+    400000: pCylinder142
+    400002: pCylinder151
+    400004: pCylinder152
+    400006: pCylinder153
+    400008: pCylinder154
+    400010: pCylinder79
+    400012: pCylinder80
+    400014: pDisc15
+    400016: pDisc16
+    400018: pDisc19
+    400020: pDisc29
+    400022: pDisc30
+    400024: pDisc31
+    400026: pDisc32
+    400028: pDisc4
+    400030: pHelix2
+    400032: pTorus10
+    400034: //RootNode
+    2300000: pCylinder142
+    2300002: pCylinder151
+    2300004: pCylinder152
+    2300006: pCylinder153
+    2300008: pCylinder154
+    2300010: pCylinder79
+    2300012: pCylinder80
+    2300014: pDisc15
+    2300016: pDisc16
+    2300018: pDisc19
+    2300020: pDisc29
+    2300022: pDisc30
+    2300024: pDisc31
+    2300026: pDisc32
+    2300028: pDisc4
+    2300030: pHelix2
+    2300032: pTorus10
+    3300000: pCylinder142
+    3300002: pCylinder151
+    3300004: pCylinder152
+    3300006: pCylinder153
+    3300008: pCylinder154
+    3300010: pCylinder79
+    3300012: pCylinder80
+    3300014: pDisc15
+    3300016: pDisc16
+    3300018: pDisc19
+    3300020: pDisc29
+    3300022: pDisc30
+    3300024: pDisc31
+    3300026: pDisc32
+    3300028: pDisc4
+    3300030: pHelix2
+    3300032: pTorus10
+    4300000: pDisc4
+    4300002: pCylinder151
+    4300004: pCylinder80
+    4300006: pDisc16
+    4300008: pCylinder153
+    4300010: pHelix2
+    4300012: pDisc29
+    4300014: pDisc19
+    4300016: pDisc30
+    4300018: pDisc31
+    4300020: pTorus10
+    4300022: pCylinder142
+    4300024: pDisc32
+    4300026: pCylinder79
+    4300028: pCylinder152
+    4300030: pDisc15
+    4300032: pCylinder154
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
