@@ -33,3 +33,4 @@ sysinfo.txt
 *.apk
 *.unitypackage
 Assets/Prefabs.meta
+Assets/Scripts/ChickenController.cs
