@@ -43,17 +43,6 @@ namespace Sabresaurus.SabreCSG
 			GL.Vertex(screenPosition2);
 		}
 
-        public static void DrawScreenLineDashed(Vector3 screenPosition1, Vector3 screenPosition2)
-        {
-            screenPosition1.z = FRONT_Z_DEPTH;
-            GL.TexCoord2(0, 0);
-            GL.Vertex(screenPosition1);
-
-            screenPosition2.z = FRONT_Z_DEPTH;
-            GL.TexCoord2(Vector3.Distance(screenPosition1, screenPosition2) / 50f, 0);
-            GL.Vertex(screenPosition2);
-        }
-
 		public static void DrawScreenRectFill (Rect rect)
 		{
 			Vector3 topLeft = new Vector3(rect.xMin,rect.yMin, FRONT_Z_DEPTH);
@@ -371,37 +360,31 @@ namespace Sabresaurus.SabreCSG
 			
 			for (int j = 0; j < polygons.Length; j++) 
 			{
-                Vector3 offset = polygons[j].Plane.normal * 0.001f;
-
-                Polygon polygon = polygons[j];
+				Polygon polygon = polygons[j];
 				for (int i = 0; i < polygon.Vertices.Length - 1; i++)
 				{
-					GL.Vertex(polygon.Vertices[i].Position + offset);
-					GL.Vertex(polygon.Vertices[i + 1].Position + offset);
+					GL.Vertex(polygon.Vertices[i].Position);
+					GL.Vertex(polygon.Vertices[i + 1].Position);
 				}
-				GL.Vertex(polygon.Vertices[polygon.Vertices.Length - 1].Position + offset);
-				GL.Vertex(polygon.Vertices[0].Position + offset);
+				GL.Vertex(polygon.Vertices[polygon.Vertices.Length - 1].Position);
+				GL.Vertex(polygon.Vertices[0].Position);
 			}
 			
 			GL.End();
 			
 			GL.Begin(GL.TRIANGLES);
 			GL.Color(faceColor);
-
-            
 			
 			for (int j = 0; j < polygons.Length; j++) 
 			{
-                Vector3 offset = polygons[j].Plane.normal * 0.001f;
-
-                Polygon polygon = polygons[j];
+				Polygon polygon = polygons[j];
 				Vector3 position1 = polygon.Vertices[0].Position;
 				
 				for (int i = 1; i < polygon.Vertices.Length - 1; i++)
 				{
-					GL.Vertex(position1 + offset);
-					GL.Vertex(polygon.Vertices[i].Position + offset);
-					GL.Vertex(polygon.Vertices[i + 1].Position + offset);
+					GL.Vertex(position1);
+					GL.Vertex(polygon.Vertices[i].Position);
+					GL.Vertex(polygon.Vertices[i + 1].Position);
 				}
 			}
 			GL.End();

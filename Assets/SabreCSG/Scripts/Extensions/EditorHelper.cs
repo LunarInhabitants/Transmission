@@ -87,9 +87,9 @@ namespace Sabresaurus.SabreCSG
 	    }
 
 	    /// <summary>
-	    /// Whether the mouse position is within the bounds of the axis snapping gizmo that appears in the top right or the bottom toolbar
+	    /// Whether the mouse position is within the bounds of the axis snapping gizmo that appears in the top right
 	    /// </summary>
-	    public static bool IsMousePositionInInvalidRects(Vector2 mousePosition)
+	    public static bool IsMousePositionNearSceneGizmo(Vector2 mousePosition)
 	    {
 			float scale = 1;
 
@@ -97,21 +97,17 @@ namespace Sabresaurus.SabreCSG
 			mousePosition = EditorGUIUtility.PointsToPixels(mousePosition);
 			scale = EditorGUIUtility.pixelsPerPoint;
 #endif
+			
+	        mousePosition.x = Screen.width - mousePosition.x;
 
-			if (mousePosition.x < Screen.width - 14 * scale 
-				&& mousePosition.x > Screen.width - 89 * scale 
+			if (mousePosition.x > 14 * scale 
+				&& mousePosition.x < 89 * scale 
 				&& mousePosition.y > 14 * scale 
 				&& mousePosition.y < 105 * scale)
 	        {
-                // Mouse is near the scene alignment gizmo
 	            return true;
 	        }
-            else if (mousePosition.y > Screen.height - Toolbar.BOTTOM_TOOLBAR_HEIGHT * scale - TOOLBAR_HEIGHT * scale)
-            {
-                // Mouse is over the bottom toolbar
-                return true;
-            }
-            else
+	        else
 	        {
 	            return false;
 	        }
@@ -123,16 +119,9 @@ namespace Sabresaurus.SabreCSG
 			if(convertPointsToPixels)
 			{
 				sourceMousePosition = EditorGUIUtility.PointsToPixels(sourceMousePosition);
-                // Flip the direction of Y and remove the Scene View top toolbar's height
-                sourceMousePosition.y = Screen.height - sourceMousePosition.y - (TOOLBAR_HEIGHT * EditorGUIUtility.pixelsPerPoint);
-            }
-            else
-            {
-                // Flip the direction of Y and remove the Scene View top toolbar's height
-				float screenHeightPoints = (Screen.height / EditorGUIUtility.pixelsPerPoint);
-				sourceMousePosition.y = screenHeightPoints - sourceMousePosition.y - (TOOLBAR_HEIGHT);
-            }
-			
+			}
+			// Flip the direction of Y and remove the Scene View top toolbar's height
+			sourceMousePosition.y = Screen.height - sourceMousePosition.y - (TOOLBAR_HEIGHT * EditorGUIUtility.pixelsPerPoint);
 #else
 			// Flip the direction of Y and remove the Scene View top toolbar's height
 			sourceMousePosition.y = Screen.height - sourceMousePosition.y - TOOLBAR_HEIGHT;
@@ -142,7 +131,6 @@ namespace Sabresaurus.SabreCSG
 
 		public static Vector2 ConvertMousePixelPosition(Vector2 sourceMousePosition, bool convertPixelsToPoints = true)
 		{
-            sourceMousePosition = MathHelper.RoundVector2(sourceMousePosition);
 #if UNITY_5_4_OR_NEWER
 			if(convertPixelsToPoints)
 			{
@@ -157,27 +145,7 @@ namespace Sabresaurus.SabreCSG
 			return sourceMousePosition;
 		}
 
-        public static float ConvertScreenPixelsToPoints(float screenPixels)
-        {
-#if UNITY_5_4_OR_NEWER
-            return screenPixels / EditorGUIUtility.pixelsPerPoint;
-#else
-			// Pre 5.4 assume that 1 pixel = 1 point
-			return screenPixels;
-#endif
-        }
-
-        public static Vector2 ConvertScreenPixelsToPoints(Vector2 screenPixels)
-        {
-#if UNITY_5_4_OR_NEWER
-            return EditorGUIUtility.PixelsToPoints(screenPixels);
-#else
-			// Pre 5.4 assume that 1 pixel = 1 point
-			return screenPixels;
-#endif
-        }
-
-        public static bool IsMousePositionInIMGUIRect(Vector2 mousePosition, Rect rect)
+		public static bool IsMousePositionInIMGUIRect(Vector2 mousePosition, Rect rect)
 		{
 			// This works in point space, not pixel space
 			mousePosition += new Vector2(0, EditorStyles.toolbar.fixedHeight);
@@ -185,34 +153,9 @@ namespace Sabresaurus.SabreCSG
 			return rect.Contains(mousePosition);
 		}
 
-        /// <summary>
-        /// Determines whether a mouse position is within distance of a screen point. Care must be taken with the inputs provided to this method - see the parameter explanations for details.
-        /// </summary>
-        /// <param name="mousePosition">As provided by Event.mousePosition (in points)</param>
-        /// <param name="targetScreenPosition">As provided by Camera.WorldToScreenPoint() (in pixels)</param>
-        /// <param name="screenDistancePoints">Screen distance (in points)</param>
-        /// <returns>True if within the specified distance, False otherwise</returns>
-        public static bool InClickZone(Vector2 mousePosition, Vector2 targetScreenPosition, float screenDistancePoints)
-        {
-            // Convert the mouse position to screen space, but leave in points
-            mousePosition = ConvertMousePointPosition(mousePosition, false);
-            // Convert screen position from pixels to points
-            targetScreenPosition = EditorHelper.ConvertScreenPixelsToPoints(targetScreenPosition);
-
-            float distance = Vector2.Distance(mousePosition, targetScreenPosition);
-
-            if (distance <= screenDistancePoints)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool InClickZone(Vector2 mousePosition, Vector3 worldPosition)
+	    public static bool InClickZone(Vector2 mousePosition, Vector3 worldPosition)
 	    {
+	        mousePosition = ConvertMousePointPosition(mousePosition);
 	        Vector3 targetScreenPosition = Camera.current.WorldToScreenPoint(worldPosition);
 
 	        if (targetScreenPosition.z < 0)
@@ -220,34 +163,67 @@ namespace Sabresaurus.SabreCSG
 	            return false;
 	        }
 
+	        float distance = Vector2.Distance(mousePosition, targetScreenPosition);
+
 			float depthDistance = targetScreenPosition.z;
+//#if UNITY_5_4_OR_NEWER
+//			depthDistance *= EditorGUIUtility.pixelsPerPoint;
+//#endif
+
 
 			// When z is 6 then click threshold is 15
 			// when z is 20 then click threshold is 5
-			float threshold = Mathf.Lerp(15, 5, Mathf.InverseLerp(6, 20, depthDistance));
+			float threshold;
 
-            return InClickZone(mousePosition, targetScreenPosition, threshold);
-        }
+//			if(CurrentSettings.ReducedHandleThreshold)
+//			{
+//				threshold = Mathf.Lerp(5, 2, Mathf.InverseLerp(6,20,depthDistance));
+//			}
+//			else
+			{
+				threshold = Mathf.Lerp(15, 5, Mathf.InverseLerp(6,20,depthDistance));
+			}
 
-		public static bool InClickRect(Vector2 mousePosition, Vector3 worldPosition1, Vector3 worldPosition2, float range)
+#if UNITY_5_4_OR_NEWER
+			threshold *= EditorGUIUtility.pixelsPerPoint;
+#endif
+
+			if (distance <= threshold)
+	        {
+	            return true;
+	        }
+	        else
+	        {
+	            return false;
+	        }
+	    }
+
+		public static bool InClickRect(Vector2 mousePosition, Vector3 worldPosition1, Vector3 worldPosition2)
 		{
-			mousePosition = ConvertMousePointPosition(mousePosition, false);
+			mousePosition = ConvertMousePointPosition(mousePosition);
 			Vector3 targetScreenPosition1 = Camera.current.WorldToScreenPoint(worldPosition1);
 			Vector3 targetScreenPosition2 = Camera.current.WorldToScreenPoint(worldPosition2);
-
-			// Convert screen position from pixels to points
-			targetScreenPosition1 = EditorHelper.ConvertScreenPixelsToPoints(targetScreenPosition1);
-			targetScreenPosition2 = EditorHelper.ConvertScreenPixelsToPoints(targetScreenPosition2);
 
 			if (targetScreenPosition1.z < 0)
 			{
 				return false;
 			}
 
+			// When z is 6 then click threshold is 15
+			// when z is 20 then click threshold is 5
+			float threshold = Mathf.Lerp(15, 5, Mathf.InverseLerp(6,20,targetScreenPosition1.z));
+
+#if UNITY_5_4_OR_NEWER
+			threshold *= EditorGUIUtility.pixelsPerPoint;
+#endif
+
 			Vector3 closestPoint = MathHelper.ProjectPointOnLineSegment(targetScreenPosition1, targetScreenPosition2, mousePosition);
 			closestPoint.z = 0;
-
-			if(Vector3.Distance(closestPoint, mousePosition) < range)
+			if(Vector3.Distance(closestPoint, mousePosition) < threshold)
+//			if(mousePosition.y > Mathf.Min(targetScreenPosition1.y, targetScreenPosition2.y - threshold)
+//				&& mousePosition.y < Mathf.Max(targetScreenPosition1.y, targetScreenPosition2.y) + threshold
+//				&& mousePosition.x > Mathf.Min(targetScreenPosition1.x, targetScreenPosition2.x - threshold)
+//				&& mousePosition.x < Mathf.Max(targetScreenPosition1.x, targetScreenPosition2.x) + threshold)
 			{
 				return true;
 			}
@@ -366,9 +342,6 @@ namespace Sabresaurus.SabreCSG
 				{
 					// Temporarily set the selection to the single entry
 					Selection.activeGameObject = selectedTransforms[i].gameObject;
-                    // Seems to be a bug in Unity where we need to set the objects array too otherwise it won't be set straight away
-                    Selection.objects = new Object[] { selectedTransforms[i].gameObject };
-
 					// Duplicate the single entry
 					Unsupported.DuplicateGameObjectsUsingPasteboard();
 					// Cache the new entry, so when we're done we reselect all new objects

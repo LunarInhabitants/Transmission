@@ -15,7 +15,7 @@ namespace Sabresaurus.SabreCSG
 //	[ExecuteInEditMode]
 	public class CSGModelBase : MonoBehaviour
 	{
-		public const string VERSION_STRING = "1.5.1";
+		public const string VERSION_STRING = "1.4.0";
 		protected const string DEFAULT_FALLBACK_MATERIAL_PATH = "Materials/Default_Map";
 
 		// Limit to how many vertices a Unity mesh can hold, before it must be split into a second mesh (just under 2^16)
@@ -149,6 +149,7 @@ namespace Sabresaurus.SabreCSG
 
 		protected virtual void Start()
 		{
+			UpdateBrushVisibility();
 		}
 
 		protected virtual void Update()
@@ -168,7 +169,7 @@ namespace Sabresaurus.SabreCSG
 		/// </summary>
 		/// <param name="forceRebuild">If set to <c>true</c> all brushes will be built and cached data ignored, otherwise SabreCSG will only rebuild brushes it knows have changed</param>
 		/// <param name="buildInBackground">If set to <c>true</c> the majority of the build will occur in a background thread</param>
-		public virtual void Build (bool forceRebuild, bool buildInBackground)
+		public void Build (bool forceRebuild, bool buildInBackground)
 		{
 			// If any of the build settings have changed, force all brushes to rebuild
 			if(!lastBuildSettings.IsBuilt || CSGBuildSettings.AreDifferent(buildSettings, lastBuildSettings))
@@ -215,6 +216,7 @@ namespace Sabresaurus.SabreCSG
 		public virtual void OnBuildComplete()
 		{
 			polygonsRemoved = false;
+			UpdateBrushVisibility();
 
 			// Mark the brushes that have been built (so we can differentiate later if new brushes are built or not)
 			builtBrushes.Clear();
@@ -308,19 +310,7 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-        public List<PolygonRaycastHit> RaycastBuiltPolygonsAll(Ray ray)
-        {
-            if (BuildContext.VisualPolygons != null)
-            {                
-                return GeometryHelper.RaycastPolygonsAll(BuildContext.VisualPolygons, ray);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public Brush FindBrushFromPolygon(Polygon sourcePolygon)
+		public Brush FindBrushFromPolygon(Polygon sourcePolygon)
 		{
 			// Find which brush contains the source polygon
 			for (int i = 0; i < brushes.Count; i++) 
@@ -427,7 +417,46 @@ namespace Sabresaurus.SabreCSG
 //			return buildContext.collisionPolygons.Where(poly => (poly.UniqueIndex == uniquePolygonIndex && !poly.ExcludeFromFinal)).ToArray();
 //		}
 
-		public List<PolygonRaycastHit> RaycastBrushesAll(Ray ray, bool testAllModels)
+		public List<RaycastHit> RaycastBrushesAllOld(Ray ray)
+		{
+			int layerMask = 1 << LayerMask.NameToLayer("CSGMesh");
+			// Invert the layer mask
+			layerMask = ~layerMask;
+
+			List<RaycastHit> hits = new List<RaycastHit>(Physics.RaycastAll(ray, float.PositiveInfinity, layerMask));
+
+			// Trim out any calculated collision meshes that have been hit
+			for (int i = 0; i < hits.Count; i++) 
+			{
+				if(hits[i].collider.name == "CollisionMesh")
+				{
+					hits.RemoveAt (i);
+					i--;
+				}
+			}
+
+			// Trim out duplicate colliders on the same game object
+			for (int j = 0; j < hits.Count; j++) 
+			{
+				for (int i = 0; i < hits.Count; i++) 
+				{
+					if(i != j)
+					{
+						if(hits[i].collider.gameObject == hits[j].collider.gameObject)
+						{
+							hits.RemoveAt (j);
+							j--;
+							break;
+						}
+					}
+				}
+			}
+
+			hits.Sort((x,y) => x.distance.CompareTo(y.distance));
+			return hits;
+		}
+
+		public List<PolygonRaycastHit> RaycastBrushesAll(Ray ray, bool testAllModels = false)
 		{
 			List<PolygonRaycastHit> hits = new List<PolygonRaycastHit>();
 
@@ -478,38 +507,16 @@ namespace Sabresaurus.SabreCSG
 			return hits;
 		}
 
-        public List<BrushBase> ExtractBrushBases(List<Brush> sourceBrushes)
-        {
-            // Generate a list of editable brushes (in the case of compound brush's child brushes this would be the root controller)
-            List<BrushBase> brushBases = new List<BrushBase>();
-            for (int i = 0; i < sourceBrushes.Count; i++)
-            {
-                if(sourceBrushes[i].GetType() == typeof(PrimitiveBrush))
-                {
-                    // Get any controller (e.g. compound brush) that is driving the selected brush
-                    BrushBase controller = ((PrimitiveBrush)sourceBrushes[i]).BrushController;
-                    if (controller != null)
-                    {
-                        // Controller found, add it instead if it's not already in the list
-                        if(!brushBases.Contains(controller))
-                        {
-                            brushBases.Add(controller);
-                        }
-                    }
-                    else
-                    {
-                        // No controller found just add the brush
-                        brushBases.Add(sourceBrushes[i]);
-                    }
-                }
-                else
-                {
-                    // Not a primitive brush, so just add it
-                    brushBases.Add(sourceBrushes[i]);
-                }
-            }
-            return brushBases;
-        }
+		public virtual void UpdateBrushVisibility()
+		{
+			for (int i = 0; i < brushes.Count; i++)
+			{
+				if (brushes[i] != null)
+				{
+					brushes[i].UpdateVisibility();
+				}
+			}
+		}
 
 		public bool HasBrushBeenBuilt(Brush candidateBrush)
 		{
@@ -554,62 +561,12 @@ namespace Sabresaurus.SabreCSG
 				&& localSize != new Vector3(2,2,2))
 			{
 				BrushUtility.Resize(primitiveBrush, localSize);
+//				primitiveBrush.Invalidate(true);
 			}
-            else
-            {
-                // Resize automatically invalidates a brush with changed polygons set, if no resize took place we still need to make sure it happens
-                primitiveBrush.Invalidate(true);
-            }
-
-            if (material != null)
-			{
-				SurfaceUtility.SetAllPolygonsMaterials(primitiveBrush, material);
-			}
-
-			return brushObject;
-		}
-
-		public GameObject CreateCompoundBrush<T>(Vector3 localPosition, Vector3 localSize = default(Vector3), Quaternion localRotation = default(Quaternion), Material material = null, CSGMode csgMode = CSGMode.Add, string brushName = null) where T : CompoundBrush
-		{
-			return CreateCompoundBrush(typeof(T), localPosition, localSize, localRotation, material, csgMode, brushName);
-		}
-
-		public GameObject CreateCompoundBrush(Type compoundBrushType, Vector3 localPosition, Vector3 localSize = default(Vector3), Quaternion localRotation = default(Quaternion), Material material = null, CSGMode csgMode = CSGMode.Add, string brushName = null)
-		{
-			// Make sure we're actually being asked to create a compound brush
-			if(!typeof(CompoundBrush).IsAssignableFrom(compoundBrushType))
-			{
-				throw new ArgumentException("Specified type must be derived from CompoundBrush");
-			}
-
-			GameObject brushObject;
-			if(!string.IsNullOrEmpty(brushName))
-			{
-				brushObject = new GameObject(brushName);
-			}
-			else
-			{
-				brushObject = new GameObject(compoundBrushType.Name);
-			}
-
-			brushObject.transform.parent = this.transform;
-			brushObject.transform.localPosition = localPosition;
-			if(localRotation != default(Quaternion))
-			{
-				brushObject.transform.localRotation = localRotation;
-			}
-			CompoundBrush compoundBrush = (CompoundBrush)brushObject.AddComponent(compoundBrushType);
-			compoundBrush.Mode = csgMode;
-			compoundBrush.Invalidate(true);
-//			if(localSize != default(Vector3) 
-//				&& localSize != new Vector3(2,2,2))
-//			{
-//				BrushUtility.Resize(compoundBrush, localSize);
-//			}
 
 			if(material != null)
 			{
-//				SurfaceUtility.SetAllPolygonsMaterials(compoundBrush, material);
+				SurfaceUtility.SetAllPolygonsMaterials(primitiveBrush, material);
 			}
 
 			return brushObject;

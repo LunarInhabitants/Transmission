@@ -37,12 +37,16 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
+
+
 		public void ResetForNext ()
 		{
-            positions.Clear();
-            uvs.Clear();
-            normals.Clear();
-        }
+			
+
+//			positions.Clear();
+//			uvs.Clear();
+//			normals.Clear();
+		}
 		
 		/// <summary>
 		/// This will find if the vertex is already contained and return its index, otherwise it adds it as new

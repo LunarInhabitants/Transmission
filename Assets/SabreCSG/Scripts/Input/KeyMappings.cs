@@ -34,11 +34,9 @@ namespace Sabresaurus.SabreCSG
 		public string ToggleMode = "Space";
 		public string ToggleModeBack = "#Space";
 
-		public string ActivateDrawMode = "#d";
-		public string ActivateClipMode = "#c";
-        public string ActivateResizeMode = "#r";
-        public string ActivateFaceMode = "#f";
-        public string ActivateVertexMode = "#v";
+		public string ActivateDrawMode = "d";
+
+		public string ActivateClipMode = "c";
 
 		[Header("Main Toolbar")]
 		public string TogglePosSnapping = "/";

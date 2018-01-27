@@ -11,7 +11,7 @@ namespace Sabresaurus.SabreCSG
     public class SurfaceEditor : Tool
     {
 		bool selectHelpersVisible = false;
-		enum Mode { None, Translate, Rotate, QuickSelect };
+		enum Mode { None, Translate, Rotate };
 		enum AlignDirection { Top, Bottom, Left, Right, Center };
 
 		Mode currentMode = Mode.None;
@@ -27,8 +27,6 @@ namespace Sabresaurus.SabreCSG
 
 		// Used so that the MouseUp event knows that it was the end of a drag not the end of a click
 		bool dragging = false;
-
-		bool limitToSameMaterial = false;
 
 		Vector3 lastWorldPoint;
 		Vector3 currentWorldPoint;
@@ -57,12 +55,7 @@ namespace Sabresaurus.SabreCSG
 		// Main UI rectangle for this tool's UI
 		readonly Rect toolbarRect = new Rect(6, 40, 200, 226);
 
-        // Used to track what polygons have been previously clicked on, so that the user can cycle click through objects
-        // on the same (or similar) ray cast
-        List<Polygon> previousHits = new List<Polygon>();
-        List<Polygon> lastHitSet = new List<Polygon>();
-
-        Rect alignButtonRect = new Rect(118,110,80,45);
+		Rect alignButtonRect = new Rect(118,110,80,45);
 
 		Material lastMaterial = null;
 		Color lastColor = Color.white;
@@ -71,21 +64,14 @@ namespace Sabresaurus.SabreCSG
 
 		VertexColorWindow vertexColorWindow = null;
 
-        // Whether we are actively searching for hidden faces.
-        bool findingHiddenFaces = false;
-
-        // Whether quick select is selecting or deselecting polygons.
-        enum QuickSelectModes { Additive, Subtractive};
-        QuickSelectModes QuickSelectMode = QuickSelectModes.Additive;
-
-        Rect ToolbarRect
+		Rect ToolbarRect
 		{
 			get
 			{
 				Rect rect = new Rect(toolbarRect);
 				if(selectHelpersVisible)
 				{
-					rect.height += 136;
+					rect.height += 100;
 				}
 				return rect;
 			}
@@ -115,22 +101,18 @@ namespace Sabresaurus.SabreCSG
 				OnMouseDrag(sceneView, e);
 			}
 			else if(e.type == EventType.MouseDown 
-				&& !EditorHelper.IsMousePositionInInvalidRects(e.mousePosition))
+				&& !EditorHelper.IsMousePositionNearSceneGizmo(e.mousePosition))
 			{
 				OnMouseDown(sceneView, e);
 			}
 			else if(e.type == EventType.MouseUp
-				&& !EditorHelper.IsMousePositionInInvalidRects(e.mousePosition))
+				&& !EditorHelper.IsMousePositionNearSceneGizmo(e.mousePosition))
 			{
 				OnMouseUp(sceneView, e);
 			}
 			else if(e.type == EventType.DragPerform)
 			{
 				OnDragPerform(sceneView, e);
-			}
-			else if(e.type == EventType.DragUpdated)
-			{
-				e.Use();
 			}
         }
 		
@@ -172,153 +154,102 @@ namespace Sabresaurus.SabreCSG
 					}
 				}
 			}
-			else // Set currentPolygon for drag operations
+			else
 			{
 				Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+				Polygon builtPolygon = csgModel.RaycastBuiltPolygons(ray);
 
-                // Get all the polygons the ray hits
-                List<Polygon> raycastHits = csgModel.RaycastBuiltPolygonsAll(ray).Select(hit => csgModel.GetSourcePolygon(hit.Polygon.UniqueIndex)).Where(item => item != null).ToList();
-                Polygon sourcePolygon = null;
+				if(builtPolygon != null)
+				{
+					Polygon sourcePolygon = csgModel.GetSourcePolygon(builtPolygon.UniqueIndex);
 
-                // User is trying to multiselect, let's not make life difficult for them by only accepting the nearest polygon
-                if (SabreInput.IsModifier(e, EventModifiers.Shift))
-                {
-                    // Use the first polygon that was hit
-                    if (raycastHits.Count > 0)
-                    {
-                        sourcePolygon = raycastHits[0];
-                    }
-                }
-                else
-                {
-                    // Walk through the hits from front to back and find if any of them are in the selection set
-                    for (int i = 0; i < raycastHits.Count; i++)
-                    {
-                        if (selectedSourcePolygons.Contains(raycastHits[i]))
-                        {
-                            sourcePolygon = raycastHits[i];
-                            break;
-                        }
-                    }
+					// Polygon may be null if the source brush has been deleted
+					if(sourcePolygon != null)
+					{
+						if(!selectedSourcePolygons.Contains(sourcePolygon))
+						{
+							if(!e.shift && !e.control)
+							{
+								currentPolygon = null;
+								ResetSelection();
+							}
+							
+							if(builtPolygon != null)
+							{
+								if(!selectedSourcePolygons.Contains(sourcePolygon))
+								{
+									selectedSourcePolygons.Add(sourcePolygon);
+	//								Debug.Log(sourcePolygon.UniqueIndex);
+									lastSelectedPolygon = sourcePolygon;
+									matchedBrushes.Add(sourcePolygon, csgModel.FindBrushFromPolygon(sourcePolygon));
+								}
+							}
+						}
+						
+						totalDelta = Vector2.zero;
+						appliedDelta = Vector2.zero;
+						
+						currentPolygon = sourcePolygon;
 
-                    // None of the hit polygons are in the selection set, so just use the first hit polygon if it's available
-                    if (sourcePolygon == null && raycastHits.Count >= 1)
-                    {
-                        sourcePolygon = raycastHits[0];
-                    }
-                }
+						Transform brushTransform = matchedBrushes[currentPolygon].transform;
 
-                // If a polygon has been hit
-                if (sourcePolygon != null)
-                {
-                    // Reset drag values
-                    totalDelta = Vector2.zero;
-                    appliedDelta = Vector2.zero;
+						Vector3[] transformedPositions = new Vector3[currentPolygon.Vertices.Length];
 
-                    // Set the current polygon from the hit polygon, if used in a drag operation the drag code will add it to selection if it's not already in there
-                    currentPolygon = sourcePolygon;
+						for (int j = 0; j < currentPolygon.Vertices.Length; j++)
+						{
+							transformedPositions[j] = brushTransform.TransformPoint(currentPolygon.Vertices[j].Position);
+						}
 
-                    Brush matchedBrush = csgModel.FindBrushFromPolygon(currentPolygon);
-                    Transform brushTransform = matchedBrush.transform;
+						// Calculate the diameter of the the bounding circle for the transformed polygon (polygon aligned)
+						for (int j = 1; j < transformedPositions.Length; j++)
+						{
+							float distance = Vector3.Distance(transformedPositions[1], transformedPositions[0]);
+							if(distance > rotationDiameter)
+							{
+								rotationDiameter = distance;
+							}
+						}
 
-                    Vector3[] transformedPositions = new Vector3[currentPolygon.Vertices.Length];
+						dragging = false;
 
-                    for (int j = 0; j < currentPolygon.Vertices.Length; j++)
-                    {
-                        transformedPositions[j] = brushTransform.TransformPoint(currentPolygon.Vertices[j].Position);
-                    }
+						Vertex vertex1;
+						Vertex vertex2;
+						Vertex vertex3;
+						// Get the three non-colinear vertices which will give us a valid plane
+						SurfaceUtility.GetPrimaryPolygonDescribers(currentPolygon, out vertex1, out vertex2, out vertex3);
+						Plane plane = new Plane(brushTransform.TransformPoint(vertex1.Position), 
+							brushTransform.TransformPoint(vertex2.Position), 
+							brushTransform.TransformPoint(vertex3.Position));
+						
+						float rayDistance;
+						
+						if(plane.Raycast(ray, out rayDistance))
+						{
+							Vector3 worldPoint = ray.GetPoint(rayDistance);
+							
+							lastWorldPoint = worldPoint;
+						}
 
-                    // Calculate the diameter of the the bounding circle for the transformed polygon (polygon aligned), used for rotation mode
-                    for (int j = 1; j < transformedPositions.Length; j++)
-                    {
-                        float distance = Vector3.Distance(transformedPositions[1], transformedPositions[0]);
-                        if (distance > rotationDiameter)
-                        {
-                            rotationDiameter = distance;
-                        }
-                    }
+						// Set the appropiate mode based on whether the user wants to rotate or translate
+						if(e.control && !e.shift)
+						{
+							currentMode = Mode.Rotate;
+						}
+						else if(!e.control && !e.shift)
+						{
+							currentMode = Mode.Translate;
+						}
+						else
+						{
+							currentMode = Mode.None;
+						}
 
-                    dragging = false;
-
-                    Vertex vertex1;
-                    Vertex vertex2;
-                    Vertex vertex3;
-                    // Get the three non-colinear vertices which will give us a valid plane
-                    SurfaceUtility.GetPrimaryPolygonDescribers(currentPolygon, out vertex1, out vertex2, out vertex3);
-                    Plane plane = new Plane(brushTransform.TransformPoint(vertex1.Position),
-                        brushTransform.TransformPoint(vertex2.Position),
-                        brushTransform.TransformPoint(vertex3.Position));
-
-                    float rayDistance;
-
-                    if (plane.Raycast(ray, out rayDistance))
-                    {
-                        Vector3 worldPoint = ray.GetPoint(rayDistance);
-
-                        lastWorldPoint = worldPoint;
-                    }
-
-                    // Set the appropiate mode based on whether the user wants to rotate or translate
-                    if (e.control && !e.shift)
-                    {
-                        currentMode = Mode.Rotate;
-                    }
-                    else if (!e.control && !e.shift)
-                    {
-                        currentMode = Mode.Translate;
-                    }
-                    else if (!e.control && e.shift)
-                    {
-                        QuickSelectMode = QuickSelectModes.Additive;
-                        // Detect whether quick mode will select or deselect polygons
-                        if (sourcePolygon != null)
-                        {
-                            bool match1 = matchedBrushes.ContainsKey(sourcePolygon);
-                            bool match2 = selectedSourcePolygons.Contains(sourcePolygon);
-
-                            if (match1 || match2)
-                            {
-                                // Subtractive, immediately deselect the polygon in case the user doesn't drag.
-                                QuickSelectMode = QuickSelectModes.Subtractive;
-                                if (match1)
-                                {
-                                    matchedBrushes.Remove(sourcePolygon);
-                                }
-
-                                if (match2)
-                                {
-                                    selectedSourcePolygons.Remove(sourcePolygon);
-                                }
-                            }
-                            else
-                            {
-                                // Additive, immediately select the polygon in case the user doesn't drag.
-                                QuickSelectMode = QuickSelectModes.Additive;
-                                if (!match1)
-                                {
-                                    matchedBrushes.Add(sourcePolygon, csgModel.FindBrushFromPolygon(sourcePolygon));
-                                }
-
-                                if (!match2)
-                                {
-                                    selectedSourcePolygons.Add(sourcePolygon);
-                                }
-                            }
-                        }
-
-                        currentMode = Mode.QuickSelect;
-                    }
-                    else
-                    {
-                        currentMode = Mode.None;
-                    }
-
-                    // Reset undo recorded state, so that we record an undo state at first valid opportunity
-                    undoRecorded = false;
-
-                    e.Use();
-                }
-            }
+						undoRecorded = false;
+						
+						e.Use();
+					}
+				}
+			}
 		}
 
 		void OnMouseDrag(SceneView sceneView, Event e)
@@ -366,34 +297,11 @@ namespace Sabresaurus.SabreCSG
 					}
 				}
 			}
-            else if(currentMode == Mode.QuickSelect)
-            {
-                OnMouseDragQuickSelect(sceneView, e);
-            }
 		}
-
-        void EnsureCurrentPolygonSelected()
-        {
-            Event e = Event.current;
-
-            if (currentPolygon != null && !selectedSourcePolygons.Contains(currentPolygon))
-            {
-                if(!e.shift && !e.control)
-                {
-                    ResetSelection();
-                }
-
-                selectedSourcePolygons.Add(currentPolygon);
-                matchedBrushes.Add(currentPolygon, csgModel.FindBrushFromPolygon(currentPolygon));
-                lastSelectedPolygon = currentPolygon;
-            }
-        }
 
 		void OnMouseDragTranslate (SceneView sceneView, Event e)
 		{
-            EnsureCurrentPolygonSelected();
-
-            if (currentPolygon != null && matchedBrushes.ContainsKey(currentPolygon))
+			if(currentPolygon != null && matchedBrushes.ContainsKey(currentPolygon))
 			{
 				Transform brushTransform = matchedBrushes[currentPolygon].transform;
 
@@ -446,7 +354,7 @@ namespace Sabresaurus.SabreCSG
 					}
 
 					bool recordUndo = false;
-					if(!undoRecorded && uvDelta != Vector2.zero)
+					if(!undoRecorded)
 					{
 						recordUndo = true;
 						undoRecorded = true;
@@ -464,9 +372,7 @@ namespace Sabresaurus.SabreCSG
 
 		void OnMouseDragRotate(SceneView sceneView, Event e)
 		{
-            EnsureCurrentPolygonSelected();
-
-            if (currentPolygon != null && matchedBrushes.ContainsKey(currentPolygon))
+			if(currentPolygon != null && matchedBrushes.ContainsKey(currentPolygon))
 			{
 				Transform brushTransform = matchedBrushes[currentPolygon].transform;
 
@@ -555,57 +461,12 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-        void OnMouseDragQuickSelect(SceneView sceneView, Event e)
-        {
-            if (!EditorHelper.IsMousePositionInIMGUIRect(e.mousePosition, ToolbarRect))
-            {
-                Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-                Polygon polygon = csgModel.RaycastBuiltPolygons(ray);
-
-                if (polygon != null)
-                {
-                    Polygon sourcePolygon = csgModel.GetSourcePolygon(polygon.UniqueIndex);
-
-                    if (sourcePolygon != null)
-                    {
-                        if (QuickSelectMode == QuickSelectModes.Additive)
-                        {
-                            if (!matchedBrushes.ContainsKey(sourcePolygon))
-                            {
-                                matchedBrushes.Add(sourcePolygon, csgModel.FindBrushFromPolygon(sourcePolygon));
-                            }
-
-                            if (!selectedSourcePolygons.Contains(sourcePolygon))
-                            {
-                                selectedSourcePolygons.Add(sourcePolygon);
-                            }
-                        }
-                        else if (QuickSelectMode == QuickSelectModes.Subtractive)
-                        {
-                            if (matchedBrushes.ContainsKey(sourcePolygon))
-                            {
-                                matchedBrushes.Remove(sourcePolygon);
-                            }
-
-                            if (selectedSourcePolygons.Contains(sourcePolygon))
-                            {
-                                selectedSourcePolygons.Remove(sourcePolygon);
-                            }
-                        }
-                    }
-                }
-            }
-
-            e.Use();
-        }
-
-        void OnMouseUp (SceneView sceneView, Event e)
+		void OnMouseUp (SceneView sceneView, Event e)
 		{
-            // Normal selection mode
-            if (e.button == 0 && !CameraPanInProgress 
+			if(e.button == 0 && !CameraPanInProgress 
 				&& (!SabreInput.AnyModifiersSet(e) || SabreInput.IsModifier(e, EventModifiers.Control) || SabreInput.IsModifier(e, EventModifiers.Shift))
 				&& !copyMaterialHeld)
-			{ 
+			{
 				currentMode = Mode.None;
 				undoRecorded = false;
 				pointSet = false;
@@ -614,107 +475,42 @@ namespace Sabresaurus.SabreCSG
 				if(!dragging && !EditorHelper.IsMousePositionInIMGUIRect(e.mousePosition, ToolbarRect))
 				{
 					Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+					Polygon polygon = csgModel.RaycastBuiltPolygons(ray);
 
-                    // Get all the polygons that the ray hits, sorted from front to back
-                    List<Polygon> raycastHits = csgModel.RaycastBuiltPolygonsAll(ray).Select(hit => csgModel.GetSourcePolygon(hit.Polygon.UniqueIndex)).Where(item => item != null).ToList();
-
-                    // If no modifiers are held, reset selection
-                    if (!e.shift && !e.control)
+					if(!e.shift && !e.control)// && selectedSourcePolygons.Count > 0)
 					{
 						currentPolygon = null;
 						ResetSelection();
 						e.Use();
 					}
 
-                    // Find the hit polygon
-                    Polygon selectedPolygon = null;
+					if(polygon != null)
+					{
+						Polygon sourcePolygon = csgModel.GetSourcePolygon(polygon.UniqueIndex);
 
-                    if (raycastHits.Count == 0) // Didn't hit anything, blank the selection
-                    {
-                        previousHits.Clear();
-                        lastHitSet.Clear();
-                    }
-                    else if (raycastHits.Count == 1 // Only hit one thing, no ambiguity, this is what is selected
-                        || e.shift || e.control) // User is trying to multiselect, let's not make life difficult for them by only accepting the nearest polygon
-                    {
-                        selectedPolygon = raycastHits[0];
-                        previousHits.Clear();
-                        lastHitSet.Clear();
-                    }
-                    else
-                    {
-                        if (!raycastHits.ContentsEquals(lastHitSet)) // If the hit polygons have changed, cycle click is not valid, default to first hit
-                        {
-                            selectedPolygon = raycastHits[0];
-                            previousHits.Clear();
-                            lastHitSet = raycastHits;
-                        }
-                        else
-                        {
-                            // First try and select anything other than what has been previously hit
-                            for (int i = 0; i < raycastHits.Count; i++)
-                            {
-                                if (!previousHits.Contains(raycastHits[i]))
-                                {
-                                    selectedPolygon = raycastHits[i];
-                                    break;
-                                }
-                            }
+						if(sourcePolygon != null)
+						{
+							if(!selectedSourcePolygons.Contains(sourcePolygon))
+							{
+								// Not already in the list so add it
+								selectedSourcePolygons.Add(sourcePolygon);
+								lastSelectedPolygon = sourcePolygon;
+								matchedBrushes.Add(sourcePolygon, csgModel.FindBrushFromPolygon(sourcePolygon));
+							}
+							else
+							{
+								// Already in the list
+								if(e.control)
+								{
+									// If ctrl is held and it's already selected, then deselect it
+									selectedSourcePolygons.Remove(sourcePolygon);
+									matchedBrushes.Remove(sourcePolygon);
+								}
+							}
 
-                            // Only found previously hit objects
-                            if (selectedPolygon == null)
-                            {
-                                // Walk backwards to find the oldest previous hit that has been hit by this ray
-                                for (int i = previousHits.Count - 1; i >= 0 && selectedPolygon == null; i--)
-                                {
-                                    for (int j = 0; j < raycastHits.Count; j++)
-                                    {
-                                        if (raycastHits[j] == previousHits[i])
-                                        {
-                                            selectedPolygon = previousHits[i];
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    
-                    if (selectedPolygon != null)
-                    {
-                        // If a valid polygon has been selected, make sure it's the most recent in the history
-                        previousHits.Remove(selectedPolygon);
-                        // Most recent hit
-                        previousHits.Insert(0, selectedPolygon);
-                  
-                        // If holding control, the action counts as selection toggle (if already selected it's removed)
-                        if (EnumHelper.IsFlagSet(e.modifiers, EventModifiers.Control))
-                        {
-                            if (selectedSourcePolygons.Contains(selectedPolygon))
-                            {
-                                selectedSourcePolygons.Remove(selectedPolygon);
-                                matchedBrushes.Remove(selectedPolygon);
-                            }
-                            else
-                            {
-                                selectedSourcePolygons.Add(selectedPolygon);
-                                lastSelectedPolygon = selectedPolygon;
-                                matchedBrushes.Add(selectedPolygon, csgModel.FindBrushFromPolygon(selectedPolygon));
-                            }
-                        }
-                        // If holding shift, quick select is used and we don't change anything
-                        else if (EnumHelper.IsFlagSet(e.modifiers, EventModifiers.Shift))
-                        {
-
-                        }
-                        else // No modifier pressed, add the polygon to selection
-                        {
-                            selectedSourcePolygons.Add(selectedPolygon);
-                            lastSelectedPolygon = selectedPolygon;
-                            matchedBrushes.Add(selectedPolygon, csgModel.FindBrushFromPolygon(selectedPolygon));
-                        }
-                    }
+							e.Use();
+						}
+					}
 
 					// No faces selected, so make sure no objects are selected too
 					if(selectedSourcePolygons.Count == 0)
@@ -725,7 +521,7 @@ namespace Sabresaurus.SabreCSG
 
 				dragging = false;
 			}
-			else if(e.button == 0 && SabreInput.IsModifier(e, EventModifiers.Shift | EventModifiers.Control)) // Follow last face
+			else if(e.button == 0 && SabreInput.IsModifier(e, EventModifiers.Shift | EventModifiers.Control))
 			{
 				if(!EditorHelper.IsMousePositionInIMGUIRect(e.mousePosition, ToolbarRect))
 				{
@@ -870,7 +666,7 @@ namespace Sabresaurus.SabreCSG
 						// Update the actual built mesh 
 						PolygonEntry entry = csgModel.GetVisualPolygonEntry(sourceTargetPolygon.UniqueIndex);
 
-						if(PolygonEntry.IsValidAndBuilt(entry))
+						if(PolygonEntry.IsValid(entry))
 						{
 							Vector3[] vertices = entry.BuiltMesh.vertices;
 							Vector2[] meshUVs = entry.BuiltMesh.uv;
@@ -958,13 +754,13 @@ namespace Sabresaurus.SabreCSG
 				if(polygon != null)
 				{
 					allPolygons = csgModel.BuiltPolygonsByIndex(polygon.UniqueIndex);
-					SabreGraphics.DrawPolygons(new Color(0,1,0,0.15f), new Color(0,1,0,0.5f), allPolygons);
-                }
+					SabreGraphics.DrawPolygons(new Color(0,1,0,0.15f), new Color(0,1,0,0.5f), allPolygons);	
+				}
 			}
 
 
 			SabreCSGResources.GetSelectedBrushDashedMaterial().SetPass(0);
-			// Draw each of the selected polygons
+			// Draw each of the selcted polygons
 			for (int i = 0; i < selectedSourcePolygons.Count; i++) 
 			{
 				if(selectedSourcePolygons[i] != null)
@@ -1027,56 +823,13 @@ namespace Sabresaurus.SabreCSG
 				GL.End();
 				GL.PopMatrix();
 			}
-
-            // Deselect surfaces that are not hidden during "find hidden surfaces"
-            if (findingHiddenFaces)
-            {
-                List<Polygon> toDeselect = new List<Polygon>();
-                for (int polygonIndex = 0; polygonIndex < selectedSourcePolygons.Count; polygonIndex++)
-                {
-                    Polygon polygon = selectedSourcePolygons[polygonIndex];
-                    Brush brush = csgModel.FindBrushFromPolygon(polygon);
-
-                    if (brush.Mode == CSGMode.Add)
-                    {
-                        // is the camera on the positive side of the plane?
-                        if (Vector3.Dot(brush.transform.TransformDirection(polygon.Plane.normal), Camera.current.transform.position - brush.transform.TransformPoint(polygon.GetCenterPoint())) > 0)
-                        {
-                            // deselect polygon.
-                            toDeselect.Add(polygon);
-                        }
-                    }
-                    else
-                    {
-                        // is the camera on the positive side of the plane?
-                        if (Vector3.Dot(brush.transform.TransformDirection(polygon.Plane.normal), Camera.current.transform.position - brush.transform.TransformPoint(polygon.GetCenterPoint())) < 0)
-                        {
-                            // deselect polygon.
-                            toDeselect.Add(polygon);
-                        }
-                    }
-                }
-
-                foreach (Polygon polygon in toDeselect)
-                {
-                    selectedSourcePolygons.Remove(polygon);
-                }
-
-                // Recalculate the matched brushes
-                matchedBrushes.Clear();
-
-                for (int i = 0; i < selectedSourcePolygons.Count; i++)
-                {
-                    matchedBrushes.Add(selectedSourcePolygons[i], csgModel.FindBrushFromPolygon(selectedSourcePolygons[i]));
-                }
-            }
 		}
 
 		void OnDragPerform (SceneView sceneView, Event e)
 		{
 			if(DragAndDrop.objectReferences.Length == 1 && DragAndDrop.objectReferences[0] is Material)
 			{
-//				if(selectedSourcePolygons.Count > 0)
+				if(selectedSourcePolygons.Count > 0)
 				{
 					Material material = (Material)DragAndDrop.objectReferences[0];
 
@@ -1175,7 +928,7 @@ namespace Sabresaurus.SabreCSG
 
 			// Update the actual built mesh
 			PolygonEntry entry = csgModel.GetVisualPolygonEntry(polygon.UniqueIndex);
-			if(PolygonEntry.IsValidAndBuilt(entry))
+			if(PolygonEntry.IsValid(entry))
 			{
 				if(recordUndo)
 				{
@@ -1234,7 +987,7 @@ namespace Sabresaurus.SabreCSG
 			for (int i = 0; i < visualPolygons.Count; i++) 
 			{
 				PolygonEntry entry = csgModel.GetVisualPolygonEntry(visualPolygons[i].UniqueIndex);
-				if(PolygonEntry.IsValidAndBuilt(entry))
+				if(PolygonEntry.IsValid(entry))
 				{
 					Vector2[] meshUVs = entry.BuiltMesh.uv;
 					Vector2[] uvs = entry.UV;
@@ -1308,18 +1061,7 @@ namespace Sabresaurus.SabreCSG
 							// Ignore normal maps
 							string assetPath = AssetDatabase.GetAssetPath(newTexture);
 							TextureImporter importer = TextureImporter.GetAtPath(assetPath) as TextureImporter;
-
-#if UNITY_5_5_OR_NEWER
-                            // Unity 5.5 refactored the TextureImporter, requiring slightly different logic
-                            TextureImporterSettings importerSettings = new TextureImporterSettings();
-                            importer.ReadTextureSettings(importerSettings);
-                            bool isNormalMap = importerSettings.textureType == TextureImporterType.NormalMap;
-#else
-                            // Pre Unity 5.5 way of checking if a texture is a normal map
-                            bool isNormalMap = importer.normalmap;
-#endif
-
-							if(!isNormalMap)
+							if(!importer.normalmap)
 							{
 								secondaryTexture = newTexture;
 								break;
@@ -1850,27 +1592,7 @@ namespace Sabresaurus.SabreCSG
 
 				GUILayout.EndHorizontal();
 
-				GUILayout.BeginHorizontal(GUILayout.Width(180));
-
-                if (!findingHiddenFaces)
-                {
-                    if (GUILayout.Button("Start Finding Hidden Faces", EditorStyles.miniButton))
-                    {
-                        findingHiddenFaces = true;
-                        SelectAll();
-                    }
-                }
-                else
-                {
-                    if (GUILayout.Button("Stop Finding Hidden Faces", EditorStyles.miniButton))
-                    {
-                        findingHiddenFaces = false;
-                    }
-                }
-
-                GUILayout.EndHorizontal();
-
-                GUILayout.Label("Adjacent", SabreGUILayout.GetTitleStyle());
+				GUILayout.Label("Adjacent", SabreGUILayout.GetTitleStyle());
 
 				GUILayout.BeginHorizontal(GUILayout.Width(180));
 
@@ -1889,25 +1611,12 @@ namespace Sabresaurus.SabreCSG
 					SelectAdjacentCeilings();
 				}
 
-                if (GUILayout.Button("Coplanar", EditorStyles.miniButtonRight))
-                {
-                    SelectAdjacentCoplanar();
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-
-                if (GUILayout.Button("All", EditorStyles.miniButton))
+				if(GUILayout.Button("All", EditorStyles.miniButtonRight))
 				{
 					SelectAdjacentAll();
 				}
 
-                GUIStyle style = EditorStyles.toggle;
-                limitToSameMaterial = GUILayout.Toggle(limitToSameMaterial, "Limit to same material", style);
-
-                GUILayout.EndHorizontal();
-
-				
+				GUILayout.EndHorizontal();
 
 				string label = selectedSourcePolygons.Count.ToStringWithSuffix(" selected face", " selected faces");
 				GUILayout.Label(label, SabreGUILayout.GetForeStyle());
@@ -1916,8 +1625,8 @@ namespace Sabresaurus.SabreCSG
 
 		public override void ResetTool()
 		{
-            findingHiddenFaces = false;
-        }
+			
+		}
 
 		public override void OnSelectionChanged ()
 		{
@@ -2050,75 +1759,28 @@ namespace Sabresaurus.SabreCSG
 
 		void SelectAdjacentWalls()
 		{
-            AdjacencyFilters.MatchMaterial filter = null;
-            if (limitToSameMaterial)
-            {
-                // Distinct set of materials used by selected polygons
-                Material[] sourceMaterials = selectedSourcePolygons.Select(polygon => polygon.Material).Distinct().ToArray();
-                filter = new AdjacencyFilters.MatchMaterial(sourceMaterials);
-            }
-
-            List<int> polygonIDs = AdjacencyHelper.FindAdjacentWalls(csgModel.VisualPolygons, selectedSourcePolygons, filter);
+			List<int> polygonIDs = AdjacencyHelper.FindAdjacentWalls(csgModel.VisualPolygons, selectedSourcePolygons);
 
 			SetSelectionFromPolygonIDs(polygonIDs);
 		}
 
 		void SelectAdjacentFloors()
 		{
-            AdjacencyFilters.MatchMaterial filter = null;
-            if (limitToSameMaterial)
-            {
-                // Distinct set of materials used by selected polygons
-                Material[] sourceMaterials = selectedSourcePolygons.Select(polygon => polygon.Material).Distinct().ToArray();
-                filter = new AdjacencyFilters.MatchMaterial(sourceMaterials);
-            }
-
-            List<int> polygonIDs = AdjacencyHelper.FindAdjacentFloors(csgModel.VisualPolygons, selectedSourcePolygons, filter);
+			List<int> polygonIDs = AdjacencyHelper.FindAdjacentFloors(csgModel.VisualPolygons, selectedSourcePolygons);
 
 			SetSelectionFromPolygonIDs(polygonIDs);
 		}
 
 		void SelectAdjacentCeilings()
 		{
-            AdjacencyFilters.MatchMaterial filter = null;
-            if (limitToSameMaterial)
-            {
-                // Distinct set of materials used by selected polygons
-                Material[] sourceMaterials = selectedSourcePolygons.Select(polygon => polygon.Material).Distinct().ToArray();
-                filter = new AdjacencyFilters.MatchMaterial(sourceMaterials);
-            }
-
-            List<int> polygonIDs = AdjacencyHelper.FindAdjacentCeilings(csgModel.VisualPolygons, selectedSourcePolygons, filter);
+			List<int> polygonIDs = AdjacencyHelper.FindAdjacentCeilings(csgModel.VisualPolygons, selectedSourcePolygons);
 
 			SetSelectionFromPolygonIDs(polygonIDs);
 		}
 
-        void SelectAdjacentCoplanar()
-        {
-            AdjacencyFilters.MatchMaterial filter = null;
-            if (limitToSameMaterial)
-            {
-                // Distinct set of materials used by selected polygons
-                Material[] sourceMaterials = selectedSourcePolygons.Select(polygon => polygon.Material).Distinct().ToArray();
-                filter = new AdjacencyFilters.MatchMaterial(sourceMaterials);
-            }
-
-            List<int> polygonIDs = AdjacencyHelper.FindAdjacentCoplanar(csgModel.VisualPolygons, selectedSourcePolygons, filter);
-
-            SetSelectionFromPolygonIDs(polygonIDs);
-        }
-
-        void SelectAdjacentAll()
+		void SelectAdjacentAll()
 		{
-            AdjacencyFilters.MatchMaterial filter = null;
-            if (limitToSameMaterial)
-            {
-                // Distinct set of materials used by selected polygons
-                Material[] sourceMaterials = selectedSourcePolygons.Select(polygon => polygon.Material).Distinct().ToArray();
-                filter = new AdjacencyFilters.MatchMaterial(sourceMaterials);
-            }
-
-            List<int> polygonIDs = AdjacencyHelper.FindAdjacentAll(csgModel.VisualPolygons, selectedSourcePolygons, filter);
+			List<int> polygonIDs = AdjacencyHelper.FindAdjacentAll(csgModel.VisualPolygons, selectedSourcePolygons);
 
 			SetSelectionFromPolygonIDs(polygonIDs);
 		}
@@ -2168,7 +1830,7 @@ namespace Sabresaurus.SabreCSG
 
 
 				PolygonEntry entry = csgModel.GetVisualPolygonEntry(polygon.UniqueIndex);
-				if(PolygonEntry.IsValidAndBuilt(entry))
+				if(PolygonEntry.IsValid(entry))
 				{
 					Brush brush = matchedBrushes[polygon];
 					Undo.RecordObject(brush, "Auto Fit");
@@ -2353,7 +2015,7 @@ namespace Sabresaurus.SabreCSG
 				// Update the actual built mesh 
 
 				PolygonEntry entry = csgModel.GetVisualPolygonEntry(polygon.UniqueIndex);
-				if(PolygonEntry.IsValidAndBuilt(entry))
+				if(PolygonEntry.IsValid(entry))
 				{
 					Undo.RecordObject(entry.BuiltMesh, "Auto UV");
 					Vector3[] vertices = entry.BuiltMesh.vertices;
@@ -2443,7 +2105,7 @@ namespace Sabresaurus.SabreCSG
 				// Update the actual built mesh 
 
 				PolygonEntry entry = csgModel.GetVisualPolygonEntry(polygon.UniqueIndex);
-				if(PolygonEntry.IsValidAndBuilt(entry))
+				if(PolygonEntry.IsValid(entry))
 				{
 					Undo.RecordObject(entry.BuiltMesh, "Planar Map");
 					Vector3[] vertices = entry.BuiltMesh.vertices;
@@ -2677,7 +2339,7 @@ namespace Sabresaurus.SabreCSG
 
 		public void RemoveAndUpdateMesh(PolygonEntry entry, Polygon sourcePolygon)
 		{
-			if(!PolygonEntry.IsValidAndBuilt(entry))
+			if(!PolygonEntry.IsValid(entry))
 			{
 				// This polygon hasn't actually been built
 				return;
@@ -2685,26 +2347,10 @@ namespace Sabresaurus.SabreCSG
 
 			int[] triangles  = entry.BuiltMesh.triangles;
 
-            // Turn the triangles into degenerates
 			for (int i = 0; i < entry.Triangles.Length; i++) 
 			{
 				triangles[entry.BuiltTriangleOffset + i] = 0;
 			}
-
-            bool areAllDegenerate = true;
-            for (int i = 0; i < triangles.Length; i++)
-            {
-                if(triangles[i] != 0)
-                {
-                    areAllDegenerate = false;
-                }
-            }
-
-            // PhysX will throw an error if we make all the polygons degenerate, so in that case simply change the triangles array to empty
-            if(areAllDegenerate)
-            {
-                triangles = new int[0];
-            }
 
 			entry.BuiltMesh.triangles = triangles;
 		}
@@ -2725,7 +2371,7 @@ namespace Sabresaurus.SabreCSG
 			// Repoint the polygon's material, so it will change with rebuilds
 			polygon.Material = destinationMaterial;
 			
-			if(!PolygonEntry.IsValidAndBuilt(entry))
+			if(!PolygonEntry.IsValid(entry))
 			{
 				// This polygon hasn't actually been built
 				return;
@@ -2888,14 +2534,6 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-		public void SetSelectionMaterial(Material material)
-		{
-			for (int i = 0; i < selectedSourcePolygons.Count; i++) 
-			{
-				Polygon polygon = selectedSourcePolygons[i];
-				ChangePolygonMaterial(polygon, material);
-			}
-		}
     }
 }
 #endif

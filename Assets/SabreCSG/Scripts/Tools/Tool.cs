@@ -2,7 +2,6 @@
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Sabresaurus.SabreCSG
 {
@@ -11,11 +10,9 @@ namespace Sabresaurus.SabreCSG
         protected CSGModel csgModel;
 
         // Used so we can reset some of the tool if the selected brush changes
-		protected BrushBase primaryTargetBrushBase;
         protected PrimitiveBrush primaryTargetBrush;
 		protected Transform primaryTargetBrushTransform;
 
-		protected BrushBase[] targetBrushBases;
 		protected PrimitiveBrush[] targetBrushes;
 		protected Transform[] targetBrushTransforms;
 
@@ -30,81 +27,52 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
-		public void SetSelection(GameObject selectedGameObject, GameObject[] selectedGameObjects)
-		{
-			// Find the selected brush bases
-			List<BrushBase> brushBases = new List<BrushBase>();
-
-			for (int i = 0; i < Selection.gameObjects.Length; i++) 
-			{
-				BrushBase matchedBrushBase = Selection.gameObjects[i].GetComponent<BrushBase>();
-
-				// If we've selected a brush base that isn't a prefab in the project 
-				if(matchedBrushBase != null
-					&& !(PrefabUtility.GetPrefabParent(matchedBrushBase.gameObject) == null 
-						&& PrefabUtility.GetPrefabObject(matchedBrushBase.transform) != null))
-				{
-					brushBases.Add(matchedBrushBase);
-				}
-			}
-
-			// Also find an array of brushes (brush bases that aren't primitive brushes will have a null entry)
-			PrimitiveBrush[] primitiveBrushes = brushBases.Select(item => item.GetComponent<PrimitiveBrush>()).ToArray();
-
-            // Pick out the first brush base and primitive brush (or null if none)
-            BrushBase newPrimaryBrushBase = null;
-            PrimitiveBrush newPrimaryBrush = null;
-
-            // Make sure it's not null and that it isn't a prefab in the project
-            if(selectedGameObject != null
-                && !(PrefabUtility.GetPrefabParent(selectedGameObject) == null
-                        && PrefabUtility.GetPrefabObject(selectedGameObject.transform) != null))
+        public PrimitiveBrush PrimaryTargetBrush
+        {
+            get
             {
-                newPrimaryBrushBase = selectedGameObject.GetComponent<BrushBase>();// brushBases.FirstOrDefault();
-                newPrimaryBrush = selectedGameObject.GetComponent<PrimitiveBrush>();// primitiveBrushes.Where(item => item != null).FirstOrDefault();
+                return primaryTargetBrush;
             }
+            set
+            {
 
-            // If the primary brush base has changed
-            if (primaryTargetBrushBase != newPrimaryBrushBase
-				|| (primaryTargetBrushBase == null && newPrimaryBrushBase != null)) // Special case for undo where references are equal but one is null
-			{
-				primaryTargetBrushBase = newPrimaryBrushBase;
+                if (primaryTargetBrush != value)
+                {
+					PrimarySelectionAboutToChange();
 
-				if(newPrimaryBrushBase != null)
-				{
-					primaryTargetBrushTransform = newPrimaryBrushBase.transform;
-				}
-				else
-				{
-					primaryTargetBrushTransform = null;
-				}
+					primaryTargetBrush = value;
 
-				ResetTool();
-			}
+					ResetTool();
 
-			BrushBase[] brushBasesArray = brushBases.ToArray();
-			primaryTargetBrush = newPrimaryBrush;
-
-			if(!targetBrushBases.ContentsEquals(brushBasesArray))
-			{
-				OnSelectionChanged();
-				targetBrushBases = brushBasesArray;
-				targetBrushes = primitiveBrushes;
-				targetBrushTransforms = new Transform[brushBasesArray.Length];
-				for (int i = 0; i < brushBasesArray.Length; i++) 
-				{
-					if(brushBasesArray[i] != null)
-					{
-						targetBrushTransforms[i] = brushBasesArray[i].transform;
-					}
+                    if (primaryTargetBrush != null)
+                    {
+                        
+						primaryTargetBrushTransform = primaryTargetBrush.transform;
+                    }
 					else
 					{
-						targetBrushTransforms[i] = null;
+						primaryTargetBrushTransform = null;
 					}
+                }
+            }
+        }
+
+		public PrimitiveBrush[] TargetBrushes
+		{
+			get
+			{
+				return targetBrushes;
+			}
+			set
+			{
+				if(!targetBrushes.ContentsEquals(value))
+				{
+					OnSelectionChanged();
+					targetBrushes = value;
+					targetBrushTransforms = targetBrushes.Select(brush => brush.transform).ToArray();
 				}
 			}
 		}
-
 
 		// Calculate the bounds for all selected brushes, respecting the current pivotRotation mode to produce 
 		// bounds aligned to the first selected brush in Local mode, or bounds aligned to the absolute grid in Global
@@ -115,24 +83,24 @@ namespace Sabresaurus.SabreCSG
 
 			if(Tools.pivotRotation == PivotRotation.Local)
 			{
-				bounds = primaryTargetBrushBase.GetBounds();
+				bounds = primaryTargetBrush.GetBounds();
 
-				for (int i = 0; i < targetBrushBases.Length; i++) 
+				for (int i = 0; i < targetBrushes.Length; i++) 
 				{
-					if(targetBrushBases[i] != primaryTargetBrushBase)
+					if(targetBrushes[i] != primaryTargetBrush)
 					{
-                        bounds.Encapsulate(targetBrushBases[i].GetBoundsLocalTo(primaryTargetBrushTransform));
-                    }
+						bounds.Encapsulate(targetBrushes[i].GetBoundsLocalTo(primaryTargetBrush.transform));
+					}
 				}
 			}
 			else // Absolute/Global
 			{
-				bounds = primaryTargetBrushBase.GetBoundsTransformed();
-				for (int i = 0; i < targetBrushBases.Length; i++) 
+				bounds = primaryTargetBrush.GetBoundsTransformed();
+				for (int i = 0; i < targetBrushes.Length; i++) 
 				{
-					if(targetBrushBases[i] != primaryTargetBrushBase)
+					if(targetBrushes[i] != primaryTargetBrush)
 					{
-						bounds.Encapsulate(targetBrushBases[i].GetBoundsTransformed());
+						bounds.Encapsulate(targetBrushes[i].GetBoundsTransformed());
 					}
 				}
 			}
@@ -233,6 +201,10 @@ namespace Sabresaurus.SabreCSG
 			}
 		}
 
+		// Called when the selected brush is about to change, to give the tool a last chance to cleanup anything it 
+		// needs to on the previous brush
+		public virtual void PrimarySelectionAboutToChange() {}
+
 		// Called when the selected objects has changed
 		public virtual void OnSelectionChanged() {}
 
@@ -257,14 +229,6 @@ namespace Sabresaurus.SabreCSG
 			get
 			{
 				return false;
-			}
-		}
-
-		public virtual bool PreventDragDrop
-		{
-			get
-			{
-				return true;
 			}
 		}
     }

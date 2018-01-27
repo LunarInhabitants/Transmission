@@ -63,15 +63,13 @@ namespace Sabresaurus.SabreCSG
 			activePolygon = null;
 			selectingHeight = false;
 			prismHeight = 0;
-            unroundedPrismHeight = 0;
         }
 
         public override void OnSceneGUI(SceneView sceneView, Event e)
         {
 			base.OnSceneGUI(sceneView, e); // Allow the base logic to calculate first
 
-			if(e.button == 0
-				&& !EditorHelper.IsMousePositionInInvalidRects(e.mousePosition)
+			if(!EditorHelper.IsMousePositionNearSceneGizmo(e.mousePosition)
 				&& !CameraPanInProgress)
 			{
 				if (e.type == EventType.MouseDown) 
@@ -105,19 +103,6 @@ namespace Sabresaurus.SabreCSG
 			}
         }
 
-        Polygon GetActivePolygon()
-        {
-            if (Camera.current.orthographic && EditorHelper.GetSceneViewCamera(Camera.current) != EditorHelper.SceneViewCamera.Other)
-            {
-                // Axis aligned iso view
-                return null;
-            }
-            else
-            {
-                return activePolygon;
-            }
-        }
-
 		Plane GetActivePlane()
 		{
 			if(Camera.current.orthographic && EditorHelper.GetSceneViewCamera(Camera.current) != EditorHelper.SceneViewCamera.Other)
@@ -146,7 +131,7 @@ namespace Sabresaurus.SabreCSG
 			{
 				// Convert the mouse position into a ray to intersect with a plane in the world
 				Ray currentRay = Camera.current.ScreenPointToRay(EditorHelper.ConvertMousePointPosition(currentPosition));
-				List<PolygonRaycastHit> hits = csgModel.RaycastBrushesAll(currentRay, false);
+				List<PolygonRaycastHit> hits = csgModel.RaycastBrushesAll(currentRay);
 				if(hits.Count > 0)
 				{
 					return hits[0];
@@ -162,70 +147,6 @@ namespace Sabresaurus.SabreCSG
 				return null;
 			}
 		}
-
-        bool IsPrismBaseValid(List<Vector3> points)
-        {
-            Vector2 hitPointsSize = CalculateHitPointsSize(points);
-            
-            if (hitPointsSize.x > 0 && hitPointsSize.y > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        Vector2 CalculateHitPointsSize(List<Vector3> points)
-        {
-            Vector3 normal = GetActivePlane().normal;
-            Vector3 tangent = Vector3.zero;
-
-            for (int i = 0; i < points.Count; i++)
-            {
-                Vector3 delta = points[(i + 1) % points.Count] - points[i];
-                if(delta.magnitude > 0.01f)
-                {
-                    tangent = delta.normalized;
-                    break;
-                }
-            }
-
-            if(tangent == Vector3.zero)
-            {
-                if (Vector3.Dot(normal.Abs(), Vector3.up) > 0.9f)
-                {
-                    tangent = Vector3.Cross(normal, Vector3.forward).normalized;
-                }
-                else
-                {
-                    tangent = Vector3.Cross(normal, Vector3.up).normalized;
-                }
-            }
-
-            Vector3 binormal = Vector3.Cross(normal, tangent);
-
-            float minX = Vector3.Dot(tangent, points[0]);
-            float maxX = minX;
-
-            float minY = Vector3.Dot(binormal, points[0]);
-            float maxY = minY;
-
-            for (int i = 1; i < points.Count; i++)
-            {
-                float testX = Vector3.Dot(tangent, points[i]);
-                float testY = Vector3.Dot(binormal, points[i]);
-
-                minX = Mathf.Min(minX, testX);
-                maxX = Mathf.Max(maxX, testX);
-
-                minY = Mathf.Min(minY, testY);
-                maxY = Mathf.Max(maxY, testY);
-            }
-
-            return new Vector2(maxX - minX, maxY - minY);
-        }
 
 		Vector3? GetHitPoint(Vector2 currentPosition)
 		{
@@ -243,25 +164,7 @@ namespace Sabresaurus.SabreCSG
 
 				if(CurrentSettings.PositionSnappingEnabled)
 				{
-                    Polygon activePolygon = GetActivePolygon();
-
-                    if (activePolygon != null)
-                    {
-                        // Rotation to go from the polygon's plane to XY plane (for sorting)
-                        Quaternion cancellingRotation = Quaternion.Inverse(Quaternion.LookRotation(plane.normal));
-                        Quaternion restoringRotation = Quaternion.LookRotation(plane.normal);
-                        hitPoint -= activePolygon.GetCenterPoint();
-                        Vector3 localHitPoint = cancellingRotation * hitPoint;
-                        // Round in local space
-                        localHitPoint = MathHelper.RoundVector3(localHitPoint, CurrentSettings.PositionSnapDistance);
-                        // Convert back to correct space
-                        hitPoint = restoringRotation * localHitPoint;
-                        hitPoint += activePolygon.GetCenterPoint();
-                    }
-                    else
-                    {
-					    hitPoint = MathHelper.RoundVector3(hitPoint, CurrentSettings.PositionSnapDistance);
-                    }
+					hitPoint = MathHelper.RoundVector3(hitPoint, CurrentSettings.PositionSnapDistance);
 				}
 				return hitPoint;
 			}
@@ -281,13 +184,8 @@ namespace Sabresaurus.SabreCSG
 		}
 
 		void OnMouseDown(SceneView sceneView, Event e)
-		{
-            UpdateCSGMode(e);
-
-            if (selectingHeight)
-                return;
-
-			
+		{					
+			UpdateCSGMode(e);
 			if(e.clickCount == 2) 
 			{
 				// Double click, so finish the polygon
@@ -360,13 +258,7 @@ namespace Sabresaurus.SabreCSG
 
 			if(hitPoint.HasValue)
 			{
-				if(drawMode == DrawMode.PolygonBase && !selectingHeight)
-                {
-                    hoverPoint = hitPoint.Value;
-                    SceneView.RepaintAll();
-                }
-
-				if(drawMode == DrawMode.Ambiguous)
+				if(drawMode == DrawMode.PolygonBase || drawMode == DrawMode.Ambiguous)
 				{
 					if(drawMode != DrawMode.RectangleBase)
 					{
@@ -377,8 +269,7 @@ namespace Sabresaurus.SabreCSG
 					hitPoints.Add(downPoint);
 				}
 
-				if(drawMode == DrawMode.Ambiguous
-                    || (drawMode == DrawMode.RectangleBase && !selectingHeight))
+				if(drawMode == DrawMode.RectangleBase || drawMode == DrawMode.Ambiguous)
 				{
 					if(hitPoints.Count < 2)
 					{
@@ -507,27 +398,16 @@ namespace Sabresaurus.SabreCSG
 				ResetTool();
 
 				sceneView.Repaint();
-            }
-            else
-            {
-                if (drawMode == DrawMode.RectangleBase)
-                {
-                    if (Is3DView && !startedSubtract)
-                    {                        
-                        // Verify that it will form a valid prism by trying to create a polygon out the base
-                        if(IsPrismBaseValid(GetRectanglePoints()))
-                        {
-						    selectingHeight = true;
-						    prismHeight = 0;
-                        }
-                        else
-                        {
-                            // Will not form a valid prism so cancel the draw
-                            ResetTool();
-
-                            sceneView.Repaint();
-                        }
-                    }
+			}
+			else
+			{
+				if(drawMode == DrawMode.RectangleBase)
+				{
+					if(Is3DView && !startedSubtract)
+					{
+						selectingHeight = true;
+						prismHeight = 0;
+					}
 					else
 					{
 						CreateBrush(GetRectanglePoints());
@@ -551,20 +431,9 @@ namespace Sabresaurus.SabreCSG
 						{
 							if(Is3DView && !startedSubtract)
 							{
-                                // Verify that it will form a valid prism by trying to create a polygon out the base
-                                if (IsPrismBaseValid(hitPoints))
-                                {
-                                    selectingHeight = true;
-                                    prismHeight = 0;
-                                }
-                                else
-                                {
-                                    // Will not form a valid prism so cancel the draw
-                                    ResetTool();
-
-                                    sceneView.Repaint();
-                                }
-                            }
+								selectingHeight = true;
+								prismHeight = 0;
+							}
 							else
 							{
 								CreateBrush(hitPoints);
@@ -588,15 +457,6 @@ namespace Sabresaurus.SabreCSG
 			{
 				return;
 			}
-
-            if(activePolygon != null)
-            {
-                for (int i = 0; i < sourcePolygon.Vertices.Length; i++)
-                {
-                    Vector2 newUV = GeometryHelper.GetUVForPosition(activePolygon, sourcePolygon.Vertices[i].Position);
-                    sourcePolygon.Vertices[i].UV = newUV;
-                }
-            }
 
 			Vector3 planeNormal = GetActivePlane().normal;
 
@@ -675,15 +535,6 @@ namespace Sabresaurus.SabreCSG
 
 			newObject.transform.rotation = rotation;
 			newObject.transform.position += positionOffset;
-
-            if(activePolygon != null
-                && activePolygon.Material != csgModel.GetDefaultMaterial())
-            {
-                for (int i = 0; i < polygons.Length; i++)
-                {
-                    polygons[i].Material = activePolygon.Material;
-                }
-            }
 			// Finally give the new brush the other set of polygons
 			newBrush.SetPolygons(polygons, true);
 
@@ -745,7 +596,7 @@ namespace Sabresaurus.SabreCSG
 		List<Vector3> GetRectanglePoints()
 		{
 			Plane plane = GetActivePlane();
-            Vector3 planeNormal = plane.normal; //MathHelper.VectorAbs(plane.normal);
+			Vector3 planeNormal = MathHelper.VectorAbs(plane.normal);
 
 			Vector3 axis1;
 			Vector3 axis2;

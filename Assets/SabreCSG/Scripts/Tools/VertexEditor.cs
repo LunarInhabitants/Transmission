@@ -16,9 +16,8 @@ namespace Sabresaurus.SabreCSG
 		bool moveInProgress = false; 
 
 		bool isMarqueeSelection = false; // Whether the user is (or could be) dragging a marquee box
-        bool marqueeCancelled = false;
 
-        Vector2 marqueeStart;
+		Vector2 marqueeStart;
 		Vector2 marqueeEnd;
 
 		bool pivotNeedsReset = false;
@@ -27,7 +26,6 @@ namespace Sabresaurus.SabreCSG
 
 		// Configured by the user
 		float weldTolerance = 0.1f;
-		float scale = 1f;
 
 		void ClearSelection()
 		{
@@ -78,11 +76,8 @@ namespace Sabresaurus.SabreCSG
 			RemoveDisjointedVertices();
 		}
 
-		List<PrimitiveBrush> AutoWeld()
+		void AutoWeld()
 		{
-            // Track the brushes that welding has changed
-            List<PrimitiveBrush> changedBrushes = new List<PrimitiveBrush>();
-
 			// Automatically weld any vertices that have been brought too close together
 			if(primaryTargetBrush != null && selectedVertices.Count > 0)
 			{
@@ -99,38 +94,17 @@ namespace Sabresaurus.SabreCSG
 
 				foreach (PrimitiveBrush brush in targetBrushes) 
 				{
-                    Polygon[] sourcePolygons = brush.GetPolygons();
-                    // Make a copy so that we can differentiate newPolygons from the original, since welding updates affected polygons in place
-                    Polygon[] sourcePolygonsCopy = sourcePolygons.DeepCopy();
+					Polygon[] sourcePolygons = brush.GetPolygons().DeepCopy();
 
 					List<Vertex> allVertices = new List<Vertex>();
-					for (int i = 0; i < sourcePolygonsCopy.Length; i++) 
+					for (int i = 0; i < sourcePolygons.Length; i++) 
 					{
-						allVertices.AddRange(sourcePolygonsCopy[i].Vertices);
+						allVertices.AddRange(sourcePolygons[i].Vertices);
 					}
 
-					Polygon[] newPolygons = VertexUtility.WeldNearbyVertices(autoWeldTolerance, sourcePolygonsCopy, allVertices);
+					Polygon[] newPolygons = VertexUtility.WeldNearbyVertices(autoWeldTolerance, sourcePolygons, allVertices);
 
-                    bool hasChanged = false;
-
-                    if(newPolygons.Length != sourcePolygons.Length)
-                    {
-                        hasChanged = true;
-                    }
-
-                    if(!hasChanged)
-                    {
-                        for (int i = 0; i < sourcePolygons.Length; i++)
-                        {
-                            if(sourcePolygons[i].Vertices.Length != newPolygons[i].Vertices.Length)
-                            {
-                                hasChanged = true;
-                                break;
-                            }
-                        }
-                    }
-
-					if(hasChanged)
+					if(newPolygons != null && newPolygons.Length != sourcePolygons.Length)
 					{
 						Undo.RecordObject(brush.transform, "Auto Weld Vertices");
 						Undo.RecordObject(brush, "Auto Weld Vertices");
@@ -143,93 +117,7 @@ namespace Sabresaurus.SabreCSG
 						brush.SetPolygons(newPolygons);
 
 						SelectVertices(brush, newPolygons, refinedSelections[brush]);
-
-                        // Brush has changed so mark it to be returned
-                        changedBrushes.Add(brush);
-                    }
-				}
-			}
-            // Return the brushes that welding has changed
-            return changedBrushes;
-        }
-
-		public void ScaleSelectedVertices(float scalar)
-		{	
-			Vector3 scalarCenter = GetSelectedCenter();
-
-			// So we know which polygons need to have their normals recalculated
-			List<Polygon> affectedPolygons = new List<Polygon>();
-
-			foreach (PrimitiveBrush brush in targetBrushes) 
-			{
-				Polygon[] polygons = brush.GetPolygons();
-
-				for (int i = 0; i < polygons.Length; i++) 
-				{
-					Polygon polygon = polygons[i];
-
-					int vertexCount = polygon.Vertices.Length;
-
-					Vector3[] newPositions = new Vector3[vertexCount];
-					Vector2[] newUV = new Vector2[vertexCount];
-
-					for (int j = 0; j < vertexCount; j++) 
-					{
-						newPositions[j] = polygon.Vertices[j].Position;
-						newUV[j] = polygon.Vertices[j].UV;
 					}
-
-					bool polygonAffected = false;
-					for (int j = 0; j < vertexCount; j++) 
-					{
-						Vertex vertex = polygon.Vertices[j];
-						if(selectedVertices.ContainsKey(vertex))
-						{
-							Vector3 newPosition = vertex.Position;
-							newPosition = brush.transform.TransformPoint(newPosition);
-							newPosition -= scalarCenter;
-							newPosition *= scalar;
-							newPosition += scalarCenter;
-
-							newPosition = brush.transform.InverseTransformPoint(newPosition);
-
-							newPositions[j] = newPosition;
-
-							newUV[j] = GeometryHelper.GetUVForPosition(polygon, newPosition);
-
-							polygonAffected = true;
-						}
-					}
-
-					if(polygonAffected)
-					{
-						affectedPolygons.Add(polygon);
-					}
-
-					// Apply all the changes to the polygon
-					for (int j = 0; j < vertexCount; j++) 
-					{
-						Vertex vertex = polygon.Vertices[j];
-						vertex.Position = newPositions[j];
-						vertex.UV = newUV[j];
-					}
-
-					polygon.CalculatePlane();
-				}
-			}
-
-			if(affectedPolygons.Count > 0)
-			{
-				for (int i = 0; i < affectedPolygons.Count; i++) 
-				{
-					affectedPolygons[i].ResetVertexNormals();
-				}
-
-				foreach (PrimitiveBrush brush in targetBrushes) 
-				{
-					brush.Invalidate(true);
-
-					brush.BreakTypeRelation();
 				}
 			}
 		}
@@ -490,10 +378,9 @@ namespace Sabresaurus.SabreCSG
 					Undo.RecordObjects(targetBrushTransforms, "Moved Vertices");
 					Undo.RecordObjects(targetBrushes, "Moved Vertices");
 
-					List<PrimitiveBrush> changedBrushes = AutoWeld();
+					AutoWeld();
 
-                    // Only invalidate the brushes that have actually changed
-					foreach (PrimitiveBrush brush in changedBrushes) 
+					foreach (PrimitiveBrush brush in targetBrushes) 
 					{
 						brush.Invalidate(true);
 
@@ -547,20 +434,22 @@ namespace Sabresaurus.SabreCSG
 
 			if(primaryTargetBrush != null)
 			{
-				
-				if (e.type == EventType.MouseDown) 
+				if(!EditorHelper.IsMousePositionNearSceneGizmo(e.mousePosition))
 				{
-					OnMouseDown(sceneView, e);
-				}
-				else if (e.type == EventType.MouseDrag) 
-				{
-					OnMouseDrag(sceneView, e);
-				}
-                // If you mouse up on a different scene view to the one you started on it's surpressed as Ignore, when
-                // doing marquee selection make sure to check the real type
-                else if (e.type == EventType.MouseUp || (isMarqueeSelection && e.rawType == EventType.MouseUp))
-                {
-					OnMouseUp(sceneView, e);
+					if (e.type == EventType.MouseDown) 
+					{
+						OnMouseDown(sceneView, e);
+					}
+					else if (e.type == EventType.MouseDrag) 
+					{
+						OnMouseDrag(sceneView, e);
+					}
+					// If you mouse up on a different scene view to the one you started on it's surpressed as Ignore, when
+					// doing marquee selection make sure to check the real type
+					else if (e.type == EventType.MouseUp || (isMarqueeSelection && e.rawType == EventType.MouseUp))
+					{
+						OnMouseUp(sceneView, e);
+					}
 				}
 			}
 
@@ -729,17 +618,9 @@ namespace Sabresaurus.SabreCSG
 			}
 
 			EditorGUILayout.BeginHorizontal();
-
-
-			GUI.SetNextControlName("weldToleranceField");
 			weldTolerance = EditorGUILayout.FloatField(weldTolerance);
 
-			bool keyboardEnter = Event.current.isKey 
-				&& Event.current.keyCode == KeyCode.Return 
-				&& Event.current.type == EventType.KeyUp 
-				&& GUI.GetNameOfFocusedControl() == "weldToleranceField";
-
-			if (GUILayout.Button("Weld with Tolerance", EditorStyles.miniButton) || keyboardEnter)
+			if (GUILayout.Button("Weld with Tolerance", EditorStyles.miniButton))
 			{
 				if(selectedVertices != null)
 				{
@@ -793,28 +674,6 @@ namespace Sabresaurus.SabreCSG
 				}
 
 				SnapSelectedVertices(false);
-			}
-			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.BeginHorizontal();
-
-			GUI.SetNextControlName("scaleField");
-			scale = EditorGUILayout.FloatField(scale);
-
-			keyboardEnter = Event.current.isKey 
-				&& Event.current.keyCode == KeyCode.Return 
-				&& Event.current.type == EventType.KeyUp 
-				&& GUI.GetNameOfFocusedControl() == "scaleField";
-
-			if (GUILayout.Button("Scale", EditorStyles.miniButton) || keyboardEnter)
-			{
-				foreach (PrimitiveBrush brush in targetBrushes) 
-				{
-					Undo.RecordObject(brush.transform, "Scale Vertices");
-					Undo.RecordObject(brush, "Scale Vertices");
-				}
-
-				ScaleSelectedVertices(scale);
 			}
 			EditorGUILayout.EndHorizontal();
 
@@ -923,7 +782,7 @@ namespace Sabresaurus.SabreCSG
 			}
 
 			// Draw UI specific to this editor
-			Rect rectangle = new Rect(0, 50, 140, 160);
+			Rect rectangle = new Rect(0, 50, 140, 140);
 			GUIStyle toolbar = new GUIStyle(EditorStyles.toolbar);
 			toolbar.normal.background = SabreCSGResources.ClearTexture;
 			toolbar.fixedHeight = rectangle.height;
@@ -936,29 +795,17 @@ namespace Sabresaurus.SabreCSG
 			moveInProgress = false;
 
 			marqueeStart = e.mousePosition;
-
-            if (EditorHelper.IsMousePositionInInvalidRects(e.mousePosition))
-            {
-                marqueeCancelled = true;
-            }
-            else
-            {
-                marqueeCancelled = false;
-            }
-        }
+		}
 
 		void OnMouseDrag (SceneView sceneView, Event e)
 		{
 			if(!CameraPanInProgress)
 			{
+				marqueeEnd = e.mousePosition;
 				if(!moveInProgress && e.button == 0)
 				{
-                    if (!marqueeCancelled)
-                    {
-                        marqueeEnd = e.mousePosition;
-                        isMarqueeSelection = true;
-                        sceneView.Repaint();
-                    }
+					isMarqueeSelection = true;
+					sceneView.Repaint();
 				}
 			}
 		}
@@ -1024,10 +871,9 @@ namespace Sabresaurus.SabreCSG
 								}
 							}
 						}
-                        SceneView.RepaintAll();
 					}
-					else if (!EditorHelper.IsMousePositionInInvalidRects(e.mousePosition) && !marqueeCancelled) // Clicking style vertex selection
-                    {
+					else // Clicking style vertex selection
+					{
 						Vector2 mousePosition = e.mousePosition;
 
 						bool clickedAnyPoints = false;

@@ -91,7 +91,7 @@ namespace Sabresaurus.SabreCSG
 			int meshIndex = 1;
 			// Create a separate mesh for polygons of each material so that we batch by material
 			foreach (KeyValuePair<Material, List<Polygon>> polygonMaterialGroup in polygonMaterialTable)
-			{                
+			{
 				List<List<OBJFaceVertex>> faces = new List<List<OBJFaceVertex>>(polygonMaterialGroup.Value.Count);
 
 				// Iterate through every polygon and triangulate
@@ -116,25 +116,25 @@ namespace Sabresaurus.SabreCSG
 				stringBuilder.AppendLine("g Mesh"+meshIndex);
 
 				// Write all the positions
-				stringBuilder.AppendLine("# Vertex Positions: " + (positions.Count));
+				stringBuilder.AppendLine("# Vertex Positions: " + (positions.Count-positionIndexOffset));
 
-				for (int i = 0; i < positions.Count; i++) 
+				for (int i = positionIndexOffset; i < positions.Count; i++) 
 				{
 					stringBuilder.AppendLine("v " + WriteVector3(positions[i]));
 				}
 
 				// Write all the texture coordinates (UVs)
-				stringBuilder.AppendLine("# Vertex UVs: " + (uvs.Count));
+				stringBuilder.AppendLine("# Vertex UVs: " + (uvs.Count-uvIndexOffset));
 
-				for (int i = 0; i < uvs.Count; i++) 
+				for (int i = uvIndexOffset; i < uvs.Count; i++) 
 				{
 					stringBuilder.AppendLine("vt " + WriteVector2(uvs[i]));
 				}
 
 				// Write all the normals
-				stringBuilder.AppendLine("# Vertex Normals: " + (normals.Count));
+				stringBuilder.AppendLine("# Vertex Normals: " + (normals.Count-normalIndexOffset));
 
-				for (int i = 0; i < normals.Count; i++) 
+				for (int i = normalIndexOffset; i < normals.Count; i++) 
 				{
 					stringBuilder.AppendLine("vn " + WriteVector3(normals[i]));
 				}
@@ -147,7 +147,7 @@ namespace Sabresaurus.SabreCSG
 					stringBuilder.Append("f ");
 					for (int j = faces[i].Count-1; j >=0; j--) 
 					{
-						stringBuilder.Append((faces[i][j].PositionIndex + positionIndexOffset) + "/" + (faces[i][j].UVIndex + uvIndexOffset) + "/" + (faces[i][j].NormalIndex + normalIndexOffset) + " ");
+						stringBuilder.Append((faces[i][j].PositionIndex) + "/" + (faces[i][j].UVIndex) + "/" + (faces[i][j].NormalIndex) + " ");
 					}
 					stringBuilder.AppendLine();
 				}
@@ -159,12 +159,10 @@ namespace Sabresaurus.SabreCSG
 				meshIndex++;
 
 				// Update the offsets so that the next pass only writes new vertex information
-				positionIndexOffset += positions.Count;
-				uvIndexOffset += uvs.Count;
-				normalIndexOffset += normals.Count;
-
-                vertexList.ResetForNext();
-            }
+				positionIndexOffset = positions.Count;
+				uvIndexOffset = uvs.Count;
+				normalIndexOffset = normals.Count;
+			}
 
 			return stringBuilder.ToString();
 		}
