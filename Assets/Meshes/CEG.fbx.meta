@@ -29,6 +29,605 @@ ModelImporter:
     100042: pCylinder9
     100044: pSphere1
     100046: pSphere2
+    100048: extrudedSurface1
+    100050: group10
+    100052: group11
+    100054: group12
+    100056: group13
+    100058: group14
+    100060: group15
+    100062: group16
+    100064: group17
+    100066: group18
+    100068: group19
+    100070: group20
+    100072: group21
+    100074: group22
+    100076: group23
+    100078: group24
+    100080: group25
+    100082: group26
+    100084: group27
+    100086: group28
+    100088: group29
+    100090: group30
+    100092: group31
+    100094: group32
+    100096: group33
+    100098: group34
+    100100: group35
+    100102: group36
+    100104: group37
+    100106: group38
+    100108: group39
+    100110: group40
+    100112: group41
+    100114: group42
+    100116: group43
+    100118: group43 1
+    100120: group44
+    100122: group44 1
+    100124: group45
+    100126: group46
+    100128: group48
+    100130: group49
+    100132: group50
+    100134: group51
+    100136: group52
+    100138: group53
+    100140: group54
+    100142: group55
+    100144: group56
+    100146: group57
+    100148: group58
+    100150: group7
+    100152: group8
+    100154: group9
+    100156: pCube11
+    100158: pCube12
+    100160: pCube12 1
+    100162: pCube12 2
+    100164: pCube12 3
+    100166: pCube13
+    100168: pCube14
+    100170: pCube15
+    100172: pCube16
+    100174: pCube17
+    100176: pCube18
+    100178: pCube19
+    100180: pCube20
+    100182: pCube31
+    100184: pCube32
+    100186: pCube33
+    100188: pCube34
+    100190: pCube35
+    100192: pCube35 1
+    100194: pCube35 2
+    100196: pCylinder18
+    100198: pCylinder19
+    100200: pCylinder20
+    100202: pCylinder21
+    100204: pCylinder21 1
+    100206: pCylinder21 10
+    100208: pCylinder21 11
+    100210: pCylinder21 12
+    100212: pCylinder21 13
+    100214: pCylinder21 14
+    100216: pCylinder21 15
+    100218: pCylinder21 16
+    100220: pCylinder21 17
+    100222: pCylinder21 18
+    100224: pCylinder21 19
+    100226: pCylinder21 2
+    100228: pCylinder21 20
+    100230: pCylinder21 21
+    100232: pCylinder21 22
+    100234: pCylinder21 23
+    100236: pCylinder21 24
+    100238: pCylinder21 25
+    100240: pCylinder21 26
+    100242: pCylinder21 27
+    100244: pCylinder21 28
+    100246: pCylinder21 29
+    100248: pCylinder21 3
+    100250: pCylinder21 30
+    100252: pCylinder21 31
+    100254: pCylinder21 32
+    100256: pCylinder21 33
+    100258: pCylinder21 34
+    100260: pCylinder21 35
+    100262: pCylinder21 4
+    100264: pCylinder21 5
+    100266: pCylinder21 6
+    100268: pCylinder21 7
+    100270: pCylinder21 8
+    100272: pCylinder21 9
+    100274: pCylinder22
+    100276: pCylinder22 1
+    100278: pCylinder22 10
+    100280: pCylinder22 11
+    100282: pCylinder22 12
+    100284: pCylinder22 13
+    100286: pCylinder22 14
+    100288: pCylinder22 15
+    100290: pCylinder22 16
+    100292: pCylinder22 17
+    100294: pCylinder22 18
+    100296: pCylinder22 19
+    100298: pCylinder22 2
+    100300: pCylinder22 20
+    100302: pCylinder22 21
+    100304: pCylinder22 22
+    100306: pCylinder22 23
+    100308: pCylinder22 24
+    100310: pCylinder22 25
+    100312: pCylinder22 26
+    100314: pCylinder22 27
+    100316: pCylinder22 28
+    100318: pCylinder22 29
+    100320: pCylinder22 3
+    100322: pCylinder22 30
+    100324: pCylinder22 31
+    100326: pCylinder22 32
+    100328: pCylinder22 33
+    100330: pCylinder22 34
+    100332: pCylinder22 35
+    100334: pCylinder22 4
+    100336: pCylinder22 5
+    100338: pCylinder22 6
+    100340: pCylinder22 7
+    100342: pCylinder22 8
+    100344: pCylinder22 9
+    100346: pCylinder23
+    100348: pCylinder23 1
+    100350: pCylinder23 10
+    100352: pCylinder23 11
+    100354: pCylinder23 12
+    100356: pCylinder23 13
+    100358: pCylinder23 14
+    100360: pCylinder23 15
+    100362: pCylinder23 16
+    100364: pCylinder23 17
+    100366: pCylinder23 18
+    100368: pCylinder23 19
+    100370: pCylinder23 2
+    100372: pCylinder23 20
+    100374: pCylinder23 21
+    100376: pCylinder23 22
+    100378: pCylinder23 23
+    100380: pCylinder23 24
+    100382: pCylinder23 25
+    100384: pCylinder23 26
+    100386: pCylinder23 27
+    100388: pCylinder23 28
+    100390: pCylinder23 29
+    100392: pCylinder23 3
+    100394: pCylinder23 30
+    100396: pCylinder23 31
+    100398: pCylinder23 32
+    100400: pCylinder23 33
+    100402: pCylinder23 34
+    100404: pCylinder23 35
+    100406: pCylinder23 4
+    100408: pCylinder23 5
+    100410: pCylinder23 6
+    100412: pCylinder23 7
+    100414: pCylinder23 8
+    100416: pCylinder23 9
+    100418: pCylinder24
+    100420: pCylinder24 1
+    100422: pCylinder24 10
+    100424: pCylinder24 11
+    100426: pCylinder24 12
+    100428: pCylinder24 13
+    100430: pCylinder24 14
+    100432: pCylinder24 15
+    100434: pCylinder24 16
+    100436: pCylinder24 17
+    100438: pCylinder24 18
+    100440: pCylinder24 19
+    100442: pCylinder24 2
+    100444: pCylinder24 20
+    100446: pCylinder24 21
+    100448: pCylinder24 22
+    100450: pCylinder24 23
+    100452: pCylinder24 24
+    100454: pCylinder24 25
+    100456: pCylinder24 26
+    100458: pCylinder24 27
+    100460: pCylinder24 28
+    100462: pCylinder24 29
+    100464: pCylinder24 3
+    100466: pCylinder24 30
+    100468: pCylinder24 31
+    100470: pCylinder24 32
+    100472: pCylinder24 33
+    100474: pCylinder24 34
+    100476: pCylinder24 35
+    100478: pCylinder24 4
+    100480: pCylinder24 5
+    100482: pCylinder24 6
+    100484: pCylinder24 7
+    100486: pCylinder24 8
+    100488: pCylinder24 9
+    100490: pCylinder25
+    100492: pCylinder25 1
+    100494: pCylinder25 10
+    100496: pCylinder25 11
+    100498: pCylinder25 12
+    100500: pCylinder25 13
+    100502: pCylinder25 14
+    100504: pCylinder25 15
+    100506: pCylinder25 16
+    100508: pCylinder25 17
+    100510: pCylinder25 18
+    100512: pCylinder25 19
+    100514: pCylinder25 2
+    100516: pCylinder25 20
+    100518: pCylinder25 21
+    100520: pCylinder25 22
+    100522: pCylinder25 23
+    100524: pCylinder25 24
+    100526: pCylinder25 25
+    100528: pCylinder25 26
+    100530: pCylinder25 27
+    100532: pCylinder25 28
+    100534: pCylinder25 29
+    100536: pCylinder25 3
+    100538: pCylinder25 30
+    100540: pCylinder25 31
+    100542: pCylinder25 32
+    100544: pCylinder25 33
+    100546: pCylinder25 34
+    100548: pCylinder25 35
+    100550: pCylinder25 4
+    100552: pCylinder25 5
+    100554: pCylinder25 6
+    100556: pCylinder25 7
+    100558: pCylinder25 8
+    100560: pCylinder25 9
+    100562: pCylinder26
+    100564: pCylinder26 1
+    100566: pCylinder26 10
+    100568: pCylinder26 11
+    100570: pCylinder26 12
+    100572: pCylinder26 13
+    100574: pCylinder26 14
+    100576: pCylinder26 15
+    100578: pCylinder26 16
+    100580: pCylinder26 17
+    100582: pCylinder26 18
+    100584: pCylinder26 19
+    100586: pCylinder26 2
+    100588: pCylinder26 20
+    100590: pCylinder26 21
+    100592: pCylinder26 22
+    100594: pCylinder26 23
+    100596: pCylinder26 24
+    100598: pCylinder26 25
+    100600: pCylinder26 26
+    100602: pCylinder26 27
+    100604: pCylinder26 28
+    100606: pCylinder26 29
+    100608: pCylinder26 3
+    100610: pCylinder26 30
+    100612: pCylinder26 31
+    100614: pCylinder26 32
+    100616: pCylinder26 33
+    100618: pCylinder26 34
+    100620: pCylinder26 35
+    100622: pCylinder26 4
+    100624: pCylinder26 5
+    100626: pCylinder26 6
+    100628: pCylinder26 7
+    100630: pCylinder26 8
+    100632: pCylinder26 9
+    100634: pCylinder27
+    100636: pCylinder28
+    100638: pCylinder29
+    100640: pCylinder30
+    100642: pCylinder31
+    100644: pCylinder32
+    100646: pCylinder33
+    100648: pCylinder34
+    100650: pCylinder35
+    100652: pCylinder35 1
+    100654: pCylinder35 2
+    100656: pCylinder35 3
+    100658: pCylinder36
+    100660: pCylinder36 1
+    100662: pCylinder36 2
+    100664: pCylinder36 3
+    100666: pCylinder37
+    100668: pCylinder37 1
+    100670: pCylinder37 2
+    100672: pCylinder37 3
+    100674: pCylinder38
+    100676: pCylinder39
+    100678: pCylinder41
+    100680: pCylinder42
+    100682: pCylinder43
+    100684: pCylinder44
+    100686: pCylinder45
+    100688: pCylinder45 1
+    100690: pCylinder45 2
+    100692: pCylinder45 3
+    100694: pCylinder45 4
+    100696: pCylinder45 5
+    100698: pCylinder45 6
+    100700: pCylinder45 7
+    100702: pCylinder46
+    100704: pCylinder46 1
+    100706: pCylinder46 2
+    100708: pCylinder46 3
+    100710: pCylinder46 4
+    100712: pCylinder46 5
+    100714: pCylinder46 6
+    100716: pCylinder46 7
+    100718: pCylinder47
+    100720: pCylinder47 1
+    100722: pCylinder47 2
+    100724: pCylinder47 3
+    100726: pCylinder47 4
+    100728: pCylinder47 5
+    100730: pCylinder47 6
+    100732: pCylinder47 7
+    100734: pCylinder48
+    100736: pCylinder50
+    100738: pCylinder52
+    100740: pCylinder53
+    100742: pCylinder54
+    100744: pCylinder55
+    100746: pCylinder56
+    100748: pCylinder57
+    100750: pCylinder58
+    100752: pCylinder59
+    100754: pCylinder60
+    100756: pCylinder61
+    100758: pCylinder62
+    100760: pCylinder63
+    100762: pCylinder64
+    100764: pCylinder65
+    100766: pCylinder66
+    100768: pCylinder67
+    100770: pCylinder68
+    100772: pCylinder69
+    100774: pCylinder69 1
+    100776: pCylinder69 2
+    100778: pCylinder70
+    100780: pCylinder70 1
+    100782: pCylinder70 2
+    100784: pCylinder71
+    100786: pCylinder72
+    100788: pCylinder73
+    100790: pDisc1
+    100792: pDisc1 1
+    100794: pDisc1 10
+    100796: pDisc1 11
+    100798: pDisc1 12
+    100800: pDisc1 13
+    100802: pDisc1 14
+    100804: pDisc1 15
+    100806: pDisc1 16
+    100808: pDisc1 17
+    100810: pDisc1 18
+    100812: pDisc1 19
+    100814: pDisc1 2
+    100816: pDisc1 20
+    100818: pDisc1 21
+    100820: pDisc1 22
+    100822: pDisc1 23
+    100824: pDisc1 24
+    100826: pDisc1 25
+    100828: pDisc1 26
+    100830: pDisc1 27
+    100832: pDisc1 28
+    100834: pDisc1 29
+    100836: pDisc1 3
+    100838: pDisc1 30
+    100840: pDisc1 31
+    100842: pDisc1 32
+    100844: pDisc1 33
+    100846: pDisc1 34
+    100848: pDisc1 35
+    100850: pDisc1 4
+    100852: pDisc1 5
+    100854: pDisc1 6
+    100856: pDisc1 7
+    100858: pDisc1 8
+    100860: pDisc1 9
+    100862: pDisc2
+    100864: pDisc2 1
+    100866: pDisc2 10
+    100868: pDisc2 11
+    100870: pDisc2 12
+    100872: pDisc2 13
+    100874: pDisc2 14
+    100876: pDisc2 15
+    100878: pDisc2 16
+    100880: pDisc2 17
+    100882: pDisc2 18
+    100884: pDisc2 19
+    100886: pDisc2 2
+    100888: pDisc2 20
+    100890: pDisc2 21
+    100892: pDisc2 22
+    100894: pDisc2 23
+    100896: pDisc2 24
+    100898: pDisc2 25
+    100900: pDisc2 26
+    100902: pDisc2 27
+    100904: pDisc2 28
+    100906: pDisc2 29
+    100908: pDisc2 3
+    100910: pDisc2 30
+    100912: pDisc2 31
+    100914: pDisc2 32
+    100916: pDisc2 33
+    100918: pDisc2 34
+    100920: pDisc2 35
+    100922: pDisc2 4
+    100924: pDisc2 5
+    100926: pDisc2 6
+    100928: pDisc2 7
+    100930: pDisc2 8
+    100932: pDisc2 9
+    100934: pDisc3
+    100936: pDisc3 1
+    100938: pDisc3 10
+    100940: pDisc3 11
+    100942: pDisc3 12
+    100944: pDisc3 13
+    100946: pDisc3 14
+    100948: pDisc3 15
+    100950: pDisc3 16
+    100952: pDisc3 17
+    100954: pDisc3 18
+    100956: pDisc3 19
+    100958: pDisc3 2
+    100960: pDisc3 20
+    100962: pDisc3 21
+    100964: pDisc3 22
+    100966: pDisc3 23
+    100968: pDisc3 24
+    100970: pDisc3 25
+    100972: pDisc3 26
+    100974: pDisc3 27
+    100976: pDisc3 28
+    100978: pDisc3 29
+    100980: pDisc3 3
+    100982: pDisc3 30
+    100984: pDisc3 31
+    100986: pDisc3 32
+    100988: pDisc3 33
+    100990: pDisc3 34
+    100992: pDisc3 35
+    100994: pDisc3 4
+    100996: pDisc3 5
+    100998: pDisc3 6
+    101000: pDisc3 7
+    101002: pDisc3 8
+    101004: pDisc3 9
+    101006: pDisc4
+    101008: pDisc4 1
+    101010: pDisc4 10
+    101012: pDisc4 11
+    101014: pDisc4 12
+    101016: pDisc4 13
+    101018: pDisc4 14
+    101020: pDisc4 15
+    101022: pDisc4 16
+    101024: pDisc4 17
+    101026: pDisc4 18
+    101028: pDisc4 19
+    101030: pDisc4 2
+    101032: pDisc4 20
+    101034: pDisc4 21
+    101036: pDisc4 22
+    101038: pDisc4 23
+    101040: pDisc4 24
+    101042: pDisc4 25
+    101044: pDisc4 26
+    101046: pDisc4 27
+    101048: pDisc4 28
+    101050: pDisc4 29
+    101052: pDisc4 3
+    101054: pDisc4 30
+    101056: pDisc4 31
+    101058: pDisc4 32
+    101060: pDisc4 33
+    101062: pDisc4 34
+    101064: pDisc4 35
+    101066: pDisc4 4
+    101068: pDisc4 5
+    101070: pDisc4 6
+    101072: pDisc4 7
+    101074: pDisc4 8
+    101076: pDisc4 9
+    101078: pHelix1
+    101080: pHelix1 1
+    101082: pHelix1 10
+    101084: pHelix1 11
+    101086: pHelix1 12
+    101088: pHelix1 13
+    101090: pHelix1 14
+    101092: pHelix1 15
+    101094: pHelix1 16
+    101096: pHelix1 17
+    101098: pHelix1 18
+    101100: pHelix1 19
+    101102: pHelix1 2
+    101104: pHelix1 20
+    101106: pHelix1 21
+    101108: pHelix1 22
+    101110: pHelix1 23
+    101112: pHelix1 24
+    101114: pHelix1 25
+    101116: pHelix1 26
+    101118: pHelix1 27
+    101120: pHelix1 28
+    101122: pHelix1 29
+    101124: pHelix1 3
+    101126: pHelix1 30
+    101128: pHelix1 31
+    101130: pHelix1 32
+    101132: pHelix1 33
+    101134: pHelix1 34
+    101136: pHelix1 35
+    101138: pHelix1 4
+    101140: pHelix1 5
+    101142: pHelix1 6
+    101144: pHelix1 7
+    101146: pHelix1 8
+    101148: pHelix1 9
+    101150: pTorus1
+    101152: pTorus1 1
+    101154: pTorus1 10
+    101156: pTorus1 11
+    101158: pTorus1 12
+    101160: pTorus1 13
+    101162: pTorus1 14
+    101164: pTorus1 15
+    101166: pTorus1 16
+    101168: pTorus1 17
+    101170: pTorus1 18
+    101172: pTorus1 19
+    101174: pTorus1 2
+    101176: pTorus1 20
+    101178: pTorus1 21
+    101180: pTorus1 22
+    101182: pTorus1 23
+    101184: pTorus1 24
+    101186: pTorus1 25
+    101188: pTorus1 26
+    101190: pTorus1 27
+    101192: pTorus1 28
+    101194: pTorus1 29
+    101196: pTorus1 3
+    101198: pTorus1 30
+    101200: pTorus1 31
+    101202: pTorus1 32
+    101204: pTorus1 33
+    101206: pTorus1 34
+    101208: pTorus1 35
+    101210: pTorus1 4
+    101212: pTorus1 5
+    101214: pTorus1 6
+    101216: pTorus1 7
+    101218: pTorus1 8
+    101220: pTorus1 9
+    101222: pTorus2
+    101224: pTorus2 1
+    101226: pTorus2 2
+    101228: pTorus2 3
+    101230: pTorus2 4
+    101232: pTorus2 5
+    101234: pTorus2 6
+    101236: pTorus2 7
+    101238: transform3
+    101240: transform4
+    101242: transform5
+    101244: transform6
     400000: //RootNode
     400002: pCube1
     400004: pCube2
@@ -53,6 +652,605 @@ ModelImporter:
     400042: pCylinder9
     400044: pSphere1
     400046: pSphere2
+    400048: extrudedSurface1
+    400050: group10
+    400052: group11
+    400054: group12
+    400056: group13
+    400058: group14
+    400060: group15
+    400062: group16
+    400064: group17
+    400066: group18
+    400068: group19
+    400070: group20
+    400072: group21
+    400074: group22
+    400076: group23
+    400078: group24
+    400080: group25
+    400082: group26
+    400084: group27
+    400086: group28
+    400088: group29
+    400090: group30
+    400092: group31
+    400094: group32
+    400096: group33
+    400098: group34
+    400100: group35
+    400102: group36
+    400104: group37
+    400106: group38
+    400108: group39
+    400110: group40
+    400112: group41
+    400114: group42
+    400116: group43
+    400118: group43 1
+    400120: group44
+    400122: group44 1
+    400124: group45
+    400126: group46
+    400128: group48
+    400130: group49
+    400132: group50
+    400134: group51
+    400136: group52
+    400138: group53
+    400140: group54
+    400142: group55
+    400144: group56
+    400146: group57
+    400148: group58
+    400150: group7
+    400152: group8
+    400154: group9
+    400156: pCube11
+    400158: pCube12
+    400160: pCube12 1
+    400162: pCube12 2
+    400164: pCube12 3
+    400166: pCube13
+    400168: pCube14
+    400170: pCube15
+    400172: pCube16
+    400174: pCube17
+    400176: pCube18
+    400178: pCube19
+    400180: pCube20
+    400182: pCube31
+    400184: pCube32
+    400186: pCube33
+    400188: pCube34
+    400190: pCube35
+    400192: pCube35 1
+    400194: pCube35 2
+    400196: pCylinder18
+    400198: pCylinder19
+    400200: pCylinder20
+    400202: pCylinder21
+    400204: pCylinder21 1
+    400206: pCylinder21 10
+    400208: pCylinder21 11
+    400210: pCylinder21 12
+    400212: pCylinder21 13
+    400214: pCylinder21 14
+    400216: pCylinder21 15
+    400218: pCylinder21 16
+    400220: pCylinder21 17
+    400222: pCylinder21 18
+    400224: pCylinder21 19
+    400226: pCylinder21 2
+    400228: pCylinder21 20
+    400230: pCylinder21 21
+    400232: pCylinder21 22
+    400234: pCylinder21 23
+    400236: pCylinder21 24
+    400238: pCylinder21 25
+    400240: pCylinder21 26
+    400242: pCylinder21 27
+    400244: pCylinder21 28
+    400246: pCylinder21 29
+    400248: pCylinder21 3
+    400250: pCylinder21 30
+    400252: pCylinder21 31
+    400254: pCylinder21 32
+    400256: pCylinder21 33
+    400258: pCylinder21 34
+    400260: pCylinder21 35
+    400262: pCylinder21 4
+    400264: pCylinder21 5
+    400266: pCylinder21 6
+    400268: pCylinder21 7
+    400270: pCylinder21 8
+    400272: pCylinder21 9
+    400274: pCylinder22
+    400276: pCylinder22 1
+    400278: pCylinder22 10
+    400280: pCylinder22 11
+    400282: pCylinder22 12
+    400284: pCylinder22 13
+    400286: pCylinder22 14
+    400288: pCylinder22 15
+    400290: pCylinder22 16
+    400292: pCylinder22 17
+    400294: pCylinder22 18
+    400296: pCylinder22 19
+    400298: pCylinder22 2
+    400300: pCylinder22 20
+    400302: pCylinder22 21
+    400304: pCylinder22 22
+    400306: pCylinder22 23
+    400308: pCylinder22 24
+    400310: pCylinder22 25
+    400312: pCylinder22 26
+    400314: pCylinder22 27
+    400316: pCylinder22 28
+    400318: pCylinder22 29
+    400320: pCylinder22 3
+    400322: pCylinder22 30
+    400324: pCylinder22 31
+    400326: pCylinder22 32
+    400328: pCylinder22 33
+    400330: pCylinder22 34
+    400332: pCylinder22 35
+    400334: pCylinder22 4
+    400336: pCylinder22 5
+    400338: pCylinder22 6
+    400340: pCylinder22 7
+    400342: pCylinder22 8
+    400344: pCylinder22 9
+    400346: pCylinder23
+    400348: pCylinder23 1
+    400350: pCylinder23 10
+    400352: pCylinder23 11
+    400354: pCylinder23 12
+    400356: pCylinder23 13
+    400358: pCylinder23 14
+    400360: pCylinder23 15
+    400362: pCylinder23 16
+    400364: pCylinder23 17
+    400366: pCylinder23 18
+    400368: pCylinder23 19
+    400370: pCylinder23 2
+    400372: pCylinder23 20
+    400374: pCylinder23 21
+    400376: pCylinder23 22
+    400378: pCylinder23 23
+    400380: pCylinder23 24
+    400382: pCylinder23 25
+    400384: pCylinder23 26
+    400386: pCylinder23 27
+    400388: pCylinder23 28
+    400390: pCylinder23 29
+    400392: pCylinder23 3
+    400394: pCylinder23 30
+    400396: pCylinder23 31
+    400398: pCylinder23 32
+    400400: pCylinder23 33
+    400402: pCylinder23 34
+    400404: pCylinder23 35
+    400406: pCylinder23 4
+    400408: pCylinder23 5
+    400410: pCylinder23 6
+    400412: pCylinder23 7
+    400414: pCylinder23 8
+    400416: pCylinder23 9
+    400418: pCylinder24
+    400420: pCylinder24 1
+    400422: pCylinder24 10
+    400424: pCylinder24 11
+    400426: pCylinder24 12
+    400428: pCylinder24 13
+    400430: pCylinder24 14
+    400432: pCylinder24 15
+    400434: pCylinder24 16
+    400436: pCylinder24 17
+    400438: pCylinder24 18
+    400440: pCylinder24 19
+    400442: pCylinder24 2
+    400444: pCylinder24 20
+    400446: pCylinder24 21
+    400448: pCylinder24 22
+    400450: pCylinder24 23
+    400452: pCylinder24 24
+    400454: pCylinder24 25
+    400456: pCylinder24 26
+    400458: pCylinder24 27
+    400460: pCylinder24 28
+    400462: pCylinder24 29
+    400464: pCylinder24 3
+    400466: pCylinder24 30
+    400468: pCylinder24 31
+    400470: pCylinder24 32
+    400472: pCylinder24 33
+    400474: pCylinder24 34
+    400476: pCylinder24 35
+    400478: pCylinder24 4
+    400480: pCylinder24 5
+    400482: pCylinder24 6
+    400484: pCylinder24 7
+    400486: pCylinder24 8
+    400488: pCylinder24 9
+    400490: pCylinder25
+    400492: pCylinder25 1
+    400494: pCylinder25 10
+    400496: pCylinder25 11
+    400498: pCylinder25 12
+    400500: pCylinder25 13
+    400502: pCylinder25 14
+    400504: pCylinder25 15
+    400506: pCylinder25 16
+    400508: pCylinder25 17
+    400510: pCylinder25 18
+    400512: pCylinder25 19
+    400514: pCylinder25 2
+    400516: pCylinder25 20
+    400518: pCylinder25 21
+    400520: pCylinder25 22
+    400522: pCylinder25 23
+    400524: pCylinder25 24
+    400526: pCylinder25 25
+    400528: pCylinder25 26
+    400530: pCylinder25 27
+    400532: pCylinder25 28
+    400534: pCylinder25 29
+    400536: pCylinder25 3
+    400538: pCylinder25 30
+    400540: pCylinder25 31
+    400542: pCylinder25 32
+    400544: pCylinder25 33
+    400546: pCylinder25 34
+    400548: pCylinder25 35
+    400550: pCylinder25 4
+    400552: pCylinder25 5
+    400554: pCylinder25 6
+    400556: pCylinder25 7
+    400558: pCylinder25 8
+    400560: pCylinder25 9
+    400562: pCylinder26
+    400564: pCylinder26 1
+    400566: pCylinder26 10
+    400568: pCylinder26 11
+    400570: pCylinder26 12
+    400572: pCylinder26 13
+    400574: pCylinder26 14
+    400576: pCylinder26 15
+    400578: pCylinder26 16
+    400580: pCylinder26 17
+    400582: pCylinder26 18
+    400584: pCylinder26 19
+    400586: pCylinder26 2
+    400588: pCylinder26 20
+    400590: pCylinder26 21
+    400592: pCylinder26 22
+    400594: pCylinder26 23
+    400596: pCylinder26 24
+    400598: pCylinder26 25
+    400600: pCylinder26 26
+    400602: pCylinder26 27
+    400604: pCylinder26 28
+    400606: pCylinder26 29
+    400608: pCylinder26 3
+    400610: pCylinder26 30
+    400612: pCylinder26 31
+    400614: pCylinder26 32
+    400616: pCylinder26 33
+    400618: pCylinder26 34
+    400620: pCylinder26 35
+    400622: pCylinder26 4
+    400624: pCylinder26 5
+    400626: pCylinder26 6
+    400628: pCylinder26 7
+    400630: pCylinder26 8
+    400632: pCylinder26 9
+    400634: pCylinder27
+    400636: pCylinder28
+    400638: pCylinder29
+    400640: pCylinder30
+    400642: pCylinder31
+    400644: pCylinder32
+    400646: pCylinder33
+    400648: pCylinder34
+    400650: pCylinder35
+    400652: pCylinder35 1
+    400654: pCylinder35 2
+    400656: pCylinder35 3
+    400658: pCylinder36
+    400660: pCylinder36 1
+    400662: pCylinder36 2
+    400664: pCylinder36 3
+    400666: pCylinder37
+    400668: pCylinder37 1
+    400670: pCylinder37 2
+    400672: pCylinder37 3
+    400674: pCylinder38
+    400676: pCylinder39
+    400678: pCylinder41
+    400680: pCylinder42
+    400682: pCylinder43
+    400684: pCylinder44
+    400686: pCylinder45
+    400688: pCylinder45 1
+    400690: pCylinder45 2
+    400692: pCylinder45 3
+    400694: pCylinder45 4
+    400696: pCylinder45 5
+    400698: pCylinder45 6
+    400700: pCylinder45 7
+    400702: pCylinder46
+    400704: pCylinder46 1
+    400706: pCylinder46 2
+    400708: pCylinder46 3
+    400710: pCylinder46 4
+    400712: pCylinder46 5
+    400714: pCylinder46 6
+    400716: pCylinder46 7
+    400718: pCylinder47
+    400720: pCylinder47 1
+    400722: pCylinder47 2
+    400724: pCylinder47 3
+    400726: pCylinder47 4
+    400728: pCylinder47 5
+    400730: pCylinder47 6
+    400732: pCylinder47 7
+    400734: pCylinder48
+    400736: pCylinder50
+    400738: pCylinder52
+    400740: pCylinder53
+    400742: pCylinder54
+    400744: pCylinder55
+    400746: pCylinder56
+    400748: pCylinder57
+    400750: pCylinder58
+    400752: pCylinder59
+    400754: pCylinder60
+    400756: pCylinder61
+    400758: pCylinder62
+    400760: pCylinder63
+    400762: pCylinder64
+    400764: pCylinder65
+    400766: pCylinder66
+    400768: pCylinder67
+    400770: pCylinder68
+    400772: pCylinder69
+    400774: pCylinder69 1
+    400776: pCylinder69 2
+    400778: pCylinder70
+    400780: pCylinder70 1
+    400782: pCylinder70 2
+    400784: pCylinder71
+    400786: pCylinder72
+    400788: pCylinder73
+    400790: pDisc1
+    400792: pDisc1 1
+    400794: pDisc1 10
+    400796: pDisc1 11
+    400798: pDisc1 12
+    400800: pDisc1 13
+    400802: pDisc1 14
+    400804: pDisc1 15
+    400806: pDisc1 16
+    400808: pDisc1 17
+    400810: pDisc1 18
+    400812: pDisc1 19
+    400814: pDisc1 2
+    400816: pDisc1 20
+    400818: pDisc1 21
+    400820: pDisc1 22
+    400822: pDisc1 23
+    400824: pDisc1 24
+    400826: pDisc1 25
+    400828: pDisc1 26
+    400830: pDisc1 27
+    400832: pDisc1 28
+    400834: pDisc1 29
+    400836: pDisc1 3
+    400838: pDisc1 30
+    400840: pDisc1 31
+    400842: pDisc1 32
+    400844: pDisc1 33
+    400846: pDisc1 34
+    400848: pDisc1 35
+    400850: pDisc1 4
+    400852: pDisc1 5
+    400854: pDisc1 6
+    400856: pDisc1 7
+    400858: pDisc1 8
+    400860: pDisc1 9
+    400862: pDisc2
+    400864: pDisc2 1
+    400866: pDisc2 10
+    400868: pDisc2 11
+    400870: pDisc2 12
+    400872: pDisc2 13
+    400874: pDisc2 14
+    400876: pDisc2 15
+    400878: pDisc2 16
+    400880: pDisc2 17
+    400882: pDisc2 18
+    400884: pDisc2 19
+    400886: pDisc2 2
+    400888: pDisc2 20
+    400890: pDisc2 21
+    400892: pDisc2 22
+    400894: pDisc2 23
+    400896: pDisc2 24
+    400898: pDisc2 25
+    400900: pDisc2 26
+    400902: pDisc2 27
+    400904: pDisc2 28
+    400906: pDisc2 29
+    400908: pDisc2 3
+    400910: pDisc2 30
+    400912: pDisc2 31
+    400914: pDisc2 32
+    400916: pDisc2 33
+    400918: pDisc2 34
+    400920: pDisc2 35
+    400922: pDisc2 4
+    400924: pDisc2 5
+    400926: pDisc2 6
+    400928: pDisc2 7
+    400930: pDisc2 8
+    400932: pDisc2 9
+    400934: pDisc3
+    400936: pDisc3 1
+    400938: pDisc3 10
+    400940: pDisc3 11
+    400942: pDisc3 12
+    400944: pDisc3 13
+    400946: pDisc3 14
+    400948: pDisc3 15
+    400950: pDisc3 16
+    400952: pDisc3 17
+    400954: pDisc3 18
+    400956: pDisc3 19
+    400958: pDisc3 2
+    400960: pDisc3 20
+    400962: pDisc3 21
+    400964: pDisc3 22
+    400966: pDisc3 23
+    400968: pDisc3 24
+    400970: pDisc3 25
+    400972: pDisc3 26
+    400974: pDisc3 27
+    400976: pDisc3 28
+    400978: pDisc3 29
+    400980: pDisc3 3
+    400982: pDisc3 30
+    400984: pDisc3 31
+    400986: pDisc3 32
+    400988: pDisc3 33
+    400990: pDisc3 34
+    400992: pDisc3 35
+    400994: pDisc3 4
+    400996: pDisc3 5
+    400998: pDisc3 6
+    401000: pDisc3 7
+    401002: pDisc3 8
+    401004: pDisc3 9
+    401006: pDisc4
+    401008: pDisc4 1
+    401010: pDisc4 10
+    401012: pDisc4 11
+    401014: pDisc4 12
+    401016: pDisc4 13
+    401018: pDisc4 14
+    401020: pDisc4 15
+    401022: pDisc4 16
+    401024: pDisc4 17
+    401026: pDisc4 18
+    401028: pDisc4 19
+    401030: pDisc4 2
+    401032: pDisc4 20
+    401034: pDisc4 21
+    401036: pDisc4 22
+    401038: pDisc4 23
+    401040: pDisc4 24
+    401042: pDisc4 25
+    401044: pDisc4 26
+    401046: pDisc4 27
+    401048: pDisc4 28
+    401050: pDisc4 29
+    401052: pDisc4 3
+    401054: pDisc4 30
+    401056: pDisc4 31
+    401058: pDisc4 32
+    401060: pDisc4 33
+    401062: pDisc4 34
+    401064: pDisc4 35
+    401066: pDisc4 4
+    401068: pDisc4 5
+    401070: pDisc4 6
+    401072: pDisc4 7
+    401074: pDisc4 8
+    401076: pDisc4 9
+    401078: pHelix1
+    401080: pHelix1 1
+    401082: pHelix1 10
+    401084: pHelix1 11
+    401086: pHelix1 12
+    401088: pHelix1 13
+    401090: pHelix1 14
+    401092: pHelix1 15
+    401094: pHelix1 16
+    401096: pHelix1 17
+    401098: pHelix1 18
+    401100: pHelix1 19
+    401102: pHelix1 2
+    401104: pHelix1 20
+    401106: pHelix1 21
+    401108: pHelix1 22
+    401110: pHelix1 23
+    401112: pHelix1 24
+    401114: pHelix1 25
+    401116: pHelix1 26
+    401118: pHelix1 27
+    401120: pHelix1 28
+    401122: pHelix1 29
+    401124: pHelix1 3
+    401126: pHelix1 30
+    401128: pHelix1 31
+    401130: pHelix1 32
+    401132: pHelix1 33
+    401134: pHelix1 34
+    401136: pHelix1 35
+    401138: pHelix1 4
+    401140: pHelix1 5
+    401142: pHelix1 6
+    401144: pHelix1 7
+    401146: pHelix1 8
+    401148: pHelix1 9
+    401150: pTorus1
+    401152: pTorus1 1
+    401154: pTorus1 10
+    401156: pTorus1 11
+    401158: pTorus1 12
+    401160: pTorus1 13
+    401162: pTorus1 14
+    401164: pTorus1 15
+    401166: pTorus1 16
+    401168: pTorus1 17
+    401170: pTorus1 18
+    401172: pTorus1 19
+    401174: pTorus1 2
+    401176: pTorus1 20
+    401178: pTorus1 21
+    401180: pTorus1 22
+    401182: pTorus1 23
+    401184: pTorus1 24
+    401186: pTorus1 25
+    401188: pTorus1 26
+    401190: pTorus1 27
+    401192: pTorus1 28
+    401194: pTorus1 29
+    401196: pTorus1 3
+    401198: pTorus1 30
+    401200: pTorus1 31
+    401202: pTorus1 32
+    401204: pTorus1 33
+    401206: pTorus1 34
+    401208: pTorus1 35
+    401210: pTorus1 4
+    401212: pTorus1 5
+    401214: pTorus1 6
+    401216: pTorus1 7
+    401218: pTorus1 8
+    401220: pTorus1 9
+    401222: pTorus2
+    401224: pTorus2 1
+    401226: pTorus2 2
+    401228: pTorus2 3
+    401230: pTorus2 4
+    401232: pTorus2 5
+    401234: pTorus2 6
+    401236: pTorus2 7
+    401238: transform3
+    401240: transform4
+    401242: transform5
+    401244: transform6
     2300000: pCube1
     2300002: pCube2
     2300004: pCube10
@@ -76,6 +1274,545 @@ ModelImporter:
     2300040: pCylinder9
     2300042: pSphere1
     2300044: pSphere2
+    2300046: extrudedSurface1
+    2300048: pCube11
+    2300050: pCube12
+    2300052: pCube12 1
+    2300054: pCube12 2
+    2300056: pCube12 3
+    2300058: pCube16
+    2300060: pCube17
+    2300062: pCube18
+    2300064: pCube19
+    2300066: pCube20
+    2300068: pCube31
+    2300070: pCube32
+    2300072: pCube33
+    2300074: pCube34
+    2300076: pCube35
+    2300078: pCube35 1
+    2300080: pCube35 2
+    2300082: pCylinder18
+    2300084: pCylinder19
+    2300086: pCylinder20
+    2300088: pCylinder21
+    2300090: pCylinder21 1
+    2300092: pCylinder21 10
+    2300094: pCylinder21 11
+    2300096: pCylinder21 12
+    2300098: pCylinder21 13
+    2300100: pCylinder21 14
+    2300102: pCylinder21 15
+    2300104: pCylinder21 16
+    2300106: pCylinder21 17
+    2300108: pCylinder21 18
+    2300110: pCylinder21 19
+    2300112: pCylinder21 2
+    2300114: pCylinder21 20
+    2300116: pCylinder21 21
+    2300118: pCylinder21 22
+    2300120: pCylinder21 23
+    2300122: pCylinder21 24
+    2300124: pCylinder21 25
+    2300126: pCylinder21 26
+    2300128: pCylinder21 27
+    2300130: pCylinder21 28
+    2300132: pCylinder21 29
+    2300134: pCylinder21 3
+    2300136: pCylinder21 30
+    2300138: pCylinder21 31
+    2300140: pCylinder21 32
+    2300142: pCylinder21 33
+    2300144: pCylinder21 34
+    2300146: pCylinder21 35
+    2300148: pCylinder21 4
+    2300150: pCylinder21 5
+    2300152: pCylinder21 6
+    2300154: pCylinder21 7
+    2300156: pCylinder21 8
+    2300158: pCylinder21 9
+    2300160: pCylinder22
+    2300162: pCylinder22 1
+    2300164: pCylinder22 10
+    2300166: pCylinder22 11
+    2300168: pCylinder22 12
+    2300170: pCylinder22 13
+    2300172: pCylinder22 14
+    2300174: pCylinder22 15
+    2300176: pCylinder22 16
+    2300178: pCylinder22 17
+    2300180: pCylinder22 18
+    2300182: pCylinder22 19
+    2300184: pCylinder22 2
+    2300186: pCylinder22 20
+    2300188: pCylinder22 21
+    2300190: pCylinder22 22
+    2300192: pCylinder22 23
+    2300194: pCylinder22 24
+    2300196: pCylinder22 25
+    2300198: pCylinder22 26
+    2300200: pCylinder22 27
+    2300202: pCylinder22 28
+    2300204: pCylinder22 29
+    2300206: pCylinder22 3
+    2300208: pCylinder22 30
+    2300210: pCylinder22 31
+    2300212: pCylinder22 32
+    2300214: pCylinder22 33
+    2300216: pCylinder22 34
+    2300218: pCylinder22 35
+    2300220: pCylinder22 4
+    2300222: pCylinder22 5
+    2300224: pCylinder22 6
+    2300226: pCylinder22 7
+    2300228: pCylinder22 8
+    2300230: pCylinder22 9
+    2300232: pCylinder23
+    2300234: pCylinder23 1
+    2300236: pCylinder23 10
+    2300238: pCylinder23 11
+    2300240: pCylinder23 12
+    2300242: pCylinder23 13
+    2300244: pCylinder23 14
+    2300246: pCylinder23 15
+    2300248: pCylinder23 16
+    2300250: pCylinder23 17
+    2300252: pCylinder23 18
+    2300254: pCylinder23 19
+    2300256: pCylinder23 2
+    2300258: pCylinder23 20
+    2300260: pCylinder23 21
+    2300262: pCylinder23 22
+    2300264: pCylinder23 23
+    2300266: pCylinder23 24
+    2300268: pCylinder23 25
+    2300270: pCylinder23 26
+    2300272: pCylinder23 27
+    2300274: pCylinder23 28
+    2300276: pCylinder23 29
+    2300278: pCylinder23 3
+    2300280: pCylinder23 30
+    2300282: pCylinder23 31
+    2300284: pCylinder23 32
+    2300286: pCylinder23 33
+    2300288: pCylinder23 34
+    2300290: pCylinder23 35
+    2300292: pCylinder23 4
+    2300294: pCylinder23 5
+    2300296: pCylinder23 6
+    2300298: pCylinder23 7
+    2300300: pCylinder23 8
+    2300302: pCylinder23 9
+    2300304: pCylinder24
+    2300306: pCylinder24 1
+    2300308: pCylinder24 10
+    2300310: pCylinder24 11
+    2300312: pCylinder24 12
+    2300314: pCylinder24 13
+    2300316: pCylinder24 14
+    2300318: pCylinder24 15
+    2300320: pCylinder24 16
+    2300322: pCylinder24 17
+    2300324: pCylinder24 18
+    2300326: pCylinder24 19
+    2300328: pCylinder24 2
+    2300330: pCylinder24 20
+    2300332: pCylinder24 21
+    2300334: pCylinder24 22
+    2300336: pCylinder24 23
+    2300338: pCylinder24 24
+    2300340: pCylinder24 25
+    2300342: pCylinder24 26
+    2300344: pCylinder24 27
+    2300346: pCylinder24 28
+    2300348: pCylinder24 29
+    2300350: pCylinder24 3
+    2300352: pCylinder24 30
+    2300354: pCylinder24 31
+    2300356: pCylinder24 32
+    2300358: pCylinder24 33
+    2300360: pCylinder24 34
+    2300362: pCylinder24 35
+    2300364: pCylinder24 4
+    2300366: pCylinder24 5
+    2300368: pCylinder24 6
+    2300370: pCylinder24 7
+    2300372: pCylinder24 8
+    2300374: pCylinder24 9
+    2300376: pCylinder25
+    2300378: pCylinder25 1
+    2300380: pCylinder25 10
+    2300382: pCylinder25 11
+    2300384: pCylinder25 12
+    2300386: pCylinder25 13
+    2300388: pCylinder25 14
+    2300390: pCylinder25 15
+    2300392: pCylinder25 16
+    2300394: pCylinder25 17
+    2300396: pCylinder25 18
+    2300398: pCylinder25 19
+    2300400: pCylinder25 2
+    2300402: pCylinder25 20
+    2300404: pCylinder25 21
+    2300406: pCylinder25 22
+    2300408: pCylinder25 23
+    2300410: pCylinder25 24
+    2300412: pCylinder25 25
+    2300414: pCylinder25 26
+    2300416: pCylinder25 27
+    2300418: pCylinder25 28
+    2300420: pCylinder25 29
+    2300422: pCylinder25 3
+    2300424: pCylinder25 30
+    2300426: pCylinder25 31
+    2300428: pCylinder25 32
+    2300430: pCylinder25 33
+    2300432: pCylinder25 34
+    2300434: pCylinder25 35
+    2300436: pCylinder25 4
+    2300438: pCylinder25 5
+    2300440: pCylinder25 6
+    2300442: pCylinder25 7
+    2300444: pCylinder25 8
+    2300446: pCylinder25 9
+    2300448: pCylinder26
+    2300450: pCylinder26 1
+    2300452: pCylinder26 10
+    2300454: pCylinder26 11
+    2300456: pCylinder26 12
+    2300458: pCylinder26 13
+    2300460: pCylinder26 14
+    2300462: pCylinder26 15
+    2300464: pCylinder26 16
+    2300466: pCylinder26 17
+    2300468: pCylinder26 18
+    2300470: pCylinder26 19
+    2300472: pCylinder26 2
+    2300474: pCylinder26 20
+    2300476: pCylinder26 21
+    2300478: pCylinder26 22
+    2300480: pCylinder26 23
+    2300482: pCylinder26 24
+    2300484: pCylinder26 25
+    2300486: pCylinder26 26
+    2300488: pCylinder26 27
+    2300490: pCylinder26 28
+    2300492: pCylinder26 29
+    2300494: pCylinder26 3
+    2300496: pCylinder26 30
+    2300498: pCylinder26 31
+    2300500: pCylinder26 32
+    2300502: pCylinder26 33
+    2300504: pCylinder26 34
+    2300506: pCylinder26 35
+    2300508: pCylinder26 4
+    2300510: pCylinder26 5
+    2300512: pCylinder26 6
+    2300514: pCylinder26 7
+    2300516: pCylinder26 8
+    2300518: pCylinder26 9
+    2300520: pCylinder27
+    2300522: pCylinder28
+    2300524: pCylinder29
+    2300526: pCylinder30
+    2300528: pCylinder31
+    2300530: pCylinder32
+    2300532: pCylinder33
+    2300534: pCylinder34
+    2300536: pCylinder35
+    2300538: pCylinder35 1
+    2300540: pCylinder35 2
+    2300542: pCylinder35 3
+    2300544: pCylinder36
+    2300546: pCylinder36 1
+    2300548: pCylinder36 2
+    2300550: pCylinder36 3
+    2300552: pCylinder37
+    2300554: pCylinder37 1
+    2300556: pCylinder37 2
+    2300558: pCylinder37 3
+    2300560: pCylinder38
+    2300562: pCylinder39
+    2300564: pCylinder41
+    2300566: pCylinder42
+    2300568: pCylinder43
+    2300570: pCylinder44
+    2300572: pCylinder45
+    2300574: pCylinder45 1
+    2300576: pCylinder45 2
+    2300578: pCylinder45 3
+    2300580: pCylinder45 4
+    2300582: pCylinder45 5
+    2300584: pCylinder45 6
+    2300586: pCylinder45 7
+    2300588: pCylinder46
+    2300590: pCylinder46 1
+    2300592: pCylinder46 2
+    2300594: pCylinder46 3
+    2300596: pCylinder46 4
+    2300598: pCylinder46 5
+    2300600: pCylinder46 6
+    2300602: pCylinder46 7
+    2300604: pCylinder47
+    2300606: pCylinder47 1
+    2300608: pCylinder47 2
+    2300610: pCylinder47 3
+    2300612: pCylinder47 4
+    2300614: pCylinder47 5
+    2300616: pCylinder47 6
+    2300618: pCylinder47 7
+    2300620: pCylinder48
+    2300622: pCylinder50
+    2300624: pCylinder52
+    2300626: pCylinder53
+    2300628: pCylinder54
+    2300630: pCylinder55
+    2300632: pCylinder56
+    2300634: pCylinder57
+    2300636: pCylinder58
+    2300638: pCylinder59
+    2300640: pCylinder60
+    2300642: pCylinder61
+    2300644: pCylinder62
+    2300646: pCylinder63
+    2300648: pCylinder64
+    2300650: pCylinder65
+    2300652: pCylinder66
+    2300654: pCylinder67
+    2300656: pCylinder68
+    2300658: pCylinder69
+    2300660: pCylinder69 1
+    2300662: pCylinder69 2
+    2300664: pCylinder70
+    2300666: pCylinder70 1
+    2300668: pCylinder70 2
+    2300670: pCylinder71
+    2300672: pCylinder72
+    2300674: pCylinder73
+    2300676: pDisc1
+    2300678: pDisc1 1
+    2300680: pDisc1 10
+    2300682: pDisc1 11
+    2300684: pDisc1 12
+    2300686: pDisc1 13
+    2300688: pDisc1 14
+    2300690: pDisc1 15
+    2300692: pDisc1 16
+    2300694: pDisc1 17
+    2300696: pDisc1 18
+    2300698: pDisc1 19
+    2300700: pDisc1 2
+    2300702: pDisc1 20
+    2300704: pDisc1 21
+    2300706: pDisc1 22
+    2300708: pDisc1 23
+    2300710: pDisc1 24
+    2300712: pDisc1 25
+    2300714: pDisc1 26
+    2300716: pDisc1 27
+    2300718: pDisc1 28
+    2300720: pDisc1 29
+    2300722: pDisc1 3
+    2300724: pDisc1 30
+    2300726: pDisc1 31
+    2300728: pDisc1 32
+    2300730: pDisc1 33
+    2300732: pDisc1 34
+    2300734: pDisc1 35
+    2300736: pDisc1 4
+    2300738: pDisc1 5
+    2300740: pDisc1 6
+    2300742: pDisc1 7
+    2300744: pDisc1 8
+    2300746: pDisc1 9
+    2300748: pDisc2
+    2300750: pDisc2 1
+    2300752: pDisc2 10
+    2300754: pDisc2 11
+    2300756: pDisc2 12
+    2300758: pDisc2 13
+    2300760: pDisc2 14
+    2300762: pDisc2 15
+    2300764: pDisc2 16
+    2300766: pDisc2 17
+    2300768: pDisc2 18
+    2300770: pDisc2 19
+    2300772: pDisc2 2
+    2300774: pDisc2 20
+    2300776: pDisc2 21
+    2300778: pDisc2 22
+    2300780: pDisc2 23
+    2300782: pDisc2 24
+    2300784: pDisc2 25
+    2300786: pDisc2 26
+    2300788: pDisc2 27
+    2300790: pDisc2 28
+    2300792: pDisc2 29
+    2300794: pDisc2 3
+    2300796: pDisc2 30
+    2300798: pDisc2 31
+    2300800: pDisc2 32
+    2300802: pDisc2 33
+    2300804: pDisc2 34
+    2300806: pDisc2 35
+    2300808: pDisc2 4
+    2300810: pDisc2 5
+    2300812: pDisc2 6
+    2300814: pDisc2 7
+    2300816: pDisc2 8
+    2300818: pDisc2 9
+    2300820: pDisc3
+    2300822: pDisc3 1
+    2300824: pDisc3 10
+    2300826: pDisc3 11
+    2300828: pDisc3 12
+    2300830: pDisc3 13
+    2300832: pDisc3 14
+    2300834: pDisc3 15
+    2300836: pDisc3 16
+    2300838: pDisc3 17
+    2300840: pDisc3 18
+    2300842: pDisc3 19
+    2300844: pDisc3 2
+    2300846: pDisc3 20
+    2300848: pDisc3 21
+    2300850: pDisc3 22
+    2300852: pDisc3 23
+    2300854: pDisc3 24
+    2300856: pDisc3 25
+    2300858: pDisc3 26
+    2300860: pDisc3 27
+    2300862: pDisc3 28
+    2300864: pDisc3 29
+    2300866: pDisc3 3
+    2300868: pDisc3 30
+    2300870: pDisc3 31
+    2300872: pDisc3 32
+    2300874: pDisc3 33
+    2300876: pDisc3 34
+    2300878: pDisc3 35
+    2300880: pDisc3 4
+    2300882: pDisc3 5
+    2300884: pDisc3 6
+    2300886: pDisc3 7
+    2300888: pDisc3 8
+    2300890: pDisc3 9
+    2300892: pDisc4
+    2300894: pDisc4 1
+    2300896: pDisc4 10
+    2300898: pDisc4 11
+    2300900: pDisc4 12
+    2300902: pDisc4 13
+    2300904: pDisc4 14
+    2300906: pDisc4 15
+    2300908: pDisc4 16
+    2300910: pDisc4 17
+    2300912: pDisc4 18
+    2300914: pDisc4 19
+    2300916: pDisc4 2
+    2300918: pDisc4 20
+    2300920: pDisc4 21
+    2300922: pDisc4 22
+    2300924: pDisc4 23
+    2300926: pDisc4 24
+    2300928: pDisc4 25
+    2300930: pDisc4 26
+    2300932: pDisc4 27
+    2300934: pDisc4 28
+    2300936: pDisc4 29
+    2300938: pDisc4 3
+    2300940: pDisc4 30
+    2300942: pDisc4 31
+    2300944: pDisc4 32
+    2300946: pDisc4 33
+    2300948: pDisc4 34
+    2300950: pDisc4 35
+    2300952: pDisc4 4
+    2300954: pDisc4 5
+    2300956: pDisc4 6
+    2300958: pDisc4 7
+    2300960: pDisc4 8
+    2300962: pDisc4 9
+    2300964: pHelix1
+    2300966: pHelix1 1
+    2300968: pHelix1 10
+    2300970: pHelix1 11
+    2300972: pHelix1 12
+    2300974: pHelix1 13
+    2300976: pHelix1 14
+    2300978: pHelix1 15
+    2300980: pHelix1 16
+    2300982: pHelix1 17
+    2300984: pHelix1 18
+    2300986: pHelix1 19
+    2300988: pHelix1 2
+    2300990: pHelix1 20
+    2300992: pHelix1 21
+    2300994: pHelix1 22
+    2300996: pHelix1 23
+    2300998: pHelix1 24
+    2301000: pHelix1 25
+    2301002: pHelix1 26
+    2301004: pHelix1 27
+    2301006: pHelix1 28
+    2301008: pHelix1 29
+    2301010: pHelix1 3
+    2301012: pHelix1 30
+    2301014: pHelix1 31
+    2301016: pHelix1 32
+    2301018: pHelix1 33
+    2301020: pHelix1 34
+    2301022: pHelix1 35
+    2301024: pHelix1 4
+    2301026: pHelix1 5
+    2301028: pHelix1 6
+    2301030: pHelix1 7
+    2301032: pHelix1 8
+    2301034: pHelix1 9
+    2301036: pTorus1
+    2301038: pTorus1 1
+    2301040: pTorus1 10
+    2301042: pTorus1 11
+    2301044: pTorus1 12
+    2301046: pTorus1 13
+    2301048: pTorus1 14
+    2301050: pTorus1 15
+    2301052: pTorus1 16
+    2301054: pTorus1 17
+    2301056: pTorus1 18
+    2301058: pTorus1 19
+    2301060: pTorus1 2
+    2301062: pTorus1 20
+    2301064: pTorus1 21
+    2301066: pTorus1 22
+    2301068: pTorus1 23
+    2301070: pTorus1 24
+    2301072: pTorus1 25
+    2301074: pTorus1 26
+    2301076: pTorus1 27
+    2301078: pTorus1 28
+    2301080: pTorus1 29
+    2301082: pTorus1 3
+    2301084: pTorus1 30
+    2301086: pTorus1 31
+    2301088: pTorus1 32
+    2301090: pTorus1 33
+    2301092: pTorus1 34
+    2301094: pTorus1 35
+    2301096: pTorus1 4
+    2301098: pTorus1 5
+    2301100: pTorus1 6
+    2301102: pTorus1 7
+    2301104: pTorus1 8
+    2301106: pTorus1 9
+    2301108: pTorus2
+    2301110: pTorus2 1
+    2301112: pTorus2 2
+    2301114: pTorus2 3
+    2301116: pTorus2 4
+    2301118: pTorus2 5
+    2301120: pTorus2 6
+    2301122: pTorus2 7
     3300000: pCube1
     3300002: pCube2
     3300004: pCube10
@@ -99,6 +1836,545 @@ ModelImporter:
     3300040: pCylinder9
     3300042: pSphere1
     3300044: pSphere2
+    3300046: extrudedSurface1
+    3300048: pCube11
+    3300050: pCube12
+    3300052: pCube12 1
+    3300054: pCube12 2
+    3300056: pCube12 3
+    3300058: pCube16
+    3300060: pCube17
+    3300062: pCube18
+    3300064: pCube19
+    3300066: pCube20
+    3300068: pCube31
+    3300070: pCube32
+    3300072: pCube33
+    3300074: pCube34
+    3300076: pCube35
+    3300078: pCube35 1
+    3300080: pCube35 2
+    3300082: pCylinder18
+    3300084: pCylinder19
+    3300086: pCylinder20
+    3300088: pCylinder21
+    3300090: pCylinder21 1
+    3300092: pCylinder21 10
+    3300094: pCylinder21 11
+    3300096: pCylinder21 12
+    3300098: pCylinder21 13
+    3300100: pCylinder21 14
+    3300102: pCylinder21 15
+    3300104: pCylinder21 16
+    3300106: pCylinder21 17
+    3300108: pCylinder21 18
+    3300110: pCylinder21 19
+    3300112: pCylinder21 2
+    3300114: pCylinder21 20
+    3300116: pCylinder21 21
+    3300118: pCylinder21 22
+    3300120: pCylinder21 23
+    3300122: pCylinder21 24
+    3300124: pCylinder21 25
+    3300126: pCylinder21 26
+    3300128: pCylinder21 27
+    3300130: pCylinder21 28
+    3300132: pCylinder21 29
+    3300134: pCylinder21 3
+    3300136: pCylinder21 30
+    3300138: pCylinder21 31
+    3300140: pCylinder21 32
+    3300142: pCylinder21 33
+    3300144: pCylinder21 34
+    3300146: pCylinder21 35
+    3300148: pCylinder21 4
+    3300150: pCylinder21 5
+    3300152: pCylinder21 6
+    3300154: pCylinder21 7
+    3300156: pCylinder21 8
+    3300158: pCylinder21 9
+    3300160: pCylinder22
+    3300162: pCylinder22 1
+    3300164: pCylinder22 10
+    3300166: pCylinder22 11
+    3300168: pCylinder22 12
+    3300170: pCylinder22 13
+    3300172: pCylinder22 14
+    3300174: pCylinder22 15
+    3300176: pCylinder22 16
+    3300178: pCylinder22 17
+    3300180: pCylinder22 18
+    3300182: pCylinder22 19
+    3300184: pCylinder22 2
+    3300186: pCylinder22 20
+    3300188: pCylinder22 21
+    3300190: pCylinder22 22
+    3300192: pCylinder22 23
+    3300194: pCylinder22 24
+    3300196: pCylinder22 25
+    3300198: pCylinder22 26
+    3300200: pCylinder22 27
+    3300202: pCylinder22 28
+    3300204: pCylinder22 29
+    3300206: pCylinder22 3
+    3300208: pCylinder22 30
+    3300210: pCylinder22 31
+    3300212: pCylinder22 32
+    3300214: pCylinder22 33
+    3300216: pCylinder22 34
+    3300218: pCylinder22 35
+    3300220: pCylinder22 4
+    3300222: pCylinder22 5
+    3300224: pCylinder22 6
+    3300226: pCylinder22 7
+    3300228: pCylinder22 8
+    3300230: pCylinder22 9
+    3300232: pCylinder23
+    3300234: pCylinder23 1
+    3300236: pCylinder23 10
+    3300238: pCylinder23 11
+    3300240: pCylinder23 12
+    3300242: pCylinder23 13
+    3300244: pCylinder23 14
+    3300246: pCylinder23 15
+    3300248: pCylinder23 16
+    3300250: pCylinder23 17
+    3300252: pCylinder23 18
+    3300254: pCylinder23 19
+    3300256: pCylinder23 2
+    3300258: pCylinder23 20
+    3300260: pCylinder23 21
+    3300262: pCylinder23 22
+    3300264: pCylinder23 23
+    3300266: pCylinder23 24
+    3300268: pCylinder23 25
+    3300270: pCylinder23 26
+    3300272: pCylinder23 27
+    3300274: pCylinder23 28
+    3300276: pCylinder23 29
+    3300278: pCylinder23 3
+    3300280: pCylinder23 30
+    3300282: pCylinder23 31
+    3300284: pCylinder23 32
+    3300286: pCylinder23 33
+    3300288: pCylinder23 34
+    3300290: pCylinder23 35
+    3300292: pCylinder23 4
+    3300294: pCylinder23 5
+    3300296: pCylinder23 6
+    3300298: pCylinder23 7
+    3300300: pCylinder23 8
+    3300302: pCylinder23 9
+    3300304: pCylinder24
+    3300306: pCylinder24 1
+    3300308: pCylinder24 10
+    3300310: pCylinder24 11
+    3300312: pCylinder24 12
+    3300314: pCylinder24 13
+    3300316: pCylinder24 14
+    3300318: pCylinder24 15
+    3300320: pCylinder24 16
+    3300322: pCylinder24 17
+    3300324: pCylinder24 18
+    3300326: pCylinder24 19
+    3300328: pCylinder24 2
+    3300330: pCylinder24 20
+    3300332: pCylinder24 21
+    3300334: pCylinder24 22
+    3300336: pCylinder24 23
+    3300338: pCylinder24 24
+    3300340: pCylinder24 25
+    3300342: pCylinder24 26
+    3300344: pCylinder24 27
+    3300346: pCylinder24 28
+    3300348: pCylinder24 29
+    3300350: pCylinder24 3
+    3300352: pCylinder24 30
+    3300354: pCylinder24 31
+    3300356: pCylinder24 32
+    3300358: pCylinder24 33
+    3300360: pCylinder24 34
+    3300362: pCylinder24 35
+    3300364: pCylinder24 4
+    3300366: pCylinder24 5
+    3300368: pCylinder24 6
+    3300370: pCylinder24 7
+    3300372: pCylinder24 8
+    3300374: pCylinder24 9
+    3300376: pCylinder25
+    3300378: pCylinder25 1
+    3300380: pCylinder25 10
+    3300382: pCylinder25 11
+    3300384: pCylinder25 12
+    3300386: pCylinder25 13
+    3300388: pCylinder25 14
+    3300390: pCylinder25 15
+    3300392: pCylinder25 16
+    3300394: pCylinder25 17
+    3300396: pCylinder25 18
+    3300398: pCylinder25 19
+    3300400: pCylinder25 2
+    3300402: pCylinder25 20
+    3300404: pCylinder25 21
+    3300406: pCylinder25 22
+    3300408: pCylinder25 23
+    3300410: pCylinder25 24
+    3300412: pCylinder25 25
+    3300414: pCylinder25 26
+    3300416: pCylinder25 27
+    3300418: pCylinder25 28
+    3300420: pCylinder25 29
+    3300422: pCylinder25 3
+    3300424: pCylinder25 30
+    3300426: pCylinder25 31
+    3300428: pCylinder25 32
+    3300430: pCylinder25 33
+    3300432: pCylinder25 34
+    3300434: pCylinder25 35
+    3300436: pCylinder25 4
+    3300438: pCylinder25 5
+    3300440: pCylinder25 6
+    3300442: pCylinder25 7
+    3300444: pCylinder25 8
+    3300446: pCylinder25 9
+    3300448: pCylinder26
+    3300450: pCylinder26 1
+    3300452: pCylinder26 10
+    3300454: pCylinder26 11
+    3300456: pCylinder26 12
+    3300458: pCylinder26 13
+    3300460: pCylinder26 14
+    3300462: pCylinder26 15
+    3300464: pCylinder26 16
+    3300466: pCylinder26 17
+    3300468: pCylinder26 18
+    3300470: pCylinder26 19
+    3300472: pCylinder26 2
+    3300474: pCylinder26 20
+    3300476: pCylinder26 21
+    3300478: pCylinder26 22
+    3300480: pCylinder26 23
+    3300482: pCylinder26 24
+    3300484: pCylinder26 25
+    3300486: pCylinder26 26
+    3300488: pCylinder26 27
+    3300490: pCylinder26 28
+    3300492: pCylinder26 29
+    3300494: pCylinder26 3
+    3300496: pCylinder26 30
+    3300498: pCylinder26 31
+    3300500: pCylinder26 32
+    3300502: pCylinder26 33
+    3300504: pCylinder26 34
+    3300506: pCylinder26 35
+    3300508: pCylinder26 4
+    3300510: pCylinder26 5
+    3300512: pCylinder26 6
+    3300514: pCylinder26 7
+    3300516: pCylinder26 8
+    3300518: pCylinder26 9
+    3300520: pCylinder27
+    3300522: pCylinder28
+    3300524: pCylinder29
+    3300526: pCylinder30
+    3300528: pCylinder31
+    3300530: pCylinder32
+    3300532: pCylinder33
+    3300534: pCylinder34
+    3300536: pCylinder35
+    3300538: pCylinder35 1
+    3300540: pCylinder35 2
+    3300542: pCylinder35 3
+    3300544: pCylinder36
+    3300546: pCylinder36 1
+    3300548: pCylinder36 2
+    3300550: pCylinder36 3
+    3300552: pCylinder37
+    3300554: pCylinder37 1
+    3300556: pCylinder37 2
+    3300558: pCylinder37 3
+    3300560: pCylinder38
+    3300562: pCylinder39
+    3300564: pCylinder41
+    3300566: pCylinder42
+    3300568: pCylinder43
+    3300570: pCylinder44
+    3300572: pCylinder45
+    3300574: pCylinder45 1
+    3300576: pCylinder45 2
+    3300578: pCylinder45 3
+    3300580: pCylinder45 4
+    3300582: pCylinder45 5
+    3300584: pCylinder45 6
+    3300586: pCylinder45 7
+    3300588: pCylinder46
+    3300590: pCylinder46 1
+    3300592: pCylinder46 2
+    3300594: pCylinder46 3
+    3300596: pCylinder46 4
+    3300598: pCylinder46 5
+    3300600: pCylinder46 6
+    3300602: pCylinder46 7
+    3300604: pCylinder47
+    3300606: pCylinder47 1
+    3300608: pCylinder47 2
+    3300610: pCylinder47 3
+    3300612: pCylinder47 4
+    3300614: pCylinder47 5
+    3300616: pCylinder47 6
+    3300618: pCylinder47 7
+    3300620: pCylinder48
+    3300622: pCylinder50
+    3300624: pCylinder52
+    3300626: pCylinder53
+    3300628: pCylinder54
+    3300630: pCylinder55
+    3300632: pCylinder56
+    3300634: pCylinder57
+    3300636: pCylinder58
+    3300638: pCylinder59
+    3300640: pCylinder60
+    3300642: pCylinder61
+    3300644: pCylinder62
+    3300646: pCylinder63
+    3300648: pCylinder64
+    3300650: pCylinder65
+    3300652: pCylinder66
+    3300654: pCylinder67
+    3300656: pCylinder68
+    3300658: pCylinder69
+    3300660: pCylinder69 1
+    3300662: pCylinder69 2
+    3300664: pCylinder70
+    3300666: pCylinder70 1
+    3300668: pCylinder70 2
+    3300670: pCylinder71
+    3300672: pCylinder72
+    3300674: pCylinder73
+    3300676: pDisc1
+    3300678: pDisc1 1
+    3300680: pDisc1 10
+    3300682: pDisc1 11
+    3300684: pDisc1 12
+    3300686: pDisc1 13
+    3300688: pDisc1 14
+    3300690: pDisc1 15
+    3300692: pDisc1 16
+    3300694: pDisc1 17
+    3300696: pDisc1 18
+    3300698: pDisc1 19
+    3300700: pDisc1 2
+    3300702: pDisc1 20
+    3300704: pDisc1 21
+    3300706: pDisc1 22
+    3300708: pDisc1 23
+    3300710: pDisc1 24
+    3300712: pDisc1 25
+    3300714: pDisc1 26
+    3300716: pDisc1 27
+    3300718: pDisc1 28
+    3300720: pDisc1 29
+    3300722: pDisc1 3
+    3300724: pDisc1 30
+    3300726: pDisc1 31
+    3300728: pDisc1 32
+    3300730: pDisc1 33
+    3300732: pDisc1 34
+    3300734: pDisc1 35
+    3300736: pDisc1 4
+    3300738: pDisc1 5
+    3300740: pDisc1 6
+    3300742: pDisc1 7
+    3300744: pDisc1 8
+    3300746: pDisc1 9
+    3300748: pDisc2
+    3300750: pDisc2 1
+    3300752: pDisc2 10
+    3300754: pDisc2 11
+    3300756: pDisc2 12
+    3300758: pDisc2 13
+    3300760: pDisc2 14
+    3300762: pDisc2 15
+    3300764: pDisc2 16
+    3300766: pDisc2 17
+    3300768: pDisc2 18
+    3300770: pDisc2 19
+    3300772: pDisc2 2
+    3300774: pDisc2 20
+    3300776: pDisc2 21
+    3300778: pDisc2 22
+    3300780: pDisc2 23
+    3300782: pDisc2 24
+    3300784: pDisc2 25
+    3300786: pDisc2 26
+    3300788: pDisc2 27
+    3300790: pDisc2 28
+    3300792: pDisc2 29
+    3300794: pDisc2 3
+    3300796: pDisc2 30
+    3300798: pDisc2 31
+    3300800: pDisc2 32
+    3300802: pDisc2 33
+    3300804: pDisc2 34
+    3300806: pDisc2 35
+    3300808: pDisc2 4
+    3300810: pDisc2 5
+    3300812: pDisc2 6
+    3300814: pDisc2 7
+    3300816: pDisc2 8
+    3300818: pDisc2 9
+    3300820: pDisc3
+    3300822: pDisc3 1
+    3300824: pDisc3 10
+    3300826: pDisc3 11
+    3300828: pDisc3 12
+    3300830: pDisc3 13
+    3300832: pDisc3 14
+    3300834: pDisc3 15
+    3300836: pDisc3 16
+    3300838: pDisc3 17
+    3300840: pDisc3 18
+    3300842: pDisc3 19
+    3300844: pDisc3 2
+    3300846: pDisc3 20
+    3300848: pDisc3 21
+    3300850: pDisc3 22
+    3300852: pDisc3 23
+    3300854: pDisc3 24
+    3300856: pDisc3 25
+    3300858: pDisc3 26
+    3300860: pDisc3 27
+    3300862: pDisc3 28
+    3300864: pDisc3 29
+    3300866: pDisc3 3
+    3300868: pDisc3 30
+    3300870: pDisc3 31
+    3300872: pDisc3 32
+    3300874: pDisc3 33
+    3300876: pDisc3 34
+    3300878: pDisc3 35
+    3300880: pDisc3 4
+    3300882: pDisc3 5
+    3300884: pDisc3 6
+    3300886: pDisc3 7
+    3300888: pDisc3 8
+    3300890: pDisc3 9
+    3300892: pDisc4
+    3300894: pDisc4 1
+    3300896: pDisc4 10
+    3300898: pDisc4 11
+    3300900: pDisc4 12
+    3300902: pDisc4 13
+    3300904: pDisc4 14
+    3300906: pDisc4 15
+    3300908: pDisc4 16
+    3300910: pDisc4 17
+    3300912: pDisc4 18
+    3300914: pDisc4 19
+    3300916: pDisc4 2
+    3300918: pDisc4 20
+    3300920: pDisc4 21
+    3300922: pDisc4 22
+    3300924: pDisc4 23
+    3300926: pDisc4 24
+    3300928: pDisc4 25
+    3300930: pDisc4 26
+    3300932: pDisc4 27
+    3300934: pDisc4 28
+    3300936: pDisc4 29
+    3300938: pDisc4 3
+    3300940: pDisc4 30
+    3300942: pDisc4 31
+    3300944: pDisc4 32
+    3300946: pDisc4 33
+    3300948: pDisc4 34
+    3300950: pDisc4 35
+    3300952: pDisc4 4
+    3300954: pDisc4 5
+    3300956: pDisc4 6
+    3300958: pDisc4 7
+    3300960: pDisc4 8
+    3300962: pDisc4 9
+    3300964: pHelix1
+    3300966: pHelix1 1
+    3300968: pHelix1 10
+    3300970: pHelix1 11
+    3300972: pHelix1 12
+    3300974: pHelix1 13
+    3300976: pHelix1 14
+    3300978: pHelix1 15
+    3300980: pHelix1 16
+    3300982: pHelix1 17
+    3300984: pHelix1 18
+    3300986: pHelix1 19
+    3300988: pHelix1 2
+    3300990: pHelix1 20
+    3300992: pHelix1 21
+    3300994: pHelix1 22
+    3300996: pHelix1 23
+    3300998: pHelix1 24
+    3301000: pHelix1 25
+    3301002: pHelix1 26
+    3301004: pHelix1 27
+    3301006: pHelix1 28
+    3301008: pHelix1 29
+    3301010: pHelix1 3
+    3301012: pHelix1 30
+    3301014: pHelix1 31
+    3301016: pHelix1 32
+    3301018: pHelix1 33
+    3301020: pHelix1 34
+    3301022: pHelix1 35
+    3301024: pHelix1 4
+    3301026: pHelix1 5
+    3301028: pHelix1 6
+    3301030: pHelix1 7
+    3301032: pHelix1 8
+    3301034: pHelix1 9
+    3301036: pTorus1
+    3301038: pTorus1 1
+    3301040: pTorus1 10
+    3301042: pTorus1 11
+    3301044: pTorus1 12
+    3301046: pTorus1 13
+    3301048: pTorus1 14
+    3301050: pTorus1 15
+    3301052: pTorus1 16
+    3301054: pTorus1 17
+    3301056: pTorus1 18
+    3301058: pTorus1 19
+    3301060: pTorus1 2
+    3301062: pTorus1 20
+    3301064: pTorus1 21
+    3301066: pTorus1 22
+    3301068: pTorus1 23
+    3301070: pTorus1 24
+    3301072: pTorus1 25
+    3301074: pTorus1 26
+    3301076: pTorus1 27
+    3301078: pTorus1 28
+    3301080: pTorus1 29
+    3301082: pTorus1 3
+    3301084: pTorus1 30
+    3301086: pTorus1 31
+    3301088: pTorus1 32
+    3301090: pTorus1 33
+    3301092: pTorus1 34
+    3301094: pTorus1 35
+    3301096: pTorus1 4
+    3301098: pTorus1 5
+    3301100: pTorus1 6
+    3301102: pTorus1 7
+    3301104: pTorus1 8
+    3301106: pTorus1 9
+    3301108: pTorus2
+    3301110: pTorus2 1
+    3301112: pTorus2 2
+    3301114: pTorus2 3
+    3301116: pTorus2 4
+    3301118: pTorus2 5
+    3301120: pTorus2 6
+    3301122: pTorus2 7
     4300000: pCube1
     4300002: pCube2
     4300004: pSphere1
@@ -122,6 +2398,545 @@ ModelImporter:
     4300040: pCube9
     4300042: pCube10
     4300044: pCylinder13
+    4300046: pCube11
+    4300048: pCylinder18
+    4300050: pCylinder19
+    4300052: pCylinder20
+    4300054: pCylinder23
+    4300056: pCylinder24
+    4300058: pCylinder21
+    4300060: pCylinder26
+    4300062: pCylinder25
+    4300064: pHelix1
+    4300066: pDisc4
+    4300068: pCylinder22
+    4300070: pDisc2
+    4300072: pDisc1
+    4300074: pDisc3
+    4300076: pTorus1
+    4300078: pCylinder23
+    4300080: pCylinder24
+    4300082: pCylinder21
+    4300084: pCylinder26
+    4300086: pCylinder25
+    4300088: pHelix1
+    4300090: pDisc4
+    4300092: pCylinder22
+    4300094: pDisc2
+    4300096: pDisc1
+    4300098: pDisc3
+    4300100: pTorus1
+    4300102: pCylinder23
+    4300104: pCylinder24
+    4300106: pCylinder21
+    4300108: pCylinder26
+    4300110: pCylinder25
+    4300112: pHelix1
+    4300114: pDisc4
+    4300116: pCylinder22
+    4300118: pDisc2
+    4300120: pDisc1
+    4300122: pDisc3
+    4300124: pTorus1
+    4300126: pCylinder23
+    4300128: pCylinder24
+    4300130: pCylinder21
+    4300132: pCylinder26
+    4300134: pCylinder25
+    4300136: pHelix1
+    4300138: pDisc4
+    4300140: pCylinder22
+    4300142: pDisc2
+    4300144: pDisc1
+    4300146: pDisc3
+    4300148: pTorus1
+    4300150: pCylinder23
+    4300152: pCylinder24
+    4300154: pCylinder21
+    4300156: pCylinder26
+    4300158: pCylinder25
+    4300160: pHelix1
+    4300162: pDisc4
+    4300164: pCylinder22
+    4300166: pDisc2
+    4300168: pDisc1
+    4300170: pDisc3
+    4300172: pTorus1
+    4300174: pCylinder23
+    4300176: pCylinder24
+    4300178: pCylinder21
+    4300180: pCylinder26
+    4300182: pCylinder25
+    4300184: pHelix1
+    4300186: pDisc4
+    4300188: pCylinder22
+    4300190: pDisc2
+    4300192: pDisc1
+    4300194: pDisc3
+    4300196: pTorus1
+    4300198: pCylinder27
+    4300200: pCylinder23
+    4300202: pCylinder24
+    4300204: pCylinder21
+    4300206: pCylinder26
+    4300208: pCylinder25
+    4300210: pHelix1
+    4300212: pDisc4
+    4300214: pCylinder22
+    4300216: pDisc2
+    4300218: pDisc1
+    4300220: pDisc3
+    4300222: pTorus1
+    4300224: pCylinder23
+    4300226: pCylinder24
+    4300228: pCylinder21
+    4300230: pCylinder26
+    4300232: pCylinder25
+    4300234: pHelix1
+    4300236: pDisc4
+    4300238: pCylinder22
+    4300240: pDisc2
+    4300242: pDisc1
+    4300244: pDisc3
+    4300246: pTorus1
+    4300248: pCylinder23
+    4300250: pCylinder24
+    4300252: pCylinder21
+    4300254: pCylinder26
+    4300256: pCylinder25
+    4300258: pHelix1
+    4300260: pDisc4
+    4300262: pCylinder22
+    4300264: pDisc2
+    4300266: pDisc1
+    4300268: pDisc3
+    4300270: pTorus1
+    4300272: pCylinder23
+    4300274: pCylinder24
+    4300276: pCylinder21
+    4300278: pCylinder26
+    4300280: pCylinder25
+    4300282: pHelix1
+    4300284: pDisc4
+    4300286: pCylinder22
+    4300288: pDisc2
+    4300290: pDisc1
+    4300292: pDisc3
+    4300294: pTorus1
+    4300296: pCylinder23
+    4300298: pCylinder24
+    4300300: pCylinder21
+    4300302: pCylinder26
+    4300304: pCylinder25
+    4300306: pHelix1
+    4300308: pDisc4
+    4300310: pCylinder22
+    4300312: pDisc2
+    4300314: pDisc1
+    4300316: pDisc3
+    4300318: pTorus1
+    4300320: pCylinder23
+    4300322: pCylinder24
+    4300324: pCylinder21
+    4300326: pCylinder26
+    4300328: pCylinder25
+    4300330: pHelix1
+    4300332: pDisc4
+    4300334: pCylinder22
+    4300336: pDisc2
+    4300338: pDisc1
+    4300340: pDisc3
+    4300342: pTorus1
+    4300344: pCylinder28
+    4300346: pCylinder23
+    4300348: pCylinder24
+    4300350: pCylinder21
+    4300352: pCylinder26
+    4300354: pCylinder25
+    4300356: pHelix1
+    4300358: pDisc4
+    4300360: pCylinder22
+    4300362: pDisc2
+    4300364: pDisc1
+    4300366: pDisc3
+    4300368: pTorus1
+    4300370: pCylinder23
+    4300372: pCylinder24
+    4300374: pCylinder21
+    4300376: pCylinder26
+    4300378: pCylinder25
+    4300380: pHelix1
+    4300382: pDisc4
+    4300384: pCylinder22
+    4300386: pDisc2
+    4300388: pDisc1
+    4300390: pDisc3
+    4300392: pTorus1
+    4300394: pCylinder23
+    4300396: pCylinder24
+    4300398: pCylinder21
+    4300400: pCylinder26
+    4300402: pCylinder25
+    4300404: pHelix1
+    4300406: pDisc4
+    4300408: pCylinder22
+    4300410: pDisc2
+    4300412: pDisc1
+    4300414: pDisc3
+    4300416: pTorus1
+    4300418: pCylinder23
+    4300420: pCylinder24
+    4300422: pCylinder21
+    4300424: pCylinder26
+    4300426: pCylinder25
+    4300428: pHelix1
+    4300430: pDisc4
+    4300432: pCylinder22
+    4300434: pDisc2
+    4300436: pDisc1
+    4300438: pDisc3
+    4300440: pTorus1
+    4300442: pCylinder23
+    4300444: pCylinder24
+    4300446: pCylinder21
+    4300448: pCylinder26
+    4300450: pCylinder25
+    4300452: pHelix1
+    4300454: pDisc4
+    4300456: pCylinder22
+    4300458: pDisc2
+    4300460: pDisc1
+    4300462: pDisc3
+    4300464: pTorus1
+    4300466: pCylinder23
+    4300468: pCylinder24
+    4300470: pCylinder21
+    4300472: pCylinder26
+    4300474: pCylinder25
+    4300476: pHelix1
+    4300478: pDisc4
+    4300480: pCylinder22
+    4300482: pDisc2
+    4300484: pDisc1
+    4300486: pDisc3
+    4300488: pTorus1
+    4300490: pCylinder29
+    4300492: pCylinder23
+    4300494: pCylinder24
+    4300496: pCylinder21
+    4300498: pCylinder26
+    4300500: pCylinder25
+    4300502: pHelix1
+    4300504: pDisc4
+    4300506: pCylinder22
+    4300508: pDisc2
+    4300510: pDisc1
+    4300512: pDisc3
+    4300514: pTorus1
+    4300516: pCylinder23
+    4300518: pCylinder24
+    4300520: pCylinder21
+    4300522: pCylinder26
+    4300524: pCylinder25
+    4300526: pHelix1
+    4300528: pDisc4
+    4300530: pCylinder22
+    4300532: pDisc2
+    4300534: pDisc1
+    4300536: pDisc3
+    4300538: pTorus1
+    4300540: pCylinder23
+    4300542: pCylinder24
+    4300544: pCylinder21
+    4300546: pCylinder26
+    4300548: pCylinder25
+    4300550: pHelix1
+    4300552: pDisc4
+    4300554: pCylinder22
+    4300556: pDisc2
+    4300558: pDisc1
+    4300560: pDisc3
+    4300562: pTorus1
+    4300564: pCylinder23
+    4300566: pCylinder24
+    4300568: pCylinder21
+    4300570: pCylinder26
+    4300572: pCylinder25
+    4300574: pHelix1
+    4300576: pDisc4
+    4300578: pCylinder22
+    4300580: pDisc2
+    4300582: pDisc1
+    4300584: pDisc3
+    4300586: pTorus1
+    4300588: pCylinder23
+    4300590: pCylinder24
+    4300592: pCylinder21
+    4300594: pCylinder26
+    4300596: pCylinder25
+    4300598: pHelix1
+    4300600: pDisc4
+    4300602: pCylinder22
+    4300604: pDisc2
+    4300606: pDisc1
+    4300608: pDisc3
+    4300610: pTorus1
+    4300612: pCylinder23
+    4300614: pCylinder24
+    4300616: pCylinder21
+    4300618: pCylinder26
+    4300620: pCylinder25
+    4300622: pHelix1
+    4300624: pDisc4
+    4300626: pCylinder22
+    4300628: pDisc2
+    4300630: pDisc1
+    4300632: pDisc3
+    4300634: pTorus1
+    4300636: pCylinder30
+    4300638: pCylinder23
+    4300640: pCylinder24
+    4300642: pCylinder21
+    4300644: pCylinder26
+    4300646: pCylinder25
+    4300648: pHelix1
+    4300650: pDisc4
+    4300652: pCylinder22
+    4300654: pDisc2
+    4300656: pDisc1
+    4300658: pDisc3
+    4300660: pTorus1
+    4300662: pCylinder23
+    4300664: pCylinder24
+    4300666: pCylinder21
+    4300668: pCylinder26
+    4300670: pCylinder25
+    4300672: pHelix1
+    4300674: pDisc4
+    4300676: pCylinder22
+    4300678: pDisc2
+    4300680: pDisc1
+    4300682: pDisc3
+    4300684: pTorus1
+    4300686: pCylinder23
+    4300688: pCylinder24
+    4300690: pCylinder21
+    4300692: pCylinder26
+    4300694: pCylinder25
+    4300696: pHelix1
+    4300698: pDisc4
+    4300700: pCylinder22
+    4300702: pDisc2
+    4300704: pDisc1
+    4300706: pDisc3
+    4300708: pTorus1
+    4300710: pCylinder23
+    4300712: pCylinder24
+    4300714: pCylinder21
+    4300716: pCylinder26
+    4300718: pCylinder25
+    4300720: pHelix1
+    4300722: pDisc4
+    4300724: pCylinder22
+    4300726: pDisc2
+    4300728: pDisc1
+    4300730: pDisc3
+    4300732: pTorus1
+    4300734: pCylinder23
+    4300736: pCylinder24
+    4300738: pCylinder21
+    4300740: pCylinder26
+    4300742: pCylinder25
+    4300744: pHelix1
+    4300746: pDisc4
+    4300748: pCylinder22
+    4300750: pDisc2
+    4300752: pDisc1
+    4300754: pDisc3
+    4300756: pTorus1
+    4300758: pCylinder23
+    4300760: pCylinder24
+    4300762: pCylinder21
+    4300764: pCylinder26
+    4300766: pCylinder25
+    4300768: pHelix1
+    4300770: pDisc4
+    4300772: pCylinder22
+    4300774: pDisc2
+    4300776: pDisc1
+    4300778: pDisc3
+    4300780: pTorus1
+    4300782: pCylinder31
+    4300784: pCylinder23
+    4300786: pCylinder24
+    4300788: pCylinder21
+    4300790: pCylinder26
+    4300792: pCylinder25
+    4300794: pHelix1
+    4300796: pDisc4
+    4300798: pCylinder22
+    4300800: pDisc2
+    4300802: pDisc1
+    4300804: pDisc3
+    4300806: pTorus1
+    4300808: pCylinder23
+    4300810: pCylinder24
+    4300812: pCylinder21
+    4300814: pCylinder26
+    4300816: pCylinder25
+    4300818: pHelix1
+    4300820: pDisc4
+    4300822: pCylinder22
+    4300824: pDisc2
+    4300826: pDisc1
+    4300828: pDisc3
+    4300830: pTorus1
+    4300832: pCylinder23
+    4300834: pCylinder24
+    4300836: pCylinder21
+    4300838: pCylinder26
+    4300840: pCylinder25
+    4300842: pHelix1
+    4300844: pDisc4
+    4300846: pCylinder22
+    4300848: pDisc2
+    4300850: pDisc1
+    4300852: pDisc3
+    4300854: pTorus1
+    4300856: pCylinder23
+    4300858: pCylinder24
+    4300860: pCylinder21
+    4300862: pCylinder26
+    4300864: pCylinder25
+    4300866: pHelix1
+    4300868: pDisc4
+    4300870: pCylinder22
+    4300872: pDisc2
+    4300874: pDisc1
+    4300876: pDisc3
+    4300878: pTorus1
+    4300880: pCylinder32
+    4300882: pCylinder23
+    4300884: pCylinder24
+    4300886: pCylinder21
+    4300888: pCylinder26
+    4300890: pCylinder25
+    4300892: pHelix1
+    4300894: pDisc4
+    4300896: pCylinder22
+    4300898: pDisc2
+    4300900: pDisc1
+    4300902: pDisc3
+    4300904: pTorus1
+    4300906: pCylinder23
+    4300908: pCylinder24
+    4300910: pCylinder21
+    4300912: pCylinder26
+    4300914: pCylinder25
+    4300916: pHelix1
+    4300918: pDisc4
+    4300920: pCylinder22
+    4300922: pDisc2
+    4300924: pDisc1
+    4300926: pDisc3
+    4300928: pTorus1
+    4300930: pCylinder33
+    4300932: pCylinder34
+    4300934: pCylinder35
+    4300936: pCylinder37
+    4300938: pCylinder36
+    4300940: pCube12
+    4300942: pCylinder35
+    4300944: pCylinder37
+    4300946: pCylinder36
+    4300948: pCube12
+    4300950: pCylinder35
+    4300952: pCylinder37
+    4300954: pCylinder36
+    4300956: pCube12
+    4300958: pCylinder35
+    4300960: pCylinder37
+    4300962: pCylinder36
+    4300964: pCube12
+    4300966: pCube16
+    4300968: pCube17
+    4300970: pCylinder38
+    4300972: pCylinder39
+    4300974: pCylinder41
+    4300976: pCylinder42
+    4300978: pCylinder43
+    4300980: pCylinder44
+    4300982: pTorus2
+    4300984: pCylinder45
+    4300986: pCylinder47
+    4300988: pCylinder46
+    4300990: pTorus2
+    4300992: pCylinder45
+    4300994: pCylinder47
+    4300996: pCylinder46
+    4300998: pTorus2
+    4301000: pCylinder45
+    4301002: pCylinder47
+    4301004: pCylinder46
+    4301006: pTorus2
+    4301008: pCylinder45
+    4301010: pCylinder47
+    4301012: pCylinder46
+    4301014: pTorus2
+    4301016: pCylinder45
+    4301018: pCylinder47
+    4301020: pCylinder46
+    4301022: pTorus2
+    4301024: pCylinder45
+    4301026: pCylinder47
+    4301028: pCylinder46
+    4301030: pTorus2
+    4301032: pCylinder45
+    4301034: pCylinder47
+    4301036: pCylinder46
+    4301038: pCylinder48
+    4301040: pCube18
+    4301042: pCube19
+    4301044: pCube20
+    4301046: pCylinder50
+    4301048: pCylinder52
+    4301050: pCylinder53
+    4301052: pCylinder54
+    4301054: pCylinder55
+    4301056: pCylinder56
+    4301058: pCylinder57
+    4301060: pCylinder58
+    4301062: pCylinder59
+    4301064: pCylinder60
+    4301066: pCylinder61
+    4301068: pCube31
+    4301070: pCylinder62
+    4301072: pCylinder63
+    4301074: pCylinder64
+    4301076: pCylinder65
+    4301078: pCube32
+    4301080: pCube33
+    4301082: pCube34
+    4301084: pCylinder66
+    4301086: pCylinder67
+    4301088: pCylinder68
+    4301090: pCube35
+    4301092: pCylinder69
+    4301094: pCylinder70
+    4301096: pCube35
+    4301098: pCylinder69
+    4301100: pCylinder70
+    4301102: pCube35
+    4301104: pCylinder69
+    4301106: pCylinder70
+    4301108: pTorus2
+    4301110: pCylinder45
+    4301112: pCylinder47
+    4301114: pCylinder46
+    4301116: pCylinder71
+    4301118: extrudedSurface1
+    4301120: pCylinder72
+    4301122: pCylinder73
     9500000: //RootNode
   materials:
     importMaterials: 0
