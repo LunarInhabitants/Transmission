@@ -73,6 +73,11 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void GetAmmo()
+    {
+
+    }
+
     public void Die()
     {
         Debug.Log("Experiment Failure: Human is Dead");

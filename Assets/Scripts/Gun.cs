@@ -27,6 +27,8 @@ public class Gun : MonoBehaviour
     private Material _material;
     private GameObject _cameraGameObject;
     private GunMode _gunMode = GunMode.Red;
+    private float _redAmmo = 256.0f;
+
     public GunMode GunMode
     {
         get { return _gunMode; }
@@ -163,5 +165,10 @@ public class Gun : MonoBehaviour
                 _material.color = Color.blue;
                 break;
         }
+    }
+
+    public void RefillAmmo()
+    {
+
     }
 }

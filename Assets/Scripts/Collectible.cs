@@ -22,7 +22,7 @@ public class Collectible : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if (collider.GetComponent<Movement>())
+        if (collider.GetComponent<Player>())
         {
 
         }
