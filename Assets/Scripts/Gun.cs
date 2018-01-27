@@ -13,16 +13,21 @@ public enum GunMode
 
 public class Gun : MonoBehaviour
 {
+    public static Gun Instance { get; private set; }
+
     [SerializeField] private float _beamDamage = 1.0f;
     [SerializeField] private Color _beamColour = new Color(1.0f, 0, 0);
-    [SerializeField] private GameObject _firePoint;
 
+    public float scopeFOV = 10.0f;
+    float _defaultFOV = 0.0f;
+    float _defaultGunFOV = 0.0f;
+    Camera _gunCamera;
     private SpiralBoi _spiralBoi;
 
     private Material _material;
     private GameObject _cameraGameObject;
     private GunMode _gunMode = GunMode.Red;
-    private GunMode _GunMode
+    public GunMode GunMode
     {
         get { return _gunMode; }
         set
@@ -49,17 +54,23 @@ public class Gun : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-	    _material = GetComponentInChildren<Renderer>().material;
+        Instance = this;
+
+        _material = GetComponentInChildren<Renderer>().material;
 	    _cameraGameObject = transform.parent.gameObject;
 	    _spiralBoi = GetComponent<SpiralBoi>();
 
 	    _material.color = _beamColour;
-	}
+
+        _defaultFOV = Camera.main.fieldOfView;
+        _gunCamera = GetComponentInParent<Camera>();
+        _defaultGunFOV = _gunCamera.fieldOfView;
+    }
 	
 	// Update is called once per frame
 	void Update () {
-	    if (Input.GetButton("Fire1"))
-	    {
+        if (Input.GetButton("Fire1"))
+        {
             Fire();
 	    }
 	    else
@@ -67,16 +78,19 @@ public class Gun : MonoBehaviour
 	        _spiralBoi.StopSpiral();
 	    }
 
-	    mouseScrollBoi += Input.mouseScrollDelta.y;
+        Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, Input.GetButton("Fire2") ? scopeFOV : _defaultFOV, 0.5f);
+        _gunCamera.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, Input.GetButton("Fire2") ? scopeFOV * (_defaultGunFOV / _defaultFOV): _defaultGunFOV, 0.5f);
+
+        mouseScrollBoi += Input.mouseScrollDelta.y;
 
 	    if (mouseScrollBoi < -1)
 	    {
-            PreviousMode();
+            NextMode();
 	        mouseScrollBoi = 0;
 	    }
         else if (mouseScrollBoi > 1)
 	    {
-            NextMode();
+            PreviousMode();
 	        mouseScrollBoi = 0;
         }
 
@@ -97,31 +111,25 @@ public class Gun : MonoBehaviour
             BaseChromable chromie = hitObject.transform.gameObject.GetComponent<BaseChromable>();
             if (chromie != null)
             {
-                Debug.DrawLine(_firePoint.transform.position, hitObject.point, Color.magenta);
-                _spiralBoi.DoSpiral(_firePoint.transform.position, hitObject.point);
+                _spiralBoi.DoSpiral(transform.position, hitObject.point);
                 chromie.Chromatize(_beamColour * Time.deltaTime);
             }
             else
             {
-                Debug.DrawLine(_firePoint.transform.position, hitObject.point, Color.green);
-                _spiralBoi.DoSpiral(_firePoint.transform.position, hitObject.point);
+                _spiralBoi.DoSpiral(transform.position, hitObject.point);
             }
-        }
-        else
-        {
-            Debug.DrawLine(_firePoint.transform.position, hitObject.point, Color.red);      
         }
     }
 
     private void NextMode()
     {
-        if ((int) _gunMode == 2)
+        if ((int)_gunMode == 0)
         {
-            _GunMode = 0;
+            GunMode = (GunMode)2;
         }
         else
         {
-            _GunMode = (GunMode)(int)_gunMode + 1;
+            GunMode = (GunMode)(int)_gunMode - 1;
         }
 
         UpdateGunVisual();
@@ -129,13 +137,13 @@ public class Gun : MonoBehaviour
 
     private void PreviousMode()
     {
-        if ((int)_gunMode == 0)
+        if ((int) _gunMode == 2)
         {
-            _GunMode = (GunMode)2;
+            GunMode = 0;
         }
         else
         {
-            _GunMode = (GunMode)(int)_gunMode - 1;
+            GunMode = (GunMode)(int)_gunMode + 1;
         }
 
         UpdateGunVisual();

@@ -16,7 +16,7 @@ public class SpiralBoi : MonoBehaviour
 	void Start ()
 	{
         positions = new List<Vector3>();
-	    _lineRenderer = GetComponentInParent<LineRenderer>();
+	    _lineRenderer = transform.parent.GetComponentInChildren<LineRenderer>();
 	    _lineRenderer.positionCount = _resolution;
         _lineRenderer.enabled = false;
 	    for (int i = 0; i < _resolution; i++)
@@ -34,11 +34,11 @@ public class SpiralBoi : MonoBehaviour
 	        float distance = movementVector.magnitude / _resolution;
 	        for (int i = 0; i < positions.Count; i++)
 	        {
-	            Vector3 vec = new Vector3();
-	            vec.z = distance * i;
-	            //vec.x += Mathf.Sin(i);
-	            //vec.y += Mathf.Cos(i);
-	            positions[i] = vec;
+	            positions[i] = new Vector3(
+                    Mathf.Sin((Time.time + i) * 4.0f) * 0.02f,
+                    Mathf.Cos((Time.time + i) * 4.0f) * 0.02f,
+                    distance * i
+                );
 	        }
 	        _lineRenderer.SetPositions(positions.ToArray());
 	    }
