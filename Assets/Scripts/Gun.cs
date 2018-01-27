@@ -15,7 +15,6 @@ public class Gun : MonoBehaviour
 {
     [SerializeField] private float _beamDamage = 1.0f;
     [SerializeField] private Color _beamColour = new Color(1.0f, 0, 0);
-    [SerializeField] private GameObject _firePoint;
 
     private SpiralBoi _spiralBoi;
 
@@ -97,19 +96,13 @@ public class Gun : MonoBehaviour
             BaseChromable chromie = hitObject.transform.gameObject.GetComponent<BaseChromable>();
             if (chromie != null)
             {
-                Debug.DrawLine(_firePoint.transform.position, hitObject.point, Color.magenta);
-                _spiralBoi.DoSpiral(_firePoint.transform.position, hitObject.point);
+                _spiralBoi.DoSpiral(transform.position, hitObject.point);
                 chromie.Chromatize(_beamColour * Time.deltaTime);
             }
             else
             {
-                Debug.DrawLine(_firePoint.transform.position, hitObject.point, Color.green);
-                _spiralBoi.DoSpiral(_firePoint.transform.position, hitObject.point);
+                _spiralBoi.DoSpiral(transform.position, hitObject.point);
             }
-        }
-        else
-        {
-            Debug.DrawLine(_firePoint.transform.position, hitObject.point, Color.red);      
         }
     }
 
