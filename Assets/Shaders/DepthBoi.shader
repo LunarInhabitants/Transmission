@@ -39,7 +39,7 @@
 			depth = pow(depth, 0.5);
 			if(_FlipDepth)
 				depth = (1.0 - depth) * 1.2;
-			o.Albedo = depth * tex.rgb;
+			o.Albedo = max(0.05, depth) * tex.rgb;
 			o.Alpha = tex.a;
 		}
 
