@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float _jumpSpeed = 8.0F;
     [SerializeField] private float _gravity = 20.0F;
+    [SerializeField] private Transform butts;
 
     public float Health { get; private set; }
     public float MaxHealth = 100.0f;
