@@ -8,21 +8,34 @@ public class ChickenController : BaseChromable
     private const float deathDistSq = deathDist * deathDist;
 
     public float chickenSpeed = 15.0f;
-    public float attackDist = 2.0f;
+
+    float chickenRadius = 1f;
+
+    public float attackDist = 1.5f;
+    float attackSq;
+
     public float damageToCauseOnAttack = 5.0f;
     public ParticleSystem deathParticles;
 
     Animator animator;
     new Rigidbody rigidbody;
 
-    float attackDistSq;
     bool isOnDeathRow = false;
+    bool isAttacking = false;
+    
+    AudioSource audioSource;
+
+    [SerializeField]
+    AudioClip attackReady, attackMade;
+
 
     protected override void Start()
     {
         base.Start();
+        audioSource = GetComponent<AudioSource>();
 
-        attackDistSq = attackDist * attackDist;
+        float attackPlusChickenRad = attackDist + chickenRadius;
+        attackSq = attackPlusChickenRad * attackPlusChickenRad;
 
         animator = GetComponentInChildren<Animator>();
         rigidbody = GetComponent<Rigidbody>();
@@ -60,18 +73,8 @@ public class ChickenController : BaseChromable
         {
             Vector3 toPlayer = Player.Instance.transform.position - transform.position;
 
-            rigidbody.AddForce(toPlayer.normalized * (chickenSpeed * 100.0f) * Time.deltaTime, ForceMode.Acceleration);
-            Vector3 lookDir = rigidbody.velocity.normalized;
-            if (lookDir.sqrMagnitude <= 0.001f)
-                lookDir = Vector3.forward;
-            rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(lookDir), 0.2f);
-            animator.SetFloat("Speed", rigidbody.velocity.sqrMagnitude);
-
-            if (toPlayer.sqrMagnitude <= attackDistSq)
-            {
-                animator.SetTrigger("IsAttacking");
-                Player.Instance.Hurt(damageToCauseOnAttack);
-            }
+            TryAttack(toPlayer);
+            
 
             if (R + G + B > 2.9f)
             {
@@ -81,6 +84,57 @@ public class ChickenController : BaseChromable
         }
 
         base.Update();
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isOnDeathRow)
+        {
+            Movement(Player.Instance.transform.position);
+        }
+    }
+
+    void Movement(Vector3 Target)
+    {
+        Vector3 toPlayer = Target - transform.position;
+        rigidbody.AddForce(toPlayer.normalized * (chickenSpeed * 100.0f) * Time.deltaTime, ForceMode.Acceleration);
+        Vector3 lookDir = rigidbody.velocity.normalized;
+        if (lookDir.sqrMagnitude <= 0.001f)
+            lookDir = Vector3.forward;
+        rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, Quaternion.LookRotation(lookDir), 0.2f);
+        animator.SetFloat("Speed", rigidbody.velocity.sqrMagnitude);
+    }
+    
+    void TryAttack(Vector3 toPlayer)
+    {
+        if (isAttacking == false)
+        {
+            if (toPlayer.sqrMagnitude <= attackSq)
+            {
+                isAttacking = true;
+                StartCoroutine(DoAttack());
+            }
+        }
+    }
+
+
+    IEnumerator DoAttack()
+    {        
+        animator.SetTrigger("IsAttacking");
+        audioSource.PlayOneShot(attackReady);
+        yield return new WaitForSeconds(1);
+
+        Vector3 toPlayer = Player.Instance.transform.position - transform.position;
+
+        if (toPlayer.sqrMagnitude <= attackSq)
+        {
+            audioSource.PlayOneShot(attackMade);
+            Player.Instance.Hurt(damageToCauseOnAttack);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        isAttacking = false;
     }
 
     IEnumerator DeathAnim()
